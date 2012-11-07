@@ -25,7 +25,7 @@
     "category" : 'Bluestar/Addons/WS',
     'complexity': "easy",
     'description': """A module to synchronize datas with external webservices. """,
-    'author': 'bluestar solutions sàrl',
+    'author': 'Bluestar Solutions Sàrl',
     'website': 'http://www.blues2.ch',
     'depends': [],
     'init_xml': [],
