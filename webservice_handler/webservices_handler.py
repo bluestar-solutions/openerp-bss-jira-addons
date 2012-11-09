@@ -21,49 +21,71 @@
 
 from openerp.osv import osv, fields
 from openerp.netsvc import logging
+from datetime import datetime, timedelta
 
-WEBSERVICE_TYPE = [('get','Get'),('push', 'Push'),('sync','Sync'),]
-WEBSERVICE_RESULT_TYPE = [('success','Success'),('no_answer','No Answer'),('fail','Fail'),]
-
-class webservice(osv.osv):
-    _name = 'ws.webservice'
-    _description = 'Webservice'
+class webservice_handler(osv.osv_memory):
+    _name = 'bss.webservice_handler'
+    _description = 'Webservice Handler'
     _logger = logging.getLogger(_name)
             
     _columns= {
-        'name': fields.char('Name', size=64, required=True,),
-        'service': fields.char('Service', size=128, required=True,),
+        'name': fields.char('Name', size=64),
+        'last_run': fields.datetime('Last Run'),
         'active': fields.boolean('Active'),
-        'wait_retry_s': fields.integer('Wait Retry', required=True),
-        'wait_next_s': fields.integer('Wait Next', required=True),
-        'order': fields.integer('Wait Next', required=True),
     }
     
-    _default= {
-        'wait_retry_s': 300,
-        'wait_next_s':3600,
-        'order': 16,
+    _defaults= {
+        'name': 'Service Handler',
+        'last_run': lambda *x: fields.datetime.now,
+        'active': True,
     }
-    
-webservice()
 
-class webservice_call(osv.osv):
-    _name = 'ws.webservice_call'
-    _description = 'Webservice Call'
-    _logger = logging.getLogger(_name)
-            
-    _columns= {
-        'webservice_id': fields.many2one('pgeam.webservice', 'Webservice', required=True),
-        'call_time': fields.datetime('Call Time'),
-        'result': fields.selection(WEBSERVICE_RESULT_TYPE, 'Result'),
-        'error': fields.text('Error'),
-    }
-    
-    _default= {
-        'last_call': lambda *x: fields.datetime.now,
-    }
-           
-webservice_call()
+    #default cron (the one created if missing)
+    cron = {'active': True,
+            'priority': 2,
+            'interval_number': 1,
+            'interval_type': 'minutes',
+            'nextcall': time.strftime("%Y-%m-%d %H:%M:%S",
+                                      (datetime.now()
+                                       + timedelta(minutes=1)).timetuple()),  # in one minute
+            'numbercall': -1,
+            'doall': True,
+            'model': 'bss.webservice_handler',
+            'function': 'run_all',
+            'args': '()',
+            }
 
+    def get_cron_id(self, cr, uid, context):
+        """return the webservice cron's id. Create one if the cron does not exists """
+        cron_obj = self.pool.get('ir.cron')
+        # find the cron that send messages
+        cron_id = cron_obj.search(cr, uid,  [('function', 'ilike', self.cron['function']),
+                                             ('model', 'ilike', self.cron['model'])],
+                                  context={'active_test': False})
+        if cron_id:
+            cron_id = cron_id[0]
+
+        # the cron does not exists
+        if not cron_id:
+            self.cron['name'] = _('Webservice Handler')
+            cron_id = cron_obj.create(cr, uid, self.cron, context)
+
+        return cron_id
+
+    def run_all(self, cr, uid, context=None):
+        webservice_obj = self.pool.get('bss.webservice')
+        service_ids = webservice_obj.search(cr, uid, [('active','=',True),('wait_next_minutes','>',0)], order='priority,last_run')
+        for service_id in service_ids:
+            service = webservice_obj.browse(cr,uid,service_id,context)
+            if service.last_success == service.last_run:
+                next_run =  service.last_run + timedelta(minutes=service.wait_next_minutes)
+            else:
+                next_run =  service.last_run + timedelta(minutes=service.wait_retry_minutes)
+                
+            if next_run < datetime.now():
+                service.do_run(cr,uid,service_id,context)
+                
+        
+webservice_handler()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:    
