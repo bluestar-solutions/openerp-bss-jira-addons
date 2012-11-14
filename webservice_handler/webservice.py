@@ -26,10 +26,9 @@ import json
 import httplib2
 import urllib2
 
-WEBSERVICE_TYPE = [('get','Get'),('push', 'Push'),('push_get','Push Get Sync'),('get_push','Get Push Sync'),]
+WEBSERVICE_TYPE = [('GET','Get'),('PUSH', 'Push'),('PUSH_GET','Push Get Sync'),('GET_PUSH','Get Push Sync'),]
 HTTP_METHOD= [('GET','GET'),('POST','POST')]
-HTTP_AUTH_TYPE = [('None', 'None'), ('Basic', 'Basic')]
-WEBSERVICE_RESULT_TYPE = [('success','Success'),('no_answer','No Answer'),('fail','Fail'),]
+HTTP_AUTH_TYPE = [('NONE', 'None'), ('BASIC', 'Basic')]
 
 class webservice(osv.osv):
     _name = 'bss.webservice'
