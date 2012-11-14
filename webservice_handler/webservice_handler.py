@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # 
 # #############################################################################
+import time
 
 from openerp.osv import osv, fields
 from openerp.netsvc import logging
@@ -26,17 +27,17 @@ from datetime import datetime, timedelta
 class webservice_handler(osv.osv_memory):
     _name = 'bss.webservice_handler'
     _description = 'Webservice Handler'
-    _logger = logging.getLogger(_name)
             
     _columns= {
         'name': fields.char('Name', size=64),
+        'service_id': fields.many2one('bss.webservice', 'Webservice'),
         'last_run': fields.datetime('Last Run'),
         'active': fields.boolean('Active'),
     }
     
     _defaults= {
         'name': 'Service Handler',
-        'last_run': lambda *x: fields.datetime.now,
+        'last_run': lambda *x: datetime.now(),
         'active': True,
     }
 
@@ -46,14 +47,13 @@ class webservice_handler(osv.osv_memory):
             'interval_number': 1,
             'interval_type': 'minutes',
             'nextcall': time.strftime("%Y-%m-%d %H:%M:%S",
-                                      (datetime.now()
-                                       + timedelta(minutes=1)).timetuple()),  # in one minute
+                                      datetime.now().timetuple()),  # in one minute
             'numbercall': -1,
             'doall': True,
             'model': 'bss.webservice_handler',
             'function': 'run_all',
             'args': '()',
-            }
+    }
 
     def get_cron_id(self, cr, uid, context):
         """return the webservice cron's id. Create one if the cron does not exists """
@@ -73,17 +73,29 @@ class webservice_handler(osv.osv_memory):
         return cron_id
 
     def run_all(self, cr, uid, context=None):
+        _logger = logging.getLogger('bss.webservice_handler')
+        if _logger.isEnabledFor(logging.DEBUG):
+            _logger.debug('Webservices started at %s', datetime.now())
         webservice_obj = self.pool.get('bss.webservice')
         service_ids = webservice_obj.search(cr, uid, [('active','=',True),('wait_next_minutes','>',0)], order='priority,last_run')
-        for service_id in service_ids:
-            service = webservice_obj.browse(cr,uid,service_id,context)
-            if service.last_success == service.last_run:
-                next_run =  service.last_run + timedelta(minutes=service.wait_next_minutes)
+        services = webservice_obj.browse(cr,uid,service_ids,context)
+        for service in services:           
+#            _logger.debug('Service is %s', str(service))
+            
+            if service.last_run:
+                _logger.debug('last_run is %s', str(service.last_run))
+                if service.last_success == service.last_run:
+                    next_run =  datetime.strptime(service.last_run,"%Y-%m-%d %H:%M:%S.%f") + timedelta(minutes=service.wait_next_minutes)
+                else:
+                    next_run =  datetime.strptime(service.last_run,"%Y-%m-%d %H:%M:%S.%f") + timedelta(minutes=service.wait_retry_minutes)
             else:
-                next_run =  service.last_run + timedelta(minutes=service.wait_retry_minutes)
-                
+                next_run = datetime(2000,1,1)
+                  
             if next_run < datetime.now():
-                service.do_run(cr,uid,service_id,context)
+                _logger.debug('Context is %s', str(context))
+                service.do_run(service.id)
+        if _logger.isEnabledFor(logging.DEBUG):
+            _logger.debug('Webservices ended at %s', datetime.now())
                 
         
 webservice_handler()

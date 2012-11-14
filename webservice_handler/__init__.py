@@ -21,6 +21,10 @@
 
 # From this project
 
+import webservice_call
+import webservice_field
+import webservice
 import webservice_handler
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

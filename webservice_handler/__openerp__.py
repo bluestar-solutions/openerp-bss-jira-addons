@@ -35,7 +35,7 @@
                    ,'security/ir.model.access.csv'
                    
                    ,'webservice_handler.xml'],
-     'demo_xml': [],
+    'demo_xml': [],
     'test': [],
     'installable': True,
     'application': False,

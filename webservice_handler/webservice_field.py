@@ -24,7 +24,7 @@ from openerp.netsvc import logging
 
 class webservice_field(osv.osv):
     _name = 'bss.webservice_field'
-    _description = 'Webservice'
+    _description = 'Webservice Field'
     _logger = logging.getLogger(_name)
 
     _columns= {

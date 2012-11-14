@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <record model="ir.ui.view" id="bss_webservice_tree">
+            <field name="name">bss.webservice.tree</field>
+            <field name="model">bss.webservice</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Webservices">
+                    <field name="name" />
+                    <field name="service_type" />
+                    <field name="ws_protocol" />
+                    <field name="ws_host" />
+                    <field name="ws_port" />
+                    <field name="ws_path" />
+                    <field name="http_method" />
+                    <field name="http_auth_type" />
+                    <field name="http_auth_login" />
+                    <field name="http_auth_password" />
+                    <field name="model_name" />
+                    <field name="before_method_name" />
+                    <field name="after_method_name" />
+                    <field name="encode_method_name" />
+                    <field name="decode_method_name" />
+                    <field name="wait_retry_minutes" />
+                    <field name="wait_next_minutes" />
+                    <field name="priority" />
+                    <field name="active" />
+                    <field name="last_run" />
+                    <field name="last_success" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="bss_webservice_form">
+            <field name="name">bss.webservice.form</field>
+            <field name="model">bss.webservice</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Webservices">
+                    <field name="name" />
+                    <field name="service_type" />
+                    <field name="ws_protocol" />
+                    <field name="ws_host" />
+                    <field name="ws_port" />
+                    <field name="ws_path" />
+                    <field name="http_method" />
+                    <field name="http_auth_type" />
+                    <field name="http_auth_login" />
+                    <field name="http_auth_password" />
+                    <field name="model_name" />
+                    <field name="before_method_name" />
+                    <field name="after_method_name" />
+                    <field name="encode_method_name" />
+                    <field name="decode_method_name" />
+                    <field name="wait_retry_minutes" />
+                    <field name="wait_next_minutes" />
+                    <field name="priority" />
+                    <field name="active" />
+                    <field name="last_run" readonly="1"/>
+                    <field name="last_success" readonly="1"/>
+                    <newline />
+                    <field name="call_ids" mode="tree,form" nolabel="1" colspan = "4" readonly="1">
+                        <tree>
+                            <field name="service_id" />
+                            <field name="call_moment" />
+                            <field name="success" />
+                            <field name="status" />
+                            <field name="reason" />                          
+                        </tree>
+                        <form>
+                            <field name="service_id" />
+                            <field name="call_moment" />
+                            <field name="success" />
+                            <field name="status" />
+                            <group string="Reason" colspan="4">
+                                <field name="reason" colspan="4" nolabel="1"/>   
+                            </group>       
+                            <group string="Body" colspan="4">                
+                                <field name="body" colspan="4" nolabel="1"/>   
+                            </group>                       
+                        </form>
+                    </field>
+                </form>
+            </field>
+        </record>
+ <!--      
+         <record model="ir.ui.view" id="pgeam_insurance_form">
+            <field name="name">pgeam.insurance.form</field>
+            <field name="model">pgeam.insurance</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Insurance">
+                    <field name="name" />
+                    <newline />
+                    <field name="insurance_policy_ids" colspan="4" nolabel="1" context="{'insurance_id':id}">
+                        <tree string="Insurance Policies">
+                            <field name="building_id" />
+                            <field name="insurance_type" />
+                            <field name="comment" />
+                            <field name="start_date" />
+                            <field name="end_date" />
+                        </tree>
+                    </field>
+                </form>
+            </field>
+        </record>
+ -->
+        <record id="bss_ws_act" model="ir.actions.act_window">
+            <field name="name">Webservices</field>
+            <field name="res_model">bss.webservice</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem action="bss_ws_act" id="menu_bss_ws_act" parent="base.next_id_10" sequence="20"/>
+    </data>
+</openerp>

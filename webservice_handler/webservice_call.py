@@ -34,8 +34,9 @@ class webservice_call(osv.osv):
         'success': fields.boolean('Success'),
         'status': fields.integer('Status'),
         'reason': fields.text('Reason'),
+        'body': fields.text('Body'),
     }
     _defaults = {
         'call_moment': lambda *x: datetime.now(),
     }
-webservice_field()
+webservice_call()

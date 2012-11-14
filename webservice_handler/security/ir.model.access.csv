@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_webservice_user,webservice,ws.model_webservice,base.group_user,False,False,False,False
+access_webservice_user,webservice,model_bss_webservice,base.group_user,False,False,False,False
