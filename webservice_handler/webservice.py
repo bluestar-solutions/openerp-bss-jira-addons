@@ -21,10 +21,11 @@
 
 from openerp.osv import osv, fields
 from openerp.netsvc import logging
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 import json
 import httplib2
 import urllib2
+import re
 
 WEBSERVICE_TYPE = [('GET','Get'),('PUSH', 'Push'),('PUSH_GET','Push Get Sync'),('GET_PUSH','Get Push Sync'),]
 HTTP_METHOD= [('GET','GET'),('POST','POST')]
@@ -94,8 +95,17 @@ class webservice(osv.osv):
                         encode_dict[key]=encode[key].id
                     else:
                         encode_dict[key]=""
+                elif field_list[key]['type']=='date':
+                    if encode[key]:
+                        year, month, day = encode[key].split('-')
+                        encode_dict[key]= '%s.%s.%s' % (day, month, year)
+                    else:
+                        encode_dict[key]=""                        
                 else:
-                    encode_dict[key]=encode[key]
+                    if encode[key]:
+                        encode_dict[key]=encode[key]
+                    else:
+                        encode_dict[key]=""
                 
             encode_dict['id']=encode.id
             encode_dict['openerp_id']=encode.id
@@ -106,10 +116,16 @@ class webservice(osv.osv):
     
     def default_decode_write(self, cr, uid, model, content):
         decoded_list = json.loads(content)
+        patt = re.compile('^(\d{2})\.(\d{2})\.(\d{4})$')
         for decoded in decoded_list:
             id = decoded['id']
             if not id:
                 id = decoded['openerp_id']
+            # Translate date from "dd.mm.yyyy" to "yyyy-mm-dd"
+            for key in decoded.keys:
+                mobj = patt.match(decoded['key'])
+                if mobj:
+                    decoded['key']= '%s-%s-%s' % mobj.group(3,2,1)
             if id:
                 model.write(cr, uid, id,decoded)
             else:
@@ -117,18 +133,21 @@ class webservice(osv.osv):
         return True
     
     def service_get(self, cr, uid, service, model):
+        logger = logging.getLogger('bss.webservice')
         http = httplib2.Http(".cache")
-        if service.http_auth_type != 'None':
+        if service.http_auth_type != 'NONE':
             http.add_credentials(service.http_auth_login, service.http_auth_password)
         url = '%(ws_protocol)s://%(ws_host)s:%(ws_port)s%(ws_path)s' % service
         headers = {"Content-type": "application/json",
                    "Accept": "application/json",
                    }  
+        logger.debug('Url : %s \\n', url)
         response, content = http.request(url, service.http_method, headers=headers)
+        logger.debug('Response: %s \n%s', response, content)
         success = False
         if response.status == 200:
             if model and service.decode_method_name and hasattr(model, service.decode_method_name):
-                method = getattr(model,service.before_method_name)
+                method = getattr(model,service.decode_method_name)
                 success = method(cr, uid, model, content)
             else:
                 success = self.default_decode_write(cr, uid, model, content)
@@ -142,7 +161,7 @@ class webservice(osv.osv):
     def service_push(self, cr, uid, service, model):
         logger = logging.getLogger('bss.webservice')
         http = httplib2.Http(".cache")
-        if service.http_auth_type != 'None':
+        if service.http_auth_type != 'NONE':
             http.add_credentials(service.http_auth_login, service.http_auth_password)
         url = '%(ws_protocol)s://%(ws_host)s:%(ws_port)s%(ws_path)s' % service
         headers = {"Content-type": "application/json",
@@ -195,15 +214,17 @@ class webservice(osv.osv):
     #                service_field = service_field_obj.browse(cr,uid,service_field_id)
     
             success = False
-            if service.service_type == 'get':
+            response = None
+            resp_content = None
+            if service.service_type == 'GET':
                 success, response, resp_content = self.service_get(service_cr, uid, service, model)
-            elif service.service_type == 'push':
+            elif service.service_type == 'PUSH':
                 success, response, resp_content = self.service_push(service_cr, uid, service, model) 
-            elif service.service_type == 'push_get':
+            elif service.service_type == 'PUSH_GET':
                 success, response, resp_content = self.service_push(service_cr, uid, service, model)
                 if success:
                      success, response, resp_content = self.service_get(service_cr, uid, service, model)
-            elif service.service_type == 'get_push':
+            elif service.service_type == 'GET_PUSH':
                 success, response, resp_content = self.service_get(service_cr, uid, service, model) 
                 if success:
                     success, response, resp_content = self.service_push(service_cr, uid, service, model)  
@@ -240,8 +261,7 @@ class webservice(osv.osv):
             self.write(service_cr, uid, service_id, {'last_run':now})
             service_cr.commit()
         finally:    
-            service_cr.close()
-        
+            service_cr.close()   
     
 webservice()
 

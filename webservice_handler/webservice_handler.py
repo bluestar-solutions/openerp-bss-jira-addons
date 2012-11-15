@@ -74,28 +74,31 @@ class webservice_handler(osv.osv_memory):
 
     def run_all(self, cr, uid, context=None):
         _logger = logging.getLogger('bss.webservice_handler')
+        _logger.info('Started webservice handler')
         if _logger.isEnabledFor(logging.DEBUG):
             _logger.debug('Webservices started at %s', datetime.now())
         webservice_obj = self.pool.get('bss.webservice')
         service_ids = webservice_obj.search(cr, uid, [('active','=',True),('wait_next_minutes','>',0)], order='priority,last_run')
         services = webservice_obj.browse(cr,uid,service_ids,context)
+
         for service in services:           
 #            _logger.debug('Service is %s', str(service))
             
             if service.last_run:
                 _logger.debug('last_run is %s', str(service.last_run))
-                if service.last_success == service.last_run:
+                if service.last_success and service.last_success == service.last_run:
                     next_run =  datetime.strptime(service.last_run,"%Y-%m-%d %H:%M:%S.%f") + timedelta(minutes=service.wait_next_minutes)
                 else:
                     next_run =  datetime.strptime(service.last_run,"%Y-%m-%d %H:%M:%S.%f") + timedelta(minutes=service.wait_retry_minutes)
             else:
                 next_run = datetime(2000,1,1)
-                  
+            _logger.info('Service %s next run at %s',service.name, next_run.strftime("%Y-%m-%d %H:%M:%S"))
             if next_run < datetime.now():
                 _logger.debug('Context is %s', str(context))
                 service.do_run(service.id)
         if _logger.isEnabledFor(logging.DEBUG):
             _logger.debug('Webservices ended at %s', datetime.now())
+        _logger.info('Ended webservice handler')
                 
         
 webservice_handler()
