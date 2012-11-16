@@ -72,11 +72,11 @@ class webservice(osv.osv):
     }
     _order = "priority, last_success"
     
-#    def write(self, cr, user, ids, vals, context=None):
-#        """Add cron if it does not exists for webservices and the webservice must be run automatically"""
-#        if vals['active'] and vals['wait_next_minutes'] and vals['wait_next_minutes']>0:
-#            self.pool.get('bss.webservice_handler').get_cron_id( cr, uid, context)    
-#        return super(insurance, self).write(cr, user, ids, vals, context)
+    def create(self, cr, user, vals, context=None):
+        """Add cron if it does not exists for webservices and the webservice must be run automatically"""
+        if vals['active'] and vals['wait_next_minutes'] and vals['wait_next_minutes']>0:
+            self.pool.get('bss.webservice_handler').get_cron_id( cr, uid, context)    
+        return super(insurance, self).create(cr, user, ids, vals, context)
 
     
     def default_read_encode(self, cr, uid, model, last_success):
@@ -94,18 +94,18 @@ class webservice(osv.osv):
                     if encode[key]:
                         encode_dict[key]=encode[key].id
                     else:
-                        encode_dict[key]=""
+                        encode_dict[key]=None
                 elif field_list[key]['type']=='date':
                     if encode[key]:
                         year, month, day = encode[key].split('-')
                         encode_dict[key]= '%s.%s.%s' % (day, month, year)
                     else:
-                        encode_dict[key]=""                        
+                        encode_dict[key]=None                        
                 else:
                     if encode[key]:
                         encode_dict[key]=encode[key]
                     else:
-                        encode_dict[key]=""
+                        encode_dict[key]=None
                 
             encode_dict['id']=encode.id
             encode_dict['openerp_id']=encode.id
@@ -123,9 +123,10 @@ class webservice(osv.osv):
                 id = decoded['openerp_id']
             # Translate date from "dd.mm.yyyy" to "yyyy-mm-dd"
             for key in decoded.keys:
-                mobj = patt.match(decoded['key'])
-                if mobj:
-                    decoded['key']= '%s-%s-%s' % mobj.group(3,2,1)
+                if decoded['key']:
+                    mobj = patt.match(decoded['key'])
+                    if mobj:
+                        decoded['key']= '%s-%s-%s' % mobj.group(3,2,1)
             if id:
                 model.write(cr, uid, id,decoded)
             else:

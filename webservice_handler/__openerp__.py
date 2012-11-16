@@ -20,13 +20,13 @@
 ##############################################################################
 
 {
-    'name': 'Webservice Handler',
-    'version': '1.0-dev',
-    "category" : 'Bluestar/Addons/WS',
-    'complexity': "easy",
-    'description': """A module to synchronize datas with external webservices. """,
-    'author': 'Bluestar Solutions Sàrl',
-    'website': 'http://www.blues2.ch',
+    "name": "Webservice Handler",
+    "version": "1.0-dev",
+    "category" : "Bluestar/Addons/WS",
+    "complexity": "easy",
+    "description": """A module to synchronize datas with external webservices. """,
+    "author": "Bluestar Solutions Sàrl",
+    "website": "http://www.blues2.ch",
     'depends': [],
     'init_xml': [],
     'update_xml': ['module_data.xml'
