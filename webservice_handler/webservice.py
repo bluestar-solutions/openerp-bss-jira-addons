@@ -21,7 +21,8 @@
 
 from openerp.osv import osv, fields
 from openerp.netsvc import logging
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
+from time import mktime,strptime
 import json
 import httplib2
 import urllib2
@@ -30,6 +31,7 @@ import re
 WEBSERVICE_TYPE = [('GET','Get'),('PUSH', 'Push'),('PUSH_GET','Push Get Sync'),('GET_PUSH','Get Push Sync'),]
 HTTP_METHOD= [('GET','GET'),('POST','POST')]
 HTTP_AUTH_TYPE = [('NONE', 'None'), ('BASIC', 'Basic')]
+DATETIME_FORMAT = [('TIMESTAMP','Epoch'),('ISO8601','ISO 8601'),('SWISS','Swiss "dd.mm.yyyy HH:MM:SS" format')]
 
 class webservice(osv.osv):
     _name = 'bss.webservice'
@@ -53,6 +55,9 @@ class webservice(osv.osv):
         'after_method_name': fields.char('After Method Name', size=128),
         'encode_method_name': fields.char('Encode Method Name', size=128),
         'decode_method_name': fields.char('Decode Method Name', size=128),
+        'push_filter': fields.char('Push Filter', size=1024),
+        'get_db_key': fields.char('Get DB Key', size=1024),
+        'datetime_format': fields.selection(DATETIME_FORMAT, 'Date & Time Format', required = True),
         'wait_retry_minutes': fields.integer('Wait Retry', required=True),
         'wait_next_minutes': fields.integer('Wait Next', required=True),
         'priority': fields.integer('Priority', required=True, help="Defines the order of the calls, lowest number comes first."),
@@ -67,21 +72,72 @@ class webservice(osv.osv):
         'wait_next_minutes':720,
         'priority': 16,
         'active': True,
-        'last_run': datetime(2000,1,1),        
-        'last_success': datetime(2000,1,1),
+        'last_run': datetime(1970,1,1),        
+        'last_success': datetime(1970,1,1),
+        'datetime_format': 'TIMESTAMP',
     }
     _order = "priority, last_success"
     
+    def str2date(self,string,type,format):
+        if format == 'TIMESTAMP':
+            if type=='date':
+                return date.fromtimestamp(string)
+            elif type=='datetime':
+                return datetime.fromtimestamp(string)
+            elif type=='time':
+                return datetime.fromtimestamp(string).time()
+        elif format == 'ISO8601':
+            if type=='date':
+                return datetime.strptime(string,'%Y-%m-%d').date()
+            elif type=='datetime':
+                return datetime.strptime(string,'%Y-%m-%dT%H:%M:S')
+            elif type=='time':
+                return datetime.strptime(string,'%H:%M:S').time()
+        elif format == 'SWISS':
+            if type=='date':
+                return datetime.strptime(string,'%d.%m.%Y').date()
+            elif type=='datetime':
+                return datetime.strptime(string,'%d.%m.%Y %H:%M:S')
+            elif type=='time':
+                return datetime.strptime(string,'%H:%M:S').time()
+        return None
+      
+    def date2str(self,string,type,format):
+        if format == 'TIMESTAMP':
+            if type=='date':
+                return int(mktime(strptime(string,"%Y-%m-%d")))
+            elif type=='datetime':
+                return int(mktime(strptime(string,"%Y-%m-%d %H:%M:%S.%f")))
+            elif type=='time':
+                return int(mktime(strptime(string,"%H:%M:S")))
+        elif format == 'ISO8601':
+            if type=='datetime':
+                return strftime(datetime.strptime(string,"%Y-%m-%d %H:%M:%S.%f"),'%Y-%m-%dT%H:%M:S')
+            elif type in ('date','time'):
+                return string
+        elif format == 'SWISS':
+            if type=='date':
+                return strftime(datetime.strptime(string,"%Y-%m-%d"),'%d.%m.%Y')            
+            elif type=='datetime':
+                return strftime(datetime.strptime(string,"%Y-%m-%d %H:%M:%S.%f"),'%d.%m.%Y %H:%M:S')
+            elif type=='time':
+                return string
+        return None
+        
     def create(self, cr, user, vals, context=None):
         """Add cron if it does not exists for webservices and the webservice must be run automatically"""
         if vals['active'] and vals['wait_next_minutes'] and vals['wait_next_minutes']>0:
-            self.pool.get('bss.webservice_handler').get_cron_id( cr, uid, context)    
-        return super(insurance, self).create(cr, user, ids, vals, context)
+            self.pool.get('bss.webservice_handler').get_cron_id( cr, user, context)    
+        return super(webservice, self).create(cr, user, vals, context)
 
     
-    def default_read_encode(self, cr, uid, model, last_success):
+    def default_read_encode(self, cr, uid, model, last_success, parameters, datetime_format):
         logger = logging.getLogger('bss.webservice')
-        encode_ids = model.search(cr, uid, ['|',('create_date','>=',str(last_success)),'&',('write_date','!=',False),('write_date','>=',str(last_success))])
+        if parameters:
+            search_param = "['&',"+parameters+",'|',('create_date','>=',str(last_success)),'&',('write_date','!=',False),('write_date','>=',str(last_success))]"
+        else:
+            search_param = "['|',('create_date','>=',str(last_success)),'&',('write_date','!=',False),('write_date','>=',str(last_success))]"
+        encode_ids = model.search(cr, uid, eval(search_param))
         encodes = model.browse(cr, uid, encode_ids)
         logger.debug('model columns = %s', str(model._columns))
         logger.debug('model fields = %s', str(model.fields_get(cr,uid)))
@@ -95,10 +151,11 @@ class webservice(osv.osv):
                         encode_dict[key]=encode[key].id
                     else:
                         encode_dict[key]=None
-                elif field_list[key]['type']=='date':
+                elif field_list[key]['type'] in ('date','datetime','time'):
                     if encode[key]:
-                        year, month, day = encode[key].split('-')
-                        encode_dict[key]= '%s.%s.%s' % (day, month, year)
+#                        year, month, day = encode[key].split('-')
+#                        encode_dict[key]= '%s.%s.%s' % (day, month, year)
+                        encode_dict[key]=self.date2str(encode[key],field_list[key]['type'],datetime_format)
                     else:
                         encode_dict[key]=None                        
                 else:
@@ -114,23 +171,57 @@ class webservice(osv.osv):
         logger.debug('result list %s',encode_list)
         return json.dumps(encode_list)
     
-    def default_decode_write(self, cr, uid, model, content):
+    def default_decode_write(self, cr, uid, model, content, db_keys, datetime_format):
+        logger = logging.getLogger('bss.webservice')
         decoded_list = json.loads(content)
-        patt = re.compile('^(\d{2})\.(\d{2})\.(\d{4})$')
+        logger.debug("List is : %s, length is %d",str(decoded_list),len(decoded_list))
+        if not decoded_list:
+            return True
+        elif len(decoded_list)==0:
+            logger.debug("List is empty")
+            return True
+        field_list = model.fields_get(cr,uid)
+#        patt = re.compile('^(\d{2})\.(\d{2})\.(\d{4})$')
         for decoded in decoded_list:
-            id = decoded['id']
-            if not id:
-                id = decoded['openerp_id']
-            # Translate date from "dd.mm.yyyy" to "yyyy-mm-dd"
-            for key in decoded.keys:
-                if decoded['key']:
-                    mobj = patt.match(decoded['key'])
-                    if mobj:
-                        decoded['key']= '%s-%s-%s' % mobj.group(3,2,1)
-            if id:
-                model.write(cr, uid, id,decoded)
+            logger.debug("Decoded is : %s, length is %d",str(decoded),len(decoded))
+            if db_keys:
+                db_key_list = db_keys.split(',')
+                param_list = []
+                for key in  db_key_list:
+                    param_list.append((key,'=',decoded[key]))
+                id = model.search(cr, uid, param_list)
+                if id:
+                    id = id[0]
             else:
-                model.create(cr, uid, decoded)
+                id = decoded['id']
+                if not id:
+                    id = decoded['openerp_id']
+            # Translate date from "dd.mm.yyyy" to "yyyy-mm-dd"
+            data = dict()
+            for key in decoded.keys():
+                logger.debug("Testing key %s",key)
+                if key in field_list:
+                    if decoded[key]:
+                        if field_list[key]['type'] in ('date','datetime','time'):
+                            data[key]=self.str2date(decode[key],field_list[key]['type'],datetime_format)
+                        else:
+                            data[key]=decoded[key]
+                    else:
+                        data[key] = decoded[key]
+                    
+#                    mobj = patt.match(decoded[key])
+#                    if mobj:
+#                        decoded[key]= '%s-%s-%s' % mobj.group(3,2,1)
+            #Filter decoded dictionary to send only columns that are in the model
+#            for key in model.fields_get(cr, uid):
+#                if key in decoded:
+#                    data_key.append(key)
+#            data = {key: decoded[key] for key in data_key}
+            
+            if id:
+                model.write(cr, uid, id,data)
+            else:
+                model.create(cr, uid, data)
         return True
     
     def service_get(self, cr, uid, service, model):
@@ -143,15 +234,15 @@ class webservice(osv.osv):
                    "Accept": "application/json",
                    }  
         logger.debug('Url : %s \\n', url)
-        response, content = http.request(url, service.http_method, headers=headers)
+        response, content = http.request(url, "GET", headers=headers)
         logger.debug('Response: %s \n%s', response, content)
         success = False
         if response.status == 200:
             if model and service.decode_method_name and hasattr(model, service.decode_method_name):
                 method = getattr(model,service.decode_method_name)
-                success = method(cr, uid, model, content)
+                success = method(cr, uid, model, content, service.datetime_format)
             else:
-                success = self.default_decode_write(cr, uid, model, content)
+                success = self.default_decode_write(cr, uid, model, content, service.get_db_key, service.datetime_format)
             if not success:
                 response.status = -1
                 response.reason = 'Decode Write Error'
@@ -175,13 +266,13 @@ class webservice(osv.osv):
             last_success = datetime(2000,1,1) 
         if model and service.encode_method_name and hasattr(model, service.encode_method_name):
             method = getattr(model,service.encode_method_name)
-            content = method(cr, uid, model, last_success)
+            content = method(cr, uid, model, last_success, service.push_filter, service.datetime_format)
         else:
-            content = self.default_read_encode(cr, uid, model, last_success)
+            content = self.default_read_encode(cr, uid, model, last_success, service.push_filter, service.datetime_format)
 #        if content == '[]':
 #            return (True, None, 'No Data')
         logger.debug('Url : %s \nBody:\n%s\n', url, content)
-        response, resp_content = http.request(url, service.http_method, headers=headers, body=content)
+        response, resp_content = http.request(url, "POST", headers=headers, body=content)
         logger.debug('Response: %s \n%s', response, resp_content)
         success = False
         if response.status == 200:

@@ -1,0 +1,301 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* webservice_handler
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 6.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-11-20 10:54+0000\n"
+"PO-Revision-Date: 2012-11-20 10:54+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#: model:ir.model,name:webservice_handler.model_bss_webservice_call
+#. module: webservice_handler
+msgid "Webservice Call"
+msgstr "Appel webservice"
+
+#: field:bss.webservice,field_ids:0
+#. module: webservice_handler
+msgid "Service Fields Translations"
+msgstr "Traduction des champs du service"
+
+#: field:bss.webservice,ws_host:0
+#. module: webservice_handler
+msgid "Webservice Host"
+msgstr "Webservice Host"
+
+#: selection:bss.webservice,http_auth_type:0
+#. module: webservice_handler
+msgid "None"
+msgstr "None"
+
+#: field:bss.webservice,ws_path:0
+#. module: webservice_handler
+msgid "Webservice Path"
+msgstr "Webservice Path"
+
+#: field:bss.webservice,priority:0
+#. module: webservice_handler
+msgid "Priority"
+msgstr "Priority"
+
+#: selection:bss.webservice,service_type:0
+#. module: webservice_handler
+msgid "Push"
+msgstr "Push"
+
+#: selection:bss.webservice,datetime_format:0
+#. module: webservice_handler
+msgid "Epoch"
+msgstr "Epoch"
+
+#: field:bss.webservice_call,call_moment:0
+#. module: webservice_handler
+msgid "Call"
+msgstr "Call"
+
+#: help:bss.webservice,priority:0
+#. module: webservice_handler
+msgid "Defines the order of the calls, lowest number comes first."
+msgstr "Defines the order of the calls, lowest number comes first."
+
+#: selection:bss.webservice,http_auth_type:0
+#. module: webservice_handler
+msgid "Basic"
+msgstr "Basic"
+
+#: field:bss.webservice,decode_method_name:0
+#. module: webservice_handler
+msgid "Decode Method Name"
+msgstr "Decode Method Name"
+
+#: field:bss.webservice,http_auth_password:0
+#. module: webservice_handler
+msgid "HTTP Password"
+msgstr "HTTP Password"
+
+#: field:bss.webservice_call,service_id:0
+#: field:bss.webservice_field,service_id:0
+#: field:bss.webservice_handler,service_id:0
+#: model:ir.model,name:webservice_handler.model_bss_webservice
+#: model:ir.model,name:webservice_handler.model_bss_webservice_field
+#. module: webservice_handler
+msgid "Webservice"
+msgstr "Webservice"
+
+#: view:bss.webservice:0
+#: field:bss.webservice_call,body:0
+#. module: webservice_handler
+msgid "Body"
+msgstr "Body"
+
+#: field:bss.webservice_field,web_oe_method_name:0
+#. module: webservice_handler
+msgid "Web - OE Translation"
+msgstr "Web - OE Translation"
+
+#: selection:bss.webservice,datetime_format:0
+#. module: webservice_handler
+msgid "Swiss \"dd.mm.yyyy HH:MM:SS\" format"
+msgstr "Swiss \"dd.mm.yyyy HH:MM:SS\" format"
+
+#: selection:bss.webservice,service_type:0
+#. module: webservice_handler
+msgid "Get"
+msgstr "Get"
+
+#: field:bss.webservice,service_type:0
+#. module: webservice_handler
+msgid "Type"
+msgstr "Type"
+
+#: field:bss.webservice_field,model_name:0
+#. module: webservice_handler
+msgid "Object"
+msgstr "Object"
+
+#: view:bss.webservice:0
+#: field:bss.webservice_call,reason:0
+#. module: webservice_handler
+msgid "Reason"
+msgstr "Reason"
+
+#: field:bss.webservice,wait_retry_minutes:0
+#. module: webservice_handler
+msgid "Wait Retry"
+msgstr "Wait Retry"
+
+#: field:bss.webservice,http_auth_login:0
+#. module: webservice_handler
+msgid "HTTP Login"
+msgstr "HTTP Login"
+
+#: field:bss.webservice,model_name:0
+#. module: webservice_handler
+msgid "Model Name"
+msgstr "Model Name"
+
+#: field:bss.webservice,active:0
+#: field:bss.webservice_handler,active:0
+#. module: webservice_handler
+msgid "Active"
+msgstr "Active"
+
+#: field:bss.webservice,get_db_key:0
+#. module: webservice_handler
+msgid "Get DB Key"
+msgstr "Get DB Key"
+
+#: field:bss.webservice_field,oe_web_method_name:0
+#. module: webservice_handler
+msgid "OE - Web Translation"
+msgstr "OE - Web Translation"
+
+#: selection:bss.webservice,http_method:0
+#. module: webservice_handler
+msgid "GET"
+msgstr "GET"
+
+#: model:res.groups,name:webservice_handler.group_user
+#. module: webservice_handler
+msgid "User"
+msgstr "User"
+
+#: field:bss.webservice_call,status:0
+#. module: webservice_handler
+msgid "Status"
+msgstr "Status"
+
+#: selection:bss.webservice,datetime_format:0
+#. module: webservice_handler
+msgid "ISO 8601"
+msgstr "ISO 8601"
+
+#: field:bss.webservice,call_ids:0
+#. module: webservice_handler
+msgid "Service Calls"
+msgstr "Service Calls"
+
+#: field:bss.webservice,name:0
+#: field:bss.webservice_handler,name:0
+#. module: webservice_handler
+msgid "Name"
+msgstr "Name"
+
+#: field:bss.webservice_call,success:0
+#. module: webservice_handler
+msgid "Success"
+msgstr "Success"
+
+#: field:bss.webservice,last_run:0
+#: field:bss.webservice_handler,last_run:0
+#. module: webservice_handler
+msgid "Last Run"
+msgstr "Last Run"
+
+#: field:bss.webservice,encode_method_name:0
+#. module: webservice_handler
+msgid "Encode Method Name"
+msgstr "Encode Method Name"
+
+#: view:bss.webservice:0
+#: model:ir.actions.act_window,name:webservice_handler.bss_ws_act
+#: model:ir.ui.menu,name:webservice_handler.menu_bss_ws_act
+#. module: webservice_handler
+msgid "Webservices"
+msgstr "Webservices"
+
+#: field:bss.webservice,wait_next_minutes:0
+#. module: webservice_handler
+msgid "Wait Next"
+msgstr "Wait Next"
+
+#: field:bss.webservice,datetime_format:0
+#. module: webservice_handler
+msgid "Date & Time Format"
+msgstr "Date & Time Format"
+
+#: selection:bss.webservice,http_method:0
+#. module: webservice_handler
+msgid "POST"
+msgstr "POST"
+
+#: field:bss.webservice,before_method_name:0
+#. module: webservice_handler
+msgid "Before Method Name"
+msgstr "Before Method Name"
+
+#: field:bss.webservice_field,web_field_names:0
+#. module: webservice_handler
+msgid "Web Field Names"
+msgstr "Web Field Names"
+
+#: model:ir.module.category,name:webservice_handler.module_category_webservice
+#. module: webservice_handler
+msgid "webservice"
+msgstr "webservice"
+
+#: code:addons/openerp-bss-addons/webservice_handler/webservice_handler.py:70
+#: code:addons/webservice_handler/webservice_handler.py:70
+#: model:ir.model,name:webservice_handler.model_bss_webservice_handler
+#. module: webservice_handler
+#, python-format
+msgid "Webservice Handler"
+msgstr "Webservice Handler"
+
+#: field:bss.webservice_field,oe_field_names:0
+#. module: webservice_handler
+msgid "OE Field Names"
+msgstr "OE Field Names"
+
+#: field:bss.webservice,after_method_name:0
+#. module: webservice_handler
+msgid "After Method Name"
+msgstr "After Method Name"
+
+#: selection:bss.webservice,service_type:0
+#. module: webservice_handler
+msgid "Push Get Sync"
+msgstr "Push Get Sync"
+
+#: field:bss.webservice,last_success:0
+#. module: webservice_handler
+msgid "Last Success"
+msgstr "Last Success"
+
+#: field:bss.webservice,http_auth_type:0
+#. module: webservice_handler
+msgid "HTTP Authentication"
+msgstr "HTTP Authentication"
+
+#: field:bss.webservice,http_method:0
+#. module: webservice_handler
+msgid "HTTP Method"
+msgstr "HTTP Method"
+
+#: field:bss.webservice,push_filter:0
+#. module: webservice_handler
+msgid "Push Filter"
+msgstr "Push Filter"
+
+#: field:bss.webservice,ws_protocol:0
+#. module: webservice_handler
+msgid "Webservice Protocol"
+msgstr "Webservice Protocol"
+
+#: selection:bss.webservice,service_type:0
+#. module: webservice_handler
+msgid "Get Push Sync"
+msgstr "Get Push Sync"
+
+#: field:bss.webservice,ws_port:0
+#. module: webservice_handler
+msgid "Webservice Port"
+msgstr "Webservice Port"
+

@@ -22,6 +22,9 @@
                     <field name="after_method_name" />
                     <field name="encode_method_name" />
                     <field name="decode_method_name" />
+                    <field name="push_filter" />
+                    <field name="get_db_key" />
+                    <field name="datetime_format" />                   
                     <field name="wait_retry_minutes" />
                     <field name="wait_next_minutes" />
                     <field name="priority" />
@@ -52,6 +55,9 @@
                     <field name="after_method_name" />
                     <field name="encode_method_name" />
                     <field name="decode_method_name" />
+                    <field name="push_filter" />
+                    <field name="get_db_key" />
+                    <field name="datetime_format" />                   
                     <field name="wait_retry_minutes" />
                     <field name="wait_next_minutes" />
                     <field name="priority" />
