@@ -13,7 +13,6 @@
                     <field name="ws_host" />
                     <field name="ws_port" />
                     <field name="ws_path" />
-                    <field name="http_method" />
                     <field name="http_auth_type" />
                     <field name="http_auth_login" />
                     <field name="http_auth_password" />
@@ -46,7 +45,6 @@
                     <field name="ws_host" />
                     <field name="ws_port" />
                     <field name="ws_path" />
-                    <field name="http_method" />
                     <field name="http_auth_type" />
                     <field name="http_auth_login" />
                     <field name="http_auth_password" />

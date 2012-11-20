@@ -22,14 +22,13 @@
 from openerp.osv import osv, fields
 from openerp.netsvc import logging
 from datetime import date, datetime, time, timedelta
-from time import mktime,strptime
+from time import mktime,strptime,strftime
 import json
 import httplib2
 import urllib2
-import re
 
 WEBSERVICE_TYPE = [('GET','Get'),('PUSH', 'Push'),('PUSH_GET','Push Get Sync'),('GET_PUSH','Get Push Sync'),]
-HTTP_METHOD= [('GET','GET'),('POST','POST')]
+#HTTP_METHOD= [('GET','GET'),('POST','POST')]
 HTTP_AUTH_TYPE = [('NONE', 'None'), ('BASIC', 'Basic')]
 DATETIME_FORMAT = [('TIMESTAMP','Epoch'),('ISO8601','ISO 8601'),('SWISS','Swiss "dd.mm.yyyy HH:MM:SS" format')]
 
@@ -45,7 +44,7 @@ class webservice(osv.osv):
         'ws_host': fields.char('Webservice Host', size=256, required=True),
         'ws_port': fields.char('Webservice Port', size=256, required=True),
         'ws_path': fields.char('Webservice Path', size=256, required=True),
-        'http_method': fields.selection(HTTP_METHOD, 'HTTP Method', required=True),
+#        'http_method': fields.selection(HTTP_METHOD, 'HTTP Method', required=True),
         'http_auth_type': fields.selection(HTTP_AUTH_TYPE, 'HTTP Authentication', required=True),
         'http_auth_login': fields.char('HTTP Login', size=64),
         'http_auth_password': fields.char('HTTP Password', size=64, invisible=True),
@@ -79,6 +78,8 @@ class webservice(osv.osv):
     _order = "priority, last_success"
     
     def str2date(self,string,type,format):
+        if not string:
+            return None
         if format == 'TIMESTAMP':
             if type=='date':
                 return date.fromtimestamp(string)
@@ -103,6 +104,8 @@ class webservice(osv.osv):
         return None
       
     def date2str(self,string,type,format):
+        if not string:
+            return None
         if format == 'TIMESTAMP':
             if type=='date':
                 return int(mktime(strptime(string,"%Y-%m-%d")))
@@ -112,14 +115,14 @@ class webservice(osv.osv):
                 return int(mktime(strptime(string,"%H:%M:S")))
         elif format == 'ISO8601':
             if type=='datetime':
-                return strftime(datetime.strptime(string,"%Y-%m-%d %H:%M:%S.%f"),'%Y-%m-%dT%H:%M:S')
+                return datetime.strftime(datetime.strptime(string,"%Y-%m-%d %H:%M:%S.%f"),'%Y-%m-%dT%H:%M:S')
             elif type in ('date','time'):
                 return string
         elif format == 'SWISS':
             if type=='date':
-                return strftime(datetime.strptime(string,"%Y-%m-%d"),'%d.%m.%Y')            
+                return datetime.strftime(datetime.strptime(string,"%Y-%m-%d"),'%d.%m.%Y')            
             elif type=='datetime':
-                return strftime(datetime.strptime(string,"%Y-%m-%d %H:%M:%S.%f"),'%d.%m.%Y %H:%M:S')
+                return datetime.strftime(datetime.strptime(string,"%Y-%m-%d %H:%M:%S.%f"),'%d.%m.%Y %H:%M:S')
             elif type=='time':
                 return string
         return None
@@ -153,8 +156,6 @@ class webservice(osv.osv):
                         encode_dict[key]=None
                 elif field_list[key]['type'] in ('date','datetime','time'):
                     if encode[key]:
-#                        year, month, day = encode[key].split('-')
-#                        encode_dict[key]= '%s.%s.%s' % (day, month, year)
                         encode_dict[key]=self.date2str(encode[key],field_list[key]['type'],datetime_format)
                     else:
                         encode_dict[key]=None                        
@@ -181,7 +182,7 @@ class webservice(osv.osv):
             logger.debug("List is empty")
             return True
         field_list = model.fields_get(cr,uid)
-#        patt = re.compile('^(\d{2})\.(\d{2})\.(\d{4})$')
+
         for decoded in decoded_list:
             logger.debug("Decoded is : %s, length is %d",str(decoded),len(decoded))
             if db_keys:
@@ -196,7 +197,7 @@ class webservice(osv.osv):
                 id = decoded['id']
                 if not id:
                     id = decoded['openerp_id']
-            # Translate date from "dd.mm.yyyy" to "yyyy-mm-dd"
+ 
             data = dict()
             for key in decoded.keys():
                 logger.debug("Testing key %s",key)
@@ -208,15 +209,6 @@ class webservice(osv.osv):
                             data[key]=decoded[key]
                     else:
                         data[key] = decoded[key]
-                    
-#                    mobj = patt.match(decoded[key])
-#                    if mobj:
-#                        decoded[key]= '%s-%s-%s' % mobj.group(3,2,1)
-            #Filter decoded dictionary to send only columns that are in the model
-#            for key in model.fields_get(cr, uid):
-#                if key in decoded:
-#                    data_key.append(key)
-#            data = {key: decoded[key] for key in data_key}
             
             if id:
                 model.write(cr, uid, id,data)
@@ -233,6 +225,8 @@ class webservice(osv.osv):
         headers = {"Content-type": "application/json",
                    "Accept": "application/json",
                    }  
+        if service.last_success:
+            headers['Last-Success'] = self.date2str(service.last_success, 'datetime', 'ISO8601')
         logger.debug('Url : %s \\n', url)
         response, content = http.request(url, "GET", headers=headers)
         logger.debug('Response: %s \n%s', response, content)
@@ -262,15 +256,14 @@ class webservice(osv.osv):
 
         if service.last_success:
             last_success = datetime.strptime(service.last_success,"%Y-%m-%d %H:%M:%S.%f")
+            headers['Last-Success'] = self.date2str(service.last_success, 'datetime', 'ISO8601')
         else:
-            last_success = datetime(2000,1,1) 
+            last_success = datetime(1970,1,1) 
         if model and service.encode_method_name and hasattr(model, service.encode_method_name):
             method = getattr(model,service.encode_method_name)
             content = method(cr, uid, model, last_success, service.push_filter, service.datetime_format)
         else:
             content = self.default_read_encode(cr, uid, model, last_success, service.push_filter, service.datetime_format)
-#        if content == '[]':
-#            return (True, None, 'No Data')
         logger.debug('Url : %s \nBody:\n%s\n', url, content)
         response, resp_content = http.request(url, "POST", headers=headers, body=content)
         logger.debug('Response: %s \n%s', response, resp_content)
