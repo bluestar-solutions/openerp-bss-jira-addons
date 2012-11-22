@@ -1,0 +1,29 @@
+-
+  In order to test the Bluestar Partner Phonenumbers module in OpenERP,
+-
+  I create a new address "Isaac Newton", with an unformated US phone number.
+-
+  !record {model: res.partner.address, id: address_albert_einstein}:
+    name: 'Albert Einstein'
+    phone: '9545551234'
+-
+  I check the stored phone is correctly formatted for en_US (default).
+-
+  !assert {model: res.partner.address, id: address_albert_einstein}:
+    - phone == '+1 954-555-1234'
+-
+  I switch the admin user to fr_CH to test swiss formatting.
+-
+  !python {model: res.users}: |
+    self.write(cr, uid, [uid], {'context_lang': 'fr_CH'})
+-
+  I create a new address "Guillaume Tell", with an unformated CH phone number.
+-
+  !record {model: res.partner.address, id: address_albert_einstein}:
+    name: 'Albert Einstein'
+    phone: '0411234567'
+-
+  I check the stored phone is correctly formatted for fr_CH.
+-
+  !assert {model: res.partner.address, id: address_albert_einstein}:
+    - phone == '+41 41 123 45 67'
