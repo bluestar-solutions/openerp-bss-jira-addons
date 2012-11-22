@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data noupdate="True">
+
+		<!-- Resource: bluestar.marital_status -->
+		<record id="bluestar_resident_permit_c" model="bluestar.resident_permit">
+			<field name="domain">resident_permit</field>
+			<field name="name">C permit</field>
+			<field name="description">Establishment authorization</field>
+		</record>
+		<record id="bluestar_resident_permit_b" model="bluestar.resident_permit">
+			<field name="domain">resident_permit</field>
+			<field name="name">B permit</field>
+			<field name="description">Living authorization</field>
+		</record>
+		<record id="bluestar_resident_permit_l" model="bluestar.resident_permit">
+			<field name="domain">resident_permit</field>
+			<field name="name">L permit</field>
+			<field name="description">Short-lived authorization</field>
+		</record>
+		<record id="bluestar_resident_permit_g" model="bluestar.resident_permit">
+			<field name="domain">resident_permit</field>
+			<field name="name">G booklet</field>
+			<field name="description">Border authorization</field>
+		</record>
+		<record id="bluestar_resident_permit_ci" model="bluestar.resident_permit">
+			<field name="domain">resident_permit</field>
+			<field name="name">Ci booklet</field>
+			<field name="description">Living authorization (diplomat)</field>
+		</record>
+		<record id="bluestar_resident_permit_f" model="bluestar.resident_permit">
+			<field name="domain">resident_permit</field>
+			<field name="name">F booklet</field>
+			<field name="description">Authorization for temporarily admitted foreigners</field>
+		</record>
+		<record id="bluestar_resident_permit_n" model="bluestar.resident_permit">
+			<field name="domain">resident_permit</field>
+			<field name="name">N booklet</field>
+			<field name="description">Authorization for asylum seekers</field>
+		</record>
+		<record id="bluestar_resident_permit_s" model="bluestar.resident_permit">
+			<field name="domain">resident_permit</field>
+			<field name="name">S booklet</field>
+			<field name="description">Authorization for people to protect</field>
+		</record>
+
+	</data>
+</openerp>
