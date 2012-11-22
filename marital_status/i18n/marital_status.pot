@@ -1,0 +1,31 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* bluestar-marital-status
+#
+msgid ""
+msgstr ""
+
+#. module: bluestar-marital-status
+#: model:bluestar.marital_status,name:bluestar_marital_status.bluestar_marital_status_married
+msgid "Married"
+msgstr ""
+
+#. module: bluestar-marital-status
+#: model:bluestar.marital_status,name:bluestar_marital_status.bluestar_marital_status_divorced
+msgid "Divorced"
+msgstr ""
+
+#. module: bluestar-marital-status
+#: model:bluestar.marital_status,name:bluestar_marital_status.bluestar_marital_status_single
+msgid "Single"
+msgstr ""
+
+#. module: bluestar-marital-status
+#: model:bluestar.marital_status,name:bluestar_marital_status.bluestar_marital_status_pacse
+msgid "Pacsé (french)"
+msgstr ""
+
+#. module: bluestar-marital-status
+#: model:bluestar.marital_status,name:bluestar_marital_status.bluestar_marital_status_widower
+msgid "Widow, widower"
+msgstr ""
