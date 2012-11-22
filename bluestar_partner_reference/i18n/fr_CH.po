@@ -1,0 +1,87 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* bluestar_partner_reference
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 6.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-17 18:32+0000\n"
+"PO-Revision-Date: 2012-05-17 18:32+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#: selection:bluestar.config,generate_ref:0
+#. module: bluestar_partner_reference
+msgid "None"
+msgstr "Aucun"
+
+#: selection:bluestar.config,generate_ref:0
+#. module: bluestar_partner_reference
+msgid "For partners with empty references"
+msgstr "Pour les partenaires sans référence"
+
+#: model:res.partner.title,name:bluestar_partner_reference.bluestar_partner_title_lp
+#. module: bluestar_partner_reference
+msgid "Legal person / (other)"
+msgstr "Personne morale / (autre)"
+
+#: selection:bluestar.config,generate_ref:0
+#. module: bluestar_partner_reference
+msgid "For all existing partners"
+msgstr "Pour tous les partenaires existants"
+
+#: model:res.partner.title,shortcut:bluestar_partner_reference.bluestar_partner_title_f
+#. module: bluestar_partner_reference
+msgid "F"
+msgstr "F"
+
+#: view:bluestar.config:0
+#. module: bluestar_partner_reference
+msgid "Partner reference"
+msgstr "Référence partenaire"
+
+#: view:bluestar.config:0
+#. module: bluestar_partner_reference
+msgid "Modules"
+msgstr "Modules"
+
+#: model:ir.model,name:bluestar_partner_reference.model_bluestar_config
+#. module: bluestar_partner_reference
+msgid "bluestar.config"
+msgstr "bluestar.config"
+
+#: model:res.partner.title,shortcut:bluestar_partner_reference.bluestar_partner_title_m
+#. module: bluestar_partner_reference
+msgid "M"
+msgstr "H"
+
+#: field:bluestar.config,generate_ref:0
+#. module: bluestar_partner_reference
+msgid "Generate references"
+msgstr "Générer les références"
+
+#: model:res.partner.title,name:bluestar_partner_reference.bluestar_partner_title_m
+#. module: bluestar_partner_reference
+msgid "Natural person / Male"
+msgstr "Personne physique / Homme"
+
+#: model:res.partner.title,shortcut:bluestar_partner_reference.bluestar_partner_title_lp
+#. module: bluestar_partner_reference
+msgid "LP"
+msgstr "PM"
+
+#: model:ir.model,name:bluestar_partner_reference.model_res_partner
+#. module: bluestar_partner_reference
+msgid "Partner"
+msgstr "Partenaire"
+
+#: model:res.partner.title,name:bluestar_partner_reference.bluestar_partner_title_f
+#. module: bluestar_partner_reference
+msgid "Natural person / Female"
+msgstr "Personne physique / Femme"
+
