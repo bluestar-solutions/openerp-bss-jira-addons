@@ -22,7 +22,7 @@
 
 {
     'name': 'Bluestar - Warranty',
-    'version': '1.4-1',
+    'version': 'ttt',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """Bluestar - Warranty""",
