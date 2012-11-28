@@ -21,7 +21,7 @@
 
 {
     'name': 'Bluestar test warning',
-    'version': 'ttt',
+    'version': 'ggg',
     "category" : 'Bluestar/Generic web module',
     'complexity': "easy",
     'description': """""",

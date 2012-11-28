@@ -21,7 +21,7 @@
 
 {
     'name': 'Bluestar - Partner references',
-    'version': 'ttt',
+    'version': 'ggg',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """A module to make partner reference readonly, unique, and automatically created from a sequence.""",

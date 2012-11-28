@@ -21,7 +21,7 @@
 
 {
     'name': 'Bluestar - Generic configuration panel',
-    'version': 'ttt',
+    'version': 'ggg',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """An empty configuration panel for bluestar's modules.""",

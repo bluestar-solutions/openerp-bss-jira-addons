@@ -21,7 +21,7 @@
 
 {
     'name': 'Bluestar - Marital status',
-    'version': 'ttt',
+    'version': 'ggg',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """A list of marital status.""",

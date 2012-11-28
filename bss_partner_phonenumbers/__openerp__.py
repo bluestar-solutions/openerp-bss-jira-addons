@@ -21,7 +21,7 @@
 
 {
     'name': 'Bluestar - Partner phone numbers',
-    'version': 'ttt',
+    'version': 'ggg',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """A module to format phone numbers using google-phonenumbers library.""",
