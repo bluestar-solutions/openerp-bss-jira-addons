@@ -5,9 +5,9 @@
 		<record id="view_bluestar_partner_phonenumbers_config_form"
 			model="ir.ui.view">
 			<field name="name">bluestar.partner.phonenumbers.config.form</field>
-			<field name="model">bluestar.config</field>
+			<field name="model">bss.config</field>
 			<field name="type">form</field>
-			<field name="inherit_id" ref="bluestar_config.view_bluestar_config_form" />
+			<field name="inherit_id" ref="bss_config.view_bss_config_form" />
 			<field name="arch" type="xml">
 				<data>
 					<separator string="Modules" position="after">

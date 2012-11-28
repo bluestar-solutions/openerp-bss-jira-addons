@@ -29,7 +29,7 @@ bluestar_partner_reference()
 
 class bluestar_partner_reference_config(osv.osv_memory):
 
-    _inherit = 'bluestar.config'
+    _inherit = 'bss.config'
 
     _columns = {
         'generate_ref': fields.selection(GENERATE_REFS, 'Generate references', required=True),

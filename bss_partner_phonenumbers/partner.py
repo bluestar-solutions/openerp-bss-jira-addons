@@ -42,7 +42,7 @@ bluestar_partner_address()
 
 class bluestar_partner_phonenumbers_config(osv.osv_memory):
     
-    _inherit = 'bluestar.config'
+    _inherit = 'bss.config'
 
     _columns = {
         'process_phone_numbers' : fields.boolean('Process existing phone numbers'),

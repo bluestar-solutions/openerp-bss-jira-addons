@@ -15,12 +15,12 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#: view:bluestar.config:0
+#: view:bss.config:0
 #. module: bluestar_partner_phonenumbers
 msgid "Partner phone numbers"
 msgstr "Formatage des numéros de téléphone"
 
-#: field:bluestar.config,process_phone_numbers:0
+#: field:bss.config,process_phone_numbers:0
 #. module: bluestar_partner_phonenumbers
 msgid "Process existing phone numbers"
 msgstr "Formatter les numéros existant"
@@ -30,13 +30,13 @@ msgstr "Formatter les numéros existant"
 msgid "Partner Addresses"
 msgstr "Carnet d'adresses"
 
-#: view:bluestar.config:0
+#: view:bss.config:0
 #. module: bluestar_partner_phonenumbers
 msgid "Modules"
 msgstr "Modules"
 
-#: model:ir.model,name:bluestar_partner_phonenumbers.model_bluestar_config
+#: model:ir.model,name:bluestar_partner_phonenumbers.model_bss_config
 #. module: bluestar_partner_phonenumbers
-msgid "bluestar.config"
-msgstr "bluestar.config"
+msgid "bss.config"
+msgstr "bss.config"
 

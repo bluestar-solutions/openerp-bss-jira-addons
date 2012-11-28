@@ -15,12 +15,12 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#: selection:bluestar.config,generate_ref:0
+#: selection:bss.config,generate_ref:0
 #. module: bluestar_partner_reference
 msgid "None"
 msgstr "Aucun"
 
-#: selection:bluestar.config,generate_ref:0
+#: selection:bss.config,generate_ref:0
 #. module: bluestar_partner_reference
 msgid "For partners with empty references"
 msgstr "Pour les partenaires sans référence"
@@ -30,7 +30,7 @@ msgstr "Pour les partenaires sans référence"
 msgid "Legal person / (other)"
 msgstr "Personne morale / (autre)"
 
-#: selection:bluestar.config,generate_ref:0
+#: selection:bss.config,generate_ref:0
 #. module: bluestar_partner_reference
 msgid "For all existing partners"
 msgstr "Pour tous les partenaires existants"
@@ -40,27 +40,27 @@ msgstr "Pour tous les partenaires existants"
 msgid "F"
 msgstr "F"
 
-#: view:bluestar.config:0
+#: view:bss.config:0
 #. module: bluestar_partner_reference
 msgid "Partner reference"
 msgstr "Référence partenaire"
 
-#: view:bluestar.config:0
+#: view:bss.config:0
 #. module: bluestar_partner_reference
 msgid "Modules"
 msgstr "Modules"
 
-#: model:ir.model,name:bluestar_partner_reference.model_bluestar_config
+#: model:ir.model,name:bluestar_partner_reference.model_bss_config
 #. module: bluestar_partner_reference
-msgid "bluestar.config"
-msgstr "bluestar.config"
+msgid "bss.config"
+msgstr "bss.config"
 
 #: model:res.partner.title,shortcut:bluestar_partner_reference.bluestar_partner_title_m
 #. module: bluestar_partner_reference
 msgid "M"
 msgstr "H"
 
-#: field:bluestar.config,generate_ref:0
+#: field:bss.config,generate_ref:0
 #. module: bluestar_partner_reference
 msgid "Generate references"
 msgstr "Générer les références"

@@ -1,6 +1,6 @@
 # Translation of OpenERP Server.
 # This file contains the translation of the following modules:
-#	* bluestar_config
+#	* bss_config
 #
 msgid ""
 msgstr ""
@@ -15,39 +15,39 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#: view:bluestar.config:0
-#. module: bluestar_config
+#: view:bss.config:0
+#. module: bss_config
 msgid "Configure bluestar's extensions"
 msgstr "Configurer les extensions Bluestar"
 
-#: model:ir.model,name:bluestar_config.model_bluestar_config
-#. module: bluestar_config
-msgid "bluestar.config"
-msgstr "bluestar.config"
+#: model:ir.model,name:bss_config.model_bss_config
+#. module: bss_config
+msgid "bss.config"
+msgstr "bss.config"
 
-#: field:bluestar.config,config_logo:0
-#. module: bluestar_config
+#: field:bss.config,config_logo:0
+#. module: bss_config
 msgid "Image"
 msgstr "Image"
 
-#: view:bluestar.config:0
-#. module: bluestar_config
+#: view:bss.config:0
+#. module: bss_config
 msgid "title"
 msgstr "title"
 
-#: view:bluestar.config:0
-#. module: bluestar_config
+#: view:bss.config:0
+#. module: bss_config
 msgid "Modules"
 msgstr "Modules"
 
-#: view:bluestar.config:0
-#: model:ir.actions.act_window,name:bluestar_config.action_bluestar_config
-#. module: bluestar_config
+#: view:bss.config:0
+#: model:ir.actions.act_window,name:bss_config.action_bss_config
+#. module: bss_config
 msgid "Bluestar's extensions configuration"
 msgstr "Configuration des extensions Bluestar"
 
-#: view:bluestar.config:0
-#. module: bluestar_config
+#: view:bss.config:0
+#. module: bss_config
 msgid "res_config_contents"
 msgstr "res_config_contents"
 

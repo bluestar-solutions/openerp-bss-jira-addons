@@ -2,9 +2,9 @@
 
 from osv import osv, fields
 
-class bluestar_config(osv.osv_memory):
+class bss_config(osv.osv_memory):
     
-    _name = 'bluestar.config'
+    _name = 'bss.config'
     _inherit = 'res.config'
 
     _columns = {
@@ -13,5 +13,5 @@ class bluestar_config(osv.osv_memory):
     def execute(self, cr, uid, ids, context=None):
         return
         
-bluestar_config()
+bss_config()
 
