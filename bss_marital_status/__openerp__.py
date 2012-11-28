@@ -21,7 +21,7 @@
 
 {
     'name': 'Bluestar - Marital status',
-    'version': '1.4-1',
+    'version': '1.0-1',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """A list of marital status.""",

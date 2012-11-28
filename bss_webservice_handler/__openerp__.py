@@ -21,7 +21,7 @@
 
 {
     "name": "Webservice Handler",
-    'version': '1.4-1',
+    'version': '1.0-1',
     "category" : "Bluestar/Addons/WS",
     "complexity": "easy",
     "description": """A module to synchronize datas with external webservices. """,
