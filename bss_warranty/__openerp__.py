@@ -22,7 +22,7 @@
 
 {
     'name': 'Bluestar - Warranty',
-    'version': 'default',
+    'version': '$VERSION$',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """Bluestar - Warranty""",
