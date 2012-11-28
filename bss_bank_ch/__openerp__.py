@@ -21,7 +21,7 @@
 
 {
     'name': 'Bluestar - Swiss banks',
-    'version': 'ggg',
+    'version': 'gghg',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """A list of all CH banks.""",
