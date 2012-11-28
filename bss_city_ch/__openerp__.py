@@ -22,7 +22,7 @@
 
 {
     'name': 'Bluestar - Cities',
-    'version': 'ggg',
+    'version': '1.4-1',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """Bluestar - Cities""",
