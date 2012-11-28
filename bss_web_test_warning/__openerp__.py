@@ -21,7 +21,7 @@
 
 {
     'name': 'Bluestar test warning',
-    'version': 'default',
+    'version': '$VERSION$',
     "category" : 'Bluestar/Generic web module',
     'complexity': "easy",
     'description': """""",
