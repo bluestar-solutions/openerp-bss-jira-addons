@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 	<data>
+	
+		<record id="view_bss_partner_form" model="ir.ui.view">
+            <field name="name">bss.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form" />
+            <field name="arch" type="xml">
+            	<field name="phone" position="replace">
+            	<!-- 	<label for="phone" class="oe_view_only" /><a href="tel:+5436436" class="oe_view_only" ><field name="phone_user" nolabel="1" /></a> -->
+       <!--      		<field name="phone" class="oe_edit_only" /> -->
+            		<field name="phone" widget="phonenumber" />
+	           	</field>
+            </field>
+        </record>
 
 		<record id="view_bluestar_partner_phonenumbers_config_form"
 			model="ir.ui.view">
@@ -9,13 +22,11 @@
 			<field name="type">form</field>
 			<field name="inherit_id" ref="bss_config.view_bss_config_form" />
 			<field name="arch" type="xml">
-				<data>
-					<separator string="Modules" position="after">
-						<group string="Partner phone numbers"  colspan="4" col="4">
-							<field name="process_phone_numbers" />
-						</group>
-					</separator>
-				</data>
+				<group id="bss_config_contents" position="inside">
+					<group string="Partner phone numbers"  colspan="4" col="4">
+						<field name="process_phone_numbers" />
+					</group>
+                </group>
 			</field>
 		</record>
 

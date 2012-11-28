@@ -3,42 +3,62 @@
 from osv import osv, fields
 import phonenumbers
 
-class bluestar_partner_address(osv.osv):
+class bss_partner_phonenumbers(osv.osv):
     
-    _inherit = 'res.partner.address'
-    _description = "Bluestar partner address phonenumbers"
+    _inherit = 'res.partner'
+    _description = "Bluestar Partner Phonenumbers"
+    
+    def _formatted_phone_number(self, cr, uid, ids, field_name, arg, context):
+        records = self.browse(cr, uid, ids)
+        result = {}
+        user = self.pool.get('res.users').browse(cr, uid, uid)
+        for r in records:
+            if r.phone:
+                pn = phonenumbers.parse(r.phone, user.lang[-2:])
+                result[r.id] = {'phone_user': phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.NATIONAL),
+                                'phone_rfc3966': phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.RFC3966)}
+            else:
+                result[r.id] = {'phone_user': '',
+                                'phone_rfc3966': '',}
+
+        return result
+    
+    _columns = {
+        'phone_user' : fields.function(_formatted_phone_number, type="char", method=True, readonly=True, multi=True, string='Phone'),
+        'phone_rfc3966' : fields.function(_formatted_phone_number, type="char", method=True, readonly=True, multi=True, string='Phone'),
+    }
     
     def phoneformat(self, cr, uid, vals):
         user = self.pool.get('res.users').browse(cr, uid, uid)
         if 'phone' in vals and vals['phone']:
             try:
-                pn = phonenumbers.parse(vals['phone'], user.context_lang[-2:])
-                vals['phone'] = phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
+                pn = phonenumbers.parse(vals['phone'], user.lang[-2:])
+                vals['phone'] = phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.E164)
             except phonenumbers.NumberParseException:
                 raise osv.except_osv('Error', 'Invalid phone number')
         if 'mobile' in vals and vals['mobile']:
             try:
-                pn = phonenumbers.parse(vals['mobile'], user.context_lang[-2:])
-                vals['mobile'] = phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
+                pn = phonenumbers.parse(vals['mobile'], user.lang[-2:])
+                vals['mobile'] = phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.E164)
             except phonenumbers.NumberParseException:
                 raise osv.except_osv('Error', 'Invalid mobile number')
         if 'fax' in vals and vals['fax']:
             try:
-                pn = phonenumbers.parse(vals['fax'], user.context_lang[-2:])
-                vals['fax'] = phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
+                pn = phonenumbers.parse(vals['fax'], user.lang[-2:])
+                vals['fax'] = phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.E164)
             except phonenumbers.NumberParseException:
                 raise osv.except_osv('Error', 'Invalid fax number')
         return vals
     
     def create(self, cr, uid, vals, context=None):
-        return super(bluestar_partner_address, self).\
+        return super(bss_partner_phonenumbers, self).\
             create(cr, uid, self.phoneformat(cr, uid, vals), context=context)
     
     def write(self, cr, uid, ids, vals, context=None):
-        return super(bluestar_partner_address, self).\
+        return super(bss_partner_phonenumbers, self).\
             write(cr, uid, ids, self.phoneformat(cr, uid, vals), context=context)
 
-bluestar_partner_address()
+bss_partner_phonenumbers()
 
 class bluestar_partner_phonenumbers_config(osv.osv_memory):
     
