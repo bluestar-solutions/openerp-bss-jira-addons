@@ -29,7 +29,7 @@
     'website': 'http://www.blues2.ch',
     'depends': ['bss_config'],
     'init_xml': [],
-    'update_xml': ['partner_view.xml'],
+    'update_xml': ['partner_config_view.xml'],
     'demo_xml': [],
     'test': ['test/test_partner_phonenumbers.yml'],
     "css": ['static/src/css/base.css'],

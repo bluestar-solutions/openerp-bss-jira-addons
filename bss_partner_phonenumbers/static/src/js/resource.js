@@ -1,6 +1,4 @@
 openerp.bss_partner_phonenumbers = function(instance) {
-	var QWeb = instance.web.qweb;
-    var _t = instance.web._t;
 
     instance.bss_partner_phonenumbers.FieldPhoneNumber = instance.web.form.FieldChar.extend({
         template : "FieldPhoneNumber",
@@ -9,15 +7,18 @@ openerp.bss_partner_phonenumbers = function(instance) {
             var $button = this.$el.find('button');
             $button.click(this.on_button_clicked);
             this.setupFocus($button);
-        },.
+        },
         render_value: function() {
-            if (!this.get("effective_readonly")) {
-                this._super();
+        	if (!this.get("effective_readonly")) {
+            	this.$el.find('input').val(this.view.datarecord[this.name]['e164']);
             } else {
                 this.$el.find('a')
-                        .attr('href', 'tel:' + this.get('value'))
-                        .text(this.get('value') || '');
+                        .attr('href', this.view.datarecord[this.name]['rfc3966'])
+                        .text(this.view.datarecord[this.name]['international'] || '');
             }
+        },
+        get_value: function() {
+            return this.get('value') + ',' + this.session.user_context.lang.substring(3,5);
         },
         on_button_clicked: function() {
             location.href = 'tel:' + this.get('value');

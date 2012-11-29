@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-from osv import osv, fields
+from openerp.osv import osv, fields
 
 GENERATE_REFS = [('none', 'None'),
                  ('empty', 'For partners with empty references'),
@@ -36,7 +36,7 @@ class bluestar_partner_reference_config(osv.osv_memory):
     }
 
     def execute(self, cr, uid, ids, context=None):
-        for config in self.read(cr, uid, ids, ['generate_ref', 'process_phone_numbers']):
+        for config in self.read(cr, uid, ids, ['generate_ref']):
             partner_ids = []
             if config['generate_ref'] == 'all':
                 partner_ids += self.pool.get('res.partner').search(cr, uid, [], context=None)

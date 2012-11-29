@@ -23,6 +23,7 @@
 
 # From this project
 import partner
+import partner_config
 
 #import wizard
 #import report
