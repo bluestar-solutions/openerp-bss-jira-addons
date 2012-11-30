@@ -10,7 +10,9 @@ openerp.bss_partner_phonenumbers = function(instance) {
         },
         render_value: function() {
         	if (!this.get("effective_readonly")) {
-            	this.$el.find('input').val(this.view.datarecord[this.name]['e164']);
+        		if (this.name in this.view.datarecord) {
+        			this.$el.find('input').val(this.view.datarecord[this.name]['e164'] || '');
+        		}
             } else {
                 this.$el.find('a')
                         .attr('href', this.view.datarecord[this.name]['rfc3966'])
@@ -18,7 +20,11 @@ openerp.bss_partner_phonenumbers = function(instance) {
             }
         },
         get_value: function() {
-            return this.get('value') + ',' + this.session.user_context.lang.substring(3,5);
+        	val = this.get('value')
+        	if (!val) {
+        		val = ''
+        	}
+            return val + ',' + this.session.user_context.lang.substring(3,5);
         },
         on_button_clicked: function() {
             location.href = 'tel:' + this.get('value');

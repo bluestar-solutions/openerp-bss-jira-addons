@@ -17,6 +17,7 @@ class phonenumber(fields._column):
             number = [vals['e164'], None]
         else:
             number = vals.split(',')
+            
         if not number[0] or number[0] == '':
             return None
             
@@ -35,9 +36,9 @@ class phonenumber(fields._column):
                       'rfc3966': phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.RFC3966),
                       'international': phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.INTERNATIONAL)}
         else:
-            result = {'e164': '',
-                      'rfc3966': '',
-                      'international': ''}
+            result = {'e164': None,
+                      'rfc3966': None,
+                      'international': None}
         return result
     
     @classmethod
