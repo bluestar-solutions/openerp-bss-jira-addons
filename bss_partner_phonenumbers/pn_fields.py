@@ -30,7 +30,7 @@ class phonenumber(fields._column):
     def _symbol_get(self, number):
         result = {}
         if number:
-            pn = phonenumbers.parse(number, 'CH')
+            pn = phonenumbers.parse(number, None)
             result = {'e164': number,
                       'rfc3966': phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.RFC3966),
                       'international': phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.INTERNATIONAL)}
