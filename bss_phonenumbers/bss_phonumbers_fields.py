@@ -1,4 +1,23 @@
 # -*- encoding: utf-8 -*-
+##############################################################################
+#    
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2012 Bluestar Solutions Sàrl (<http://www.blues2.ch>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+##############################################################################
 
 from openerp.osv import osv, fields
 from openerp import tools
@@ -7,20 +26,10 @@ import phonenumbers
 class phonenumber(fields._column):
     _type = 'phonenumber'
     _symbol_c = '%s'
-    _classic_read = False
     
     def __init__(self, string="unknown", **args):
         fields._column.__init__(self, string=string, size=64, **args)
         self._symbol_set = (self._symbol_c, self._symbol_set_number)
-        
-    def get(self, cr, obj, ids, name, uid=None, context=None, values=None):
-        print str(values)
-        res = {}
-        for oid in ids:
-            res[oid] = {'e164': '164',
-                      'rfc3966': '3966',
-                      'international': 'int'}
-        return res
         
     def _symbol_set_number(self, vals):
         if isinstance(vals, dict):
@@ -39,16 +48,22 @@ class phonenumber(fields._column):
         return phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.E164)
         
     def _symbol_get(self, number):
+        print str(self._properties)
+        print str(self._context)
+        print str(self._type)
+        print str(self.view_load)
         result = {}
         if number:
             pn = phonenumbers.parse(number, None)
             result = {'e164': number,
                       'rfc3966': phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.RFC3966),
                       'international': phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.INTERNATIONAL)}
+#            result = phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
         else:
-            result = {'e164': None,
-                      'rfc3966': None,
-                      'international': None}
+#            result = {'e164': None,
+#                      'rfc3966': None,
+#                      'international': None}
+            result = None
         return result
     
     @classmethod
