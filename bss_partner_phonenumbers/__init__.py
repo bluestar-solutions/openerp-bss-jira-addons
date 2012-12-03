@@ -2,7 +2,7 @@
 ##############################################################################
 #    
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2012 Bluestar Solutions Sàrl (<http://www.blues2.ch>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -22,8 +22,8 @@
 # From openerp addons
 
 # From this project
-import partner
-import partner_config
+import bss_partner_phonumbers_partner
+import bss_partner_phonumbers_partner_config
 
 #import wizard
 #import report

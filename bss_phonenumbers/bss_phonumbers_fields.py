@@ -48,21 +48,13 @@ class phonenumber(fields._column):
         return phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.E164)
         
     def _symbol_get(self, number):
-        print str(self._properties)
-        print str(self._context)
-        print str(self._type)
-        print str(self.view_load)
         result = {}
         if number:
             pn = phonenumbers.parse(number, None)
             result = {'e164': number,
                       'rfc3966': phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.RFC3966),
                       'international': phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.INTERNATIONAL)}
-#            result = phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
         else:
-#            result = {'e164': None,
-#                      'rfc3966': None,
-#                      'international': None}
             result = None
         return result
     
