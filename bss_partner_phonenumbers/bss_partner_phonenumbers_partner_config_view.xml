@@ -1,21 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 	<data>
-       
-		<record id="view_bluestar_partner_phonenumbers_config_form"
-			model="ir.ui.view">
-			<field name="name">bluestar.partner.phonenumbers.config.form</field>
-			<field name="model">bss.config</field>
+		
+		<record id="view_bss_partner_phonenumbers_config_form1" model="ir.ui.view">
+			<field name="name">bss.partner.phonenumbers.config.form1</field>
+			<field name="model">bss.partner.phonenumbers.config</field>
 			<field name="type">form</field>
-			<field name="inherit_id" ref="bss_config.view_bss_config_form" />
+			<field name="inherit_id" ref="base.res_config_view_base" />
 			<field name="arch" type="xml">
-				<group id="bss_config_contents" position="inside">
-					<group string="Partner phone numbers"  colspan="4" col="4">
-						<field name="process_phone_numbers" />
-					</group>
-                </group>
+				<data>
+					<form position="attributes">
+						<attribute name="string">Migrate Partner Phone Numbers</attribute>
+					</form>
+					
+					<group string="res_config_contents" position="replace">
+						<group string="Partner phone numbers"  colspan="4" col="4">
+							<field name="country_id" />
+						</group>
+	                </group>
+				</data>
 			</field>
 		</record>
+
+		<record id="view_bss_partner_phonenumbers_config_form2" model="ir.ui.view">
+			<field name="name">bss.partner.phonenumbers.config.form2</field>
+			<field name="model">bss.partner.phonenumbers.config</field>
+			<field name="type">form</field>
+			<field name="inherit_id" ref="base.res_config_view_base" />
+			<field name="arch" type="xml">
+				<data>
+					<form position="attributes">
+						<attribute name="string">Migrate Partner Phone Numbers</attribute>
+					</form>
+					
+					<group string="res_config_contents" position="replace">
+						<group string="Partner phone numbers"  colspan="4" col="4">
+							<field name="failed_ids" />
+						</group>
+	                </group>
+				</data>
+			</field>
+		</record>
+
+		<record id="action_bss_partner_phonenumbers_config" model="ir.actions.act_window">
+			<field name="name">Migrate Partner Phone Numbers</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">bss.partner.phonenumbers.config</field>
+			<field name="view_type">form</field>
+			<field name="view_id" ref="view_bss_partner_phonenumbers_config_form1" />
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+		</record>
+		
+		<record id="bss_partner_phonenumbers_config_todo" model="ir.actions.todo">
+            <field name="action_id" ref="action_bss_partner_phonenumbers_config"/>
+            <field name="sequence">200</field>
+            <field name="type">automatic</field>
+        </record>
 
 	</data>
 </openerp>

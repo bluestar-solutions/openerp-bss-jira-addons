@@ -27,7 +27,7 @@
     'description': """A module to format phone numbers using google-phonenumbers library.""",
     'author': 'bluestar solutions sàrl',
     'website': 'http://www.blues2.ch',
-    'depends': ['bss_config'],
+    'depends': [],
     'init_xml': [],
     'update_xml': [],
     'demo_xml': [],

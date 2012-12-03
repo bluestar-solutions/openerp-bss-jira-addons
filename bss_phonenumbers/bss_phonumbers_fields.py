@@ -27,6 +27,14 @@ class phonenumber(fields._column):
     _type = 'phonenumber'
     _symbol_c = '%s'
     
+    @staticmethod
+    def parse_to_db(number, country):           
+        if not number or number == '':
+            return None
+
+        pn = phonenumbers.parse(number, country)  
+        return phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.E164)    
+    
     def __init__(self, string="unknown", **args):
         fields._column.__init__(self, string=string, size=64, **args)
         self._symbol_set = (self._symbol_c, self._symbol_set_number)
@@ -37,15 +45,12 @@ class phonenumber(fields._column):
         else:
             number = vals.split(',')
             
-        if not number[0] or number[0] == '':
-            return None
-            
         try:
-            pn = phonenumbers.parse(*number)
+            res = phonenumber.parse_to_db(*number)
         except phonenumbers.NumberParseException:
             raise osv.except_osv('Error', 'Invalid phone number for field : %s' % self.string)
         
-        return phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.E164)
+        return res
         
     def _symbol_get(self, number):
         result = {}
