@@ -7,10 +7,20 @@ import phonenumbers
 class phonenumber(fields._column):
     _type = 'phonenumber'
     _symbol_c = '%s'
+    _classic_read = False
     
     def __init__(self, string="unknown", **args):
         fields._column.__init__(self, string=string, size=64, **args)
         self._symbol_set = (self._symbol_c, self._symbol_set_number)
+        
+    def get(self, cr, obj, ids, name, uid=None, context=None, values=None):
+        print str(values)
+        res = {}
+        for oid in ids:
+            res[oid] = {'e164': '164',
+                      'rfc3966': '3966',
+                      'international': 'int'}
+        return res
         
     def _symbol_set_number(self, vals):
         if isinstance(vals, dict):
