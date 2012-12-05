@@ -22,14 +22,85 @@
 from openerp.osv import osv, fields
 from bss_phonenumbers import bss_phonumbers_fields as pnfields
 import phonenumbers
+from openerp.tools.translate import _
 
-class bluestar_partner_phonenumbers_failed(osv.AbstractModel):
+class bluestar_partner_phonenumbers_config(osv.osv_memory):
+    
+    _name = 'bss.partner.phonenumbers.config'
+    _inherit = 'res.config'
+    _description = 'Partner Phonenumbers Configuration'
+
+    _columns = {
+        'country_id': fields.many2one('res.country', 'Default Country', required=True),
+#        'failed_ids': fields.one2many('bss.partner.phonenumbers.failed', 'config_id', string='Failed Phone Numbers')
+    }
+    
+    def execute(self, cr, uid, ids, context=None):
+        failed_pool = self.pool.get('bss.partner.phonenumbers.failed')
+        failed_pool.unlink(cr, uid, failed_pool.search(cr, uid, []))
+        
+        config = self.browse(cr, uid, ids, context)[0]
+        
+        cr.execute("SELECT id, phone, mobile, fax FROM res_partner")
+        rows = cr.fetchall ()
+        for row in rows:
+            partner = {'id': row[0],
+                       'phone': row[1],
+                       'mobile': row[2],
+                       'fax': row[3]}
+            failed = {}
+
+            try:
+                partner['phone'] = pnfields.phonenumber.parse_to_db(partner['phone'], config.country_id.code)
+            except phonenumbers.NumberParseException:
+                failed['phone'] = partner['phone']
+                partner['phone'] = None
+                pass  
+            try:
+                partner['mobile'] = pnfields.phonenumber.parse_to_db(partner['mobile'], config.country_id.code)
+            except phonenumbers.NumberParseException:
+                failed['mobile'] = partner['mobile']
+                partner['mobile'] = None
+                pass
+            try:
+                partner['fax'] = pnfields.phonenumber.parse_to_db(partner['fax'], config.country_id.code)
+            except phonenumbers.NumberParseException:
+                failed['fax'] = partner['fax']
+                partner['fax'] = None
+                pass
+          
+            if failed:
+#                failed['config_id'] = config.id     
+                failed['partner_id'] = partner['id']
+                failed_pool.create(cr, uid, failed)
+
+            cr.execute ("""
+                UPDATE res_partner 
+                SET phone = %(phone)s,
+                    mobile = %(mobile)s,
+                    fax = %(fax)s
+                WHERE id = %(id)s
+            """, partner)
+            self.write(cr, uid, config.id, {'state': 'step2'})
+    
+        return {
+            'name': _('Migration Report'),
+            'view_type': 'form',
+            'view_mode': 'tree',
+            'res_model': 'bss.partner.phonenumbers.failed',
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+        }
+        
+bluestar_partner_phonenumbers_config()
+
+class bluestar_partner_phonenumbers_failed(osv.osv_memory):
     
     _name = 'bss.partner.phonenumbers.failed'
     _description = 'Failed Phone Numbers'
     
     _columns = {
-        'config_id': fields.many2one('bss.partner.phonenumbers.config', 'Config', required=True),
+#        'config_id': fields.many2one('bss.partner.phonenumbers.config', 'Config', required=True),
         'partner_id': fields.many2one('res.partner', 'Partner', required=True),
         'phone': fields.char('Phone', size=64),
         'mobile': fields.char('Mobile', size=64),
@@ -38,61 +109,6 @@ class bluestar_partner_phonenumbers_failed(osv.AbstractModel):
     
 bluestar_partner_phonenumbers_failed()
 
-class bluestar_partner_phonenumbers_config(osv.AbstractModel):
-    
-    _name = 'bss.partner.phonenumbers.config'
-    _description = 'Partner Phonenumbers Configuration'
-
-    _columns = {
-        'country_id': fields.many2one('res.country', 'Default Country', required=True),
-        'failed_id': fields.one2many('bss.partner.phonenumbers.failed', 'config_id', string='Failed Phone Numbers')
-    }
-    
-    def execute(self, cr, uid, ids, context=None):
-        partner_pool = self.pool.get('res.partner')
-        failed_pool = self.pool.get('bss.partner.phonenumbers.failed')
-        
-        config = self.browse(cr, uid, ids, context)[0]
-        
-        ids = partner_pool.search(cr, uid, [])
-        for partner in partner_pool.browse(cr, uid, ids):
-            failed = {}
-            
-            vals = {}
-            try:
-                vals['phone'] = pnfields.phonenumber.parse_to_db(partner.phone, config.country_id.code)
-            except phonenumbers.NumberParseException:
-                failed['phone'] = partner.phone  
-                pass  
-            try:
-                vals['mobile'] = pnfields.phonenumber.parse_to_db(partner.mobile, config.country_id.code)
-            except phonenumbers.NumberParseException:
-                failed['mobile'] = partner.phone
-                pass
-            try:
-                vals['fax'] = pnfields.phonenumber.parse_to_db(partner.fax, config.country_id.code)
-            except phonenumbers.NumberParseException:
-                failed['fax'] = partner.phone
-                pass
-          
-            if failed:
-                failed['config_id'] = config.id     
-                failed['partner_id'] = partner.id   
-                failed_pool.create(cr, uid, failed)
-
-            partner_pool.write(cr, uid, [partner.id], vals)
-    
-        return {
-            'name': '2',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'view_id': 'form',
-            'res_model': 'bss.partner.phonenumbers.config',
-            'type': 'ir.actions.act_window',
-            'target': 'new',
-        }
-        
-bluestar_partner_phonenumbers_config()
 
 
 

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-from osv import osv, fields
+from openerp.osv import osv, fields
 
 ZIP_TYPES = [('10', 'Home addresses and PO Box'),
              ('20', 'Home addresses only'),
@@ -41,7 +41,7 @@ class bluestar_partner_address(osv.osv):
 
     _columns = {
         'city_id': fields.many2one('bluestar.city', 
-                                   'City search',
+                                   'City Search',
                                    domain="[('zip_type', 'not in', ['80'])]", 
                                    required=False, store=False),
     }

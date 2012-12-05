@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Bluestar - Marital status',
+    'name': 'Marital status',
     'version': '1.0-1',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",

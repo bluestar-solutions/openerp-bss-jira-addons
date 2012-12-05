@@ -5,9 +5,8 @@
 		<record model="ir.ui.view" id="view_bluestar_city_form">
 			<field name="name">bluestar.city.form</field>
 			<field name="model">bluestar.city</field>
-			<field name="type">form</field>
 			<field name="arch" type="xml">
-				<form>
+				<form string="City">
 						<field name="zip" select="1" />
 						<field name="zip_complement" />
 						<field name="short_name" />
@@ -21,9 +20,8 @@
 		<record model="ir.ui.view" id="view_bluestar_city_tree">
 			<field name="name">bluestar.city.tree</field>
 			<field name="model">bluestar.city</field>
-			<field name="type">tree</field>
 			<field name="arch" type="xml">
-				<tree>
+				<tree string="Cities">
 					<field name="zip" />
 					<field name="long_name" />
 					<field name="state_id" />	
@@ -45,46 +43,13 @@
 		<record model="ir.ui.view" id="view_partner_bluestar_city_form">
 			<field name="name">res.partner.bluestar.city.form.inherit</field>
 			<field name="model">res.partner</field>
-			<field name="type">form</field>
 			<field name="inherit_id" ref="base.view_partner_form" />
 			<field name="arch" type="xml">
-				<data>
-					<field name="zip"
-						position="before">
-						<field name="city_id" on_change="onchange_city_id(city_id)" />
-						<newline />
-					</field>				
-				</data>
-			</field>
-		</record>
-
-		<record model="ir.ui.view" id="view_partner_address_bluestar_city_form1">
-			<field name="name">res.partner.address.bluestar.city.form1.inherit</field>
-			<field name="model">res.partner.address</field>
-			<field name="type">form</field>
-			<field name="inherit_id" ref="base.view_partner_address_form1" />
-			<field name="arch" type="xml">
-				<data>
-					<field name="zip"
-						position="before">
-						<field name="city_id" on_change="onchange_city_id(city_id)" />
-					</field>				
-				</data>
-			</field>
-		</record>
-
-		<record model="ir.ui.view" id="view_partner_address_bluestar_city_form2">
-			<field name="name">res.partner.address.bluestar.city.form2.inherit</field>
-			<field name="model">res.partner.address</field>
-			<field name="type">form</field>
-			<field name="inherit_id" ref="base.view_partner_address_form2" />
-			<field name="arch" type="xml">
-				<data>
-					<field name="zip"
-						position="before">
-						<field name="city_id" on_change="onchange_city_id(city_id)" />
-					</field>				
-				</data>
+				<field name="city"
+					position="before">
+					<field name="city_id" on_change="onchange_city_id(city_id)" placeholder="City Search" />
+					<newline />
+				</field>				
 			</field>
 		</record>
 

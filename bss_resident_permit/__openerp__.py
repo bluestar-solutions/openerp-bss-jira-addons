@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Bluestar - Resident permits',
+    'name': 'Resident permits',
     'version': '1.0-1',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",

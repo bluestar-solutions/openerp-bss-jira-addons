@@ -21,7 +21,7 @@
 
 
 {
-    'name': 'Bluestar - Cities',
+    'name': 'Swiss Cities',
     'version': '1.0-1',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",

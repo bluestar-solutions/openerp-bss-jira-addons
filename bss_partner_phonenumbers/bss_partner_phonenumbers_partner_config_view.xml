@@ -1,44 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 	<data>
-		
-		<record id="view_bss_partner_phonenumbers_config_form1" model="ir.ui.view">
-			<field name="name">bss.partner.phonenumbers.config.form1</field>
+
+		<record id="view_bss_partner_phonenumbers_config_form" model="ir.ui.view">
+			<field name="name">bss.partner.phonenumbers.config.form</field>
 			<field name="model">bss.partner.phonenumbers.config</field>
-			<field name="type">form</field>
 			<field name="inherit_id" ref="base.res_config_view_base" />
 			<field name="arch" type="xml">
-				<data>
-					<form position="attributes">
-						<attribute name="string">Migrate Partner Phone Numbers</attribute>
-					</form>
-					
-					<group string="res_config_contents" position="replace">
-						<group string="Partner phone numbers"  colspan="4" col="4">
-							<field name="country_id" />
-						</group>
-	                </group>
-				</data>
+				<form position="attributes" version="7.0">
+					<attribute name="string">Migrate Partner Phone Numbers</attribute>
+				</form>
+				
+				<group string="res_config_contents" position="replace">
+					<field name="country_id" />
+                </group>
 			</field>
 		</record>
 
-		<record id="view_bss_partner_phonenumbers_config_form2" model="ir.ui.view">
-			<field name="name">bss.partner.phonenumbers.config.form2</field>
-			<field name="model">bss.partner.phonenumbers.config</field>
-			<field name="type">form</field>
-			<field name="inherit_id" ref="base.res_config_view_base" />
+		<delete model="ir.ui.view" search="[('model','=','bss.partner.phonenumbers.failed')]" />
+		<record id="view_bss_partner_phonenumbers_failed_tree" model="ir.ui.view">
+			<field name="name">bss.partner.phonenumbers.failed.tree</field>
+			<field name="model">bss.partner.phonenumbers.failed</field>
 			<field name="arch" type="xml">
-				<data>
-					<form position="attributes">
-						<attribute name="string">Migrate Partner Phone Numbers</attribute>
-					</form>
-					
-					<group string="res_config_contents" position="replace">
-						<group string="Partner phone numbers"  colspan="4" col="4">
-							<field name="failed_ids" />
-						</group>
-	                </group>
-				</data>
+				<tree string="Failed Phone Numbers">
+					<field name="partner_id" />
+					<field name="phone" />
+					<field name="mobile" />
+					<field name="fax" />
+				</tree>
 			</field>
 		</record>
 
@@ -47,7 +36,7 @@
 			<field name="type">ir.actions.act_window</field>
 			<field name="res_model">bss.partner.phonenumbers.config</field>
 			<field name="view_type">form</field>
-			<field name="view_id" ref="view_bss_partner_phonenumbers_config_form1" />
+			<field name="view_id" ref="view_bss_partner_phonenumbers_config_form" />
 			<field name="view_mode">form</field>
 			<field name="target">new</field>
 		</record>

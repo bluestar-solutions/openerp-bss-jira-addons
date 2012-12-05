@@ -20,11 +20,11 @@
 ##############################################################################
 
 {
-    'name': 'Bluestar test warning',
+    'name': 'Test Warning',
     'version': '1.0-1',
     "category" : 'Bluestar/Generic web module',
     'complexity': "easy",
-    'description': """""",
+    'description': """Test Warning""",
     'author': 'bluestar solutions sàrl',
     'website': 'http://www.blues2.ch',
     'depends': ['web'],

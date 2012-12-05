@@ -20,11 +20,6 @@ msgstr ""
 msgid "Partner phone numbers"
 msgstr "Formatage des numéros de téléphone"
 
-#: field:bss.config,process_phone_numbers:0
-#. module: bluestar_partner_phonenumbers
-msgid "Process existing phone numbers"
-msgstr "Formatter les numéros existant"
-
 #: model:ir.model,name:bluestar_partner_phonenumbers.model_res_partner_address
 #. module: bluestar_partner_phonenumbers
 msgid "Partner Addresses"

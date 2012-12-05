@@ -9,15 +9,20 @@ openerp.bss_partner_phonenumbers = function(instance) {
             this.setupFocus($button);
         },
         render_value: function() {
-        	if (!this.get("effective_readonly")) {
-        		if (this.name in this.view.datarecord) {
-        			this.$el.find('input').val(this.view.datarecord[this.name]['e164'] || '');
-        		}
-            } else {
-                this.$el.find('a')
-                        .attr('href', this.view.datarecord[this.name]['rfc3966'])
-                        .text(this.view.datarecord[this.name]['international'] || '');
-            }
+        	var field = this
+        	var conv = new instance.web.Model('bss.phonenumbers.converter');
+        	conv.call('format', [this.view.datarecord[this.name]]).then(function (result) {
+        		console.log(result)
+            	if (!field.get("effective_readonly")) {
+            		if (field.name in field.view.datarecord) {
+            			field.$el.find('input').val(result.international || '');
+            		}
+                } else {
+                	field.$el.find('a')
+                            .attr('href', result.rfc3966)
+                            .text(result.international || '');
+                }
+        	});
         },
         get_value: function() {
         	val = this.get('value')

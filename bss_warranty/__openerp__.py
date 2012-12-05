@@ -21,11 +21,11 @@
 
 
 {
-    'name': 'Bluestar - Warranty',
+    'name': 'Bluestar Warranty',
     'version': '1.0-1',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
-    'description': """Bluestar - Warranty""",
+    'description': """Bluestar Warranty""",
     'author': 'bluestar solutions sàrl',
     'website': 'http://www.blues2.ch',
     'depends': [],
