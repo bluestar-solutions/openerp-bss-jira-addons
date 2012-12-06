@@ -20,14 +20,14 @@
 ##############################################################################
 
 {
-    'name': 'Partner Phone Numbers',
+    'name': 'CRM Phone Numbers',
     'version': '1.0-1',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
-    'description': """A module to format phone numbers in Partner.""",
+    'description': """A module to format phone numbers in CRM.""",
     'author': 'bluestar solutions sàrl',
     'website': 'http://www.blues2.ch',
-    'depends': ['base', 'bss_phonenumbers'],
+    'depends': ['base', 'bss_partner_phonenumbers'],
     'init_xml': [],
     'update_xml': ['bss_partner_phonenumbers_partner_config_view.xml',
                    'bss_partner_phonenumbers_partner_view.xml'],

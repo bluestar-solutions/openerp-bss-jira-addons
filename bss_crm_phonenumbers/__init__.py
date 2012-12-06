@@ -19,23 +19,13 @@
 #
 ##############################################################################
 
-{
-    'name': 'Partner Phone Numbers',
-    'version': '1.0-1',
-    "category" : 'Bluestar/Generic module',
-    'complexity': "easy",
-    'description': """A module to format phone numbers in Partner.""",
-    'author': 'bluestar solutions sàrl',
-    'website': 'http://www.blues2.ch',
-    'depends': ['base', 'bss_phonenumbers'],
-    'init_xml': [],
-    'update_xml': ['bss_partner_phonenumbers_partner_config_view.xml',
-                   'bss_partner_phonenumbers_partner_view.xml'],
-    'demo_xml': [],
-    'test': ['test/test_partner_phonenumbers.yml'],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
-}
+# From openerp addons
+
+# From this project
+import bss_partner_phonenumbers_partner
+import bss_partner_phonenumbers_partner_config
+
+#import wizard
+#import report
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
