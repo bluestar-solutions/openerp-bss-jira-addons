@@ -11,12 +11,9 @@ openerp.bss_partner_phonenumbers = function(instance) {
         render_value: function() {
         	var field = this
         	var conv = new instance.web.Model('bss.phonenumbers.converter');
-        	conv.call('format', [this.view.datarecord[this.name]]).then(function (result) {
-        		console.log(result)
+        	conv.call('format', [this.get('value')]).then(function (result) {
             	if (!field.get("effective_readonly")) {
-            		if (field.name in field.view.datarecord) {
-            			field.$el.find('input').val(result.international || '');
-            		}
+        			field.$el.find('input').val(result.international || '');
                 } else {
                 	field.$el.find('a')
                             .attr('href', result.rfc3966)
