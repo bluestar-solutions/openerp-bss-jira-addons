@@ -35,8 +35,11 @@ class bss_phonenumbers_converter(osv.TransientModel):
         pn = phonenumbers.parse(number, country)  
         return phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.E164)  
     
-    def parse(self, cr, uid, number, country, context=None): 
-        return bss_phonenumbers_converter._parse(number, country)        
+    def parse(self, cr, uid, number, country, context=None):
+        try:
+            return bss_phonenumbers_converter._parse(number, country)
+        except phonenumbers.NumberParseException:
+            return None
 
     @staticmethod
     def _format(number):           
@@ -56,7 +59,14 @@ class bss_phonenumbers_converter(osv.TransientModel):
         }   
 
     def format(self, cr, uid, number, context=None): 
-        return bss_phonenumbers_converter._format(number)   
+        try:
+            return bss_phonenumbers_converter._format(number)   
+        except phonenumbers.NumberParseException:
+            return {
+                'e164': None,
+                'international': None,
+                'rfc3966': None,
+            } 
 
 bss_phonenumbers_converter()
 

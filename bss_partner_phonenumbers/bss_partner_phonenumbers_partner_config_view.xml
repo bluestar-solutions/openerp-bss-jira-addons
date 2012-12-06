@@ -5,29 +5,60 @@
 		<record id="view_bss_partner_phonenumbers_config_form" model="ir.ui.view">
 			<field name="name">bss.partner.phonenumbers.config.form</field>
 			<field name="model">bss.partner.phonenumbers.config</field>
-			<field name="inherit_id" ref="base.res_config_view_base" />
 			<field name="arch" type="xml">
-				<form position="attributes" version="7.0">
-					<attribute name="string">Migrate Partner Phone Numbers</attribute>
-				</form>
-				
-				<group string="res_config_contents" position="replace">
-					<field name="country_id" />
-                </group>
+	            <form string="Migrate Partner Phone Numbers" version="7.0">
+	                <group>
+	                	<group colspan="4" col="1">
+		                	<p>
+			                	<label string="The module 'Partner Phone Number' need valid and well-formed phone numbers for
+			                					partners. We will try now to convert phone numbers on existing partners. The numbers
+			                					we cannot convert will be blanked. You can download a CSV file with all the numbers
+			                					we cannot convert at the end of the process." />
+		                	</p>
+		                	<p>
+			                	<label string="You have to specify a default country for helping us to convert numbers without country code." />
+		                	</p>
+	                	</group>
+	                    <field name="country_id" />
+	                </group>
+	                <footer>
+	                    <button name="execute" string="Apply" type="object" class="oe_highlight"/>
+	                    or
+	                    <button string="Cancel" class="oe_link" special="cancel"/>
+	                </footer>
+	            </form>
 			</field>
 		</record>
 
-		<delete model="ir.ui.view" search="[('model','=','bss.partner.phonenumbers.failed')]" />
-		<record id="view_bss_partner_phonenumbers_failed_tree" model="ir.ui.view">
-			<field name="name">bss.partner.phonenumbers.failed.tree</field>
-			<field name="model">bss.partner.phonenumbers.failed</field>
+ 		<record id="view_bss_partner_phonenumbers_config_failed_form" model="ir.ui.view">
+			<field name="name">bss.partner.phonenumbers.config.failed.form</field>
+			<field name="model">bss.partner.phonenumbers.config</field>
 			<field name="arch" type="xml">
-				<tree string="Failed Phone Numbers">
-					<field name="partner_id" />
-					<field name="phone" />
-					<field name="mobile" />
-					<field name="fax" />
-				</tree>
+	            <form string="Migrate Partner Phone Numbers" version="7.0">
+	            	<field name="success" invisible="1" />
+	                <group attrs="{'invisible': [('success', '=', True)]}">
+	                	<label string="Following numbers failed to be converted and have been blanked :" colspan="4"/>
+	                    <field name="failed_ids" nolabel="1" colspan="4">
+	                    	<tree string="Failed Conversion">
+	                    		<field name="partner_id" />
+	                    		<field name="phone" />
+	                    		<field name="mobile" />
+	                    		<field name="fax" />
+	                    	</tree>
+	                    </field>
+	                    <field name="output_file_stream" filename="output_file_name" nolabel="1" colspan="4" />
+	                </group>
+	                <group attrs="{'invisible': [('success', '=', False)]}">
+	                    <group colspan="4" col="1">
+		                	<p>
+			                	<label string="Every partner numbers successfully converted." />
+		                	</p>
+	                	</group>
+	                </group>
+	                <footer>
+	                    <button string="Close" special="cancel" class="oe_highlight"/>
+	                </footer>
+	            </form>
 			</field>
 		</record>
 
