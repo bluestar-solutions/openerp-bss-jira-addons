@@ -27,7 +27,7 @@
     'description': """A module to make partner reference readonly, unique, and automatically created from a sequence.""",
     'author': 'bluestar solutions sàrl',
     'website': 'http://www.blues2.ch',
-    'depends': ['bluestar_config'],
+    'depends': ['bss_config'],
     'init_xml': ['partner_data.xml'],
     'update_xml': ['partner_sequence.xml',
                    'partner_view.xml'],
