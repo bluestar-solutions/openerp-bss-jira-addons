@@ -20,7 +20,7 @@
 ##############################################################################
 
 from openerp.osv import osv, fields
-from bss_phonenumbers import bss_phonumbers_fields as pnfields
+from bss_phonenumbers.bss_phonumbers_fields import bss_phonenumbers_converter as phonumbers_converter
 import phonenumbers
 from openerp.tools.translate import _
 
@@ -51,19 +51,19 @@ class bluestar_partner_phonenumbers_config(osv.osv_memory):
             failed = {}
 
             try:
-                partner['phone'] = pnfields.phonenumber.parse_to_db(partner['phone'], config.country_id.code)
+                partner['phone'] = phonumbers_converter.parse(partner['phone'], config.country_id.code)
             except phonenumbers.NumberParseException:
                 failed['phone'] = partner['phone']
                 partner['phone'] = None
                 pass  
             try:
-                partner['mobile'] = pnfields.phonenumber.parse_to_db(partner['mobile'], config.country_id.code)
+                partner['mobile'] = phonumbers_converter.parse(partner['mobile'], config.country_id.code)
             except phonenumbers.NumberParseException:
                 failed['mobile'] = partner['mobile']
                 partner['mobile'] = None
                 pass
             try:
-                partner['fax'] = pnfields.phonenumber.parse_to_db(partner['fax'], config.country_id.code)
+                partner['fax'] = phonumbers_converter.parse(partner['fax'], config.country_id.code)
             except phonenumbers.NumberParseException:
                 failed['fax'] = partner['fax']
                 partner['fax'] = None
