@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+	
+	    <record id="view_attendance_sheet_form" model="ir.ui.view">
+            <field name="name">bss_attendance_sheet.sheet.form</field>
+            <field name="model">bss_attendance_sheet.sheet</field>
+            <field name="arch" type="xml">
+            	<form string="gdfhd">
+	        		<field name="name" />
+	        		<field name="employee_id" />
+	        		<field name="total_attendance_str" />
+	        		<field name="total_break_str" />
+	        		<field name="total_midday_str" />
+	        		<field name="total_recorded_str" /> 
+	        		<field name="attendance_ids" colspan="4" nolabel="1" /> 
+        		</form>               
+            </field>
+        </record>	
+
+	    <record id="view_attendance_sheet_tree" model="ir.ui.view">
+            <field name="name">bss_attendance_sheet.sheet.tree</field>
+            <field name="model">bss_attendance_sheet.sheet</field>
+            <field name="arch" type="xml">
+            	<tree string="gdfhd">
+	        		<field name="name" />
+	        		<field name="employee_id" />
+	        		<field name="total_attendance_str" />
+	        		<field name="total_break_str" />
+	        		<field name="total_midday_str" />
+	        		<field name="total_recorded_str" /> 
+        		</tree>               
+            </field>
+        </record>	
+
+        <record model="ir.actions.act_window" id="action_hr_attendance_report">
+            <field name="name">Attendances Analysis</field>
+            <field name="res_model">bss_attendance_sheet.sheet</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!-- <field name="view_id" eval="view_holiday_simple"/> -->
+            <!-- <field name="context">{'search_default_year':1, 'search_default_This Month':1, 'search_default_group_employee': 1, 'search_default_group_type': 1}</field> -->
+            <!-- <field name="domain">[('holiday_type','=','employee')]</field> -->
+            <!-- <field name="search_view_id" ref="view_hr_holidays_filter"/> -->
+        </record>
+
+        <menuitem
+            name="Attendances Analysis" 
+            id="menu_hr_attendance_report_tree" 
+            action="action_hr_attendance_report" 
+            parent="hr.menu_hr_reporting" sequence="4" />
+
+    </data>
+</openerp>
+
+

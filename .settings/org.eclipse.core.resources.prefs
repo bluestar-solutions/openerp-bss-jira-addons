@@ -1,10 +1,17 @@
 eclipse.preferences.version=1
+encoding//bss_attendance_sheet/__init__.py=utf-8
+encoding//bss_attendance_sheet/__openerp__.py=utf-8
+encoding//bss_attendance_sheet/bss_attendance.py=utf-8
+encoding//bss_attendance_sheet/bss_attendance_sheet.py=utf-8
+encoding//bss_attendance_sheet/report/__init__.py=utf-8
+encoding//bss_attendance_sheet/report/bss_attendance_report.py=utf-8
 encoding//bss_bank_ch/__openerp__.py=utf-8
 encoding//bss_city_ch/__openerp__.py=utf-8
 encoding//bss_city_ch/city.py=utf-8
 encoding//bss_crm_phonenumbers/__init__.py=utf-8
 encoding//bss_crm_phonenumbers/__openerp__.py=utf-8
 encoding//bss_crm_phonenumbers/bss_crm_phonenumbers_lead.py=utf-8
+encoding//bss_marital_status/__init__.py=utf-8
 encoding//bss_marital_status/__openerp__.py=utf-8
 encoding//bss_partner_phonenumbers/__init__.py=utf-8
 encoding//bss_partner_phonenumbers/__openerp__.py=utf-8
