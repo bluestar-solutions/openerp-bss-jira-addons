@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<record id="contract_view_form" model="ir.ui.view">
+			<field name="name">bss.contract.view.form</field>
+			<field name="model">hr.contract</field>
+			<field name="inherit_id" ref="hr_contract.hr_contract_view_form" />
+			<field name="arch" type="xml">
+				<separator string="Notes" position="before">
+					<separator string="Hours" />
+					<field name="contract_week_ids" nolabel="1">
+						<tree string="" editable="top">
+							<field name="name" />
+							<field name="monday_hours" widget="float_time" string="Mon." />
+							<field name="tuesday_hours" widget="float_time" string="Tue." />
+							<field name="wednesday_hours" widget="float_time" string="Wed." />
+							<field name="thursday_hours" widget="float_time" string="Thu." />
+							<field name="friday_hours" widget="float_time" string="Fri." />
+							<field name="saturday_hours" widget="float_time" string="Sat." />
+							<field name="sunday_hours" widget="float_time" string="Sun." />
+							<field name="total_hours" widget="float_time" />
+						</tree>
+					</field>
+				</separator>
+			</field>
+		</record>
+
+	</data>
+</openerp>
