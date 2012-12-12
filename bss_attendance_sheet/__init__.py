@@ -22,6 +22,9 @@
 # From openerp addons
 
 # From this project
+import bss_company
+import bss_contract
+import bss_contract_week
 import bss_attendance
 import bss_attendance_sheet
 

@@ -6,15 +6,33 @@
             <field name="name">bss_attendance_sheet.sheet.form</field>
             <field name="model">bss_attendance_sheet.sheet</field>
             <field name="arch" type="xml">
-            	<form string="gdfhd">
-	        		<field name="name" />
-	        		<field name="employee_id" />
-	        		<field name="total_attendance_str" />
-	        		<field name="total_break_str" />
-	        		<field name="total_midday_str" />
-	        		<field name="total_recorded_str" /> 
+            	<form string="Account Entry" version="7.0">
+                <sheet string="My sheet" >
+	        		<group colspan="4" col="3">
+		        		<group col="1">
+		                	<h1><field name="name" /></h1>
+		                	<h3><field name="employee_id" nolabel="1" /></h3>
+		        		</group>
+	        		
+		        		<group col="2">
+		        			<field name="total_attendance" widget="float_time" />
+		        			<field name="total_midday" widget="float_time" />
+		        			<field name="total_break" widget="float_time" />
+		        		</group>
+		        		
+		        		<group col="2">
+		        			<field name="expected_time" widget="float_time" />
+		        			<field name="total_recorded" widget="float_time" />
+		        			<field name="time_difference" widget="float_time" />
+		        			<separator orientation="horizontal" colspan="2" />
+		        			<field name="cumulative_difference" widget="float_time" />
+		        		</group>
+	        		</group>
+
+					<separator string="Log" />
 	        		<field name="attendance_ids" colspan="4" nolabel="1" /> 
-        		</form>               
+        		</sheet>
+        		</form>            
             </field>
         </record>	
 
@@ -22,13 +40,14 @@
             <field name="name">bss_attendance_sheet.sheet.tree</field>
             <field name="model">bss_attendance_sheet.sheet</field>
             <field name="arch" type="xml">
-            	<tree string="gdfhd">
+            	<tree string="" colors="darkgreen:time_difference&gt;=0;darkred:time_difference&lt;0">
 	        		<field name="name" />
 	        		<field name="employee_id" />
-	        		<field name="total_attendance_str" />
-	        		<field name="total_break_str" />
-	        		<field name="total_midday_str" />
-	        		<field name="total_recorded_str" /> 
+	        		<field name="total_attendance" widget="float_time" />
+	        		<field name="total_recorded" widget="float_time" />
+	        		<field name="expected_time" widget="float_time" />  
+	        		<field name="time_difference" widget="float_time" />
+	        		<field name="cumulative_difference" widget="float_time" />
         		</tree>               
             </field>
         </record>	
