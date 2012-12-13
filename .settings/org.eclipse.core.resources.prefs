@@ -6,6 +6,7 @@ encoding//bss_attendance_sheet/bss_attendance_sheet.py=utf-8
 encoding//bss_attendance_sheet/bss_company.py=utf-8
 encoding//bss_attendance_sheet/bss_contract.py=utf-8
 encoding//bss_attendance_sheet/bss_contract_week.py=utf-8
+encoding//bss_attendance_sheet/bss_holidays.py=utf-8
 encoding//bss_attendance_sheet/report/__init__.py=utf-8
 encoding//bss_attendance_sheet/report/bss_attendance_report.py=utf-8
 encoding//bss_bank_ch/__openerp__.py=utf-8
