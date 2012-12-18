@@ -25,13 +25,12 @@ OpenERP.
 
 import logging
 import smtplib
-from tools.translate import _
+from openerp.tools.translate import _
 from openerp.tools import ustr
 from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 
-from osv import osv, fields
+from openerp.osv import osv
 
 _logger = logging.getLogger(__name__)
 

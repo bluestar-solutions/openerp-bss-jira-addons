@@ -4,7 +4,6 @@
        <record model="ir.ui.view" id="bss_webservice_tree">
             <field name="name">bss.webservice.tree</field>
             <field name="model">bss.webservice</field>
-            <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Webservices">
                     <field name="name" />
@@ -36,7 +35,6 @@
         <record model="ir.ui.view" id="bss_webservice_form">
             <field name="name">bss.webservice.form</field>
             <field name="model">bss.webservice</field>
-            <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Webservices">
                     <field name="name" />
@@ -63,15 +61,15 @@
                     <field name="last_run" readonly="1"/>
                     <field name="last_success" readonly="1"/>
                     <newline />
-                    <field name="call_ids" mode="tree,form" nolabel="1" colspan = "4" readonly="1">
-                        <tree>
+                    <field name="call_ids" mode="tree" nolabel="1" colspan = "4" readonly="1">
+                        <tree string="">
                             <field name="service_id" />
                             <field name="call_moment" />
                             <field name="success" />
                             <field name="status" />
                             <field name="reason" />                          
                         </tree>
-                        <form>
+<!--                         <form string="">
                             <field name="service_id" />
                             <field name="call_moment" />
                             <field name="success" />
@@ -82,7 +80,7 @@
                             <group string="Body" colspan="4">                
                                 <field name="body" colspan="4" nolabel="1"/>   
                             </group>                       
-                        </form>
+                        </form> -->
                     </field>
                 </form>
             </field>
@@ -116,6 +114,6 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <menuitem action="bss_ws_act" id="menu_bss_ws_act" parent="base.next_id_10" sequence="20"/>
+        <menuitem action="bss_ws_act" id="menu_bss_ws_act" parent="base.menu_custom" sequence="23"/>
     </data>
 </openerp>

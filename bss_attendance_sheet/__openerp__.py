@@ -30,7 +30,9 @@
     'depends': ['hr_attendance',
                 'hr_holidays'],
     'init_xml': [],
-    'update_xml': ['bss_company_view.xml',
+    'update_xml': ['data/bss.webservice.csv',
+                   
+                   'bss_company_view.xml',
                    'bss_holidays_view.xml',
                    'bss_contract_view.xml',
                    'bss_attendance_view.xml',

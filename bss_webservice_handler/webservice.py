@@ -21,11 +21,10 @@
 
 from openerp.osv import osv, fields
 from openerp.netsvc import logging
-from datetime import date, datetime, time, timedelta
-from time import mktime,strptime,strftime
+from datetime import date, datetime
+from time import mktime, strptime
 import json
 import httplib2
-import urllib2
 
 WEBSERVICE_TYPE = [('GET','Get'),('PUSH', 'Push'),('PUSH_GET','Push Get Sync'),('GET_PUSH','Get Push Sync'),]
 #HTTP_METHOD= [('GET','GET'),('POST','POST')]
@@ -77,7 +76,7 @@ class webservice(osv.osv):
     }
     _order = "priority, last_success"
     
-    def str2date(self,string,type,format):
+    def str2date(self, string, type, format):
         if not string:
             return None
         if format == 'TIMESTAMP':
@@ -103,7 +102,7 @@ class webservice(osv.osv):
                 return datetime.strptime(string,'%H:%M:S').time()
         return None
       
-    def date2str(self,string,type,format):
+    def date2str(self, string, type, format):
         if not string:
             return None
         if format == 'TIMESTAMP':
@@ -241,7 +240,7 @@ class webservice(osv.osv):
                 response.status = -1
                 response.reason = 'Decode Write Error'
         else:
-           success = False
+            success = False
         return (success, response, content)
     
     def service_push(self, cr, uid, service, model):
@@ -271,7 +270,7 @@ class webservice(osv.osv):
         if response.status == 200:
             success = True
         else:
-           success = False
+            success = False
         return (success, response, resp_content)
     
     def do_run(self, cr, uid, service_id, context=None):
@@ -308,7 +307,7 @@ class webservice(osv.osv):
             elif service.service_type == 'PUSH_GET':
                 success, response, resp_content = self.service_push(service_cr, uid, service, model)
                 if success:
-                     success, response, resp_content = self.service_get(service_cr, uid, service, model)
+                    success, response, resp_content = self.service_get(service_cr, uid, service, model)
             elif service.service_type == 'GET_PUSH':
                 success, response, resp_content = self.service_get(service_cr, uid, service, model) 
                 if success:

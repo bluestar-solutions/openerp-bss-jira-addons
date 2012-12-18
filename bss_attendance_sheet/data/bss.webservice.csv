@@ -1,0 +1,2 @@
+"id","name","service_type","ws_protocol","ws_host","ws_port","ws_path","http_auth_type","http_auth_login","http_auth_password","model_name","before_method_name","after_method_name","decode_method_name","encode_method_name","wait_retry_minutes","wait_next_minutes","priority","active","push_filter","get_db_key","datetime_format"
+"webservice_employee","employee","Push","http","oprox.dev.blues2.ch","80","/api/agency","None",,,"hr.employee",,,,"ws_encode_employee","1","2",,"True",,,"Swiss ""dd.mm.yyyy HH:MM:SS"" format"

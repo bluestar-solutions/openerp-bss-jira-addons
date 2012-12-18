@@ -22,6 +22,7 @@ import time
 
 from openerp.osv import osv, fields
 from openerp.netsvc import logging
+from openerp.tools.translate import _
 from datetime import datetime, timedelta
 
 class webservice_handler(osv.osv_memory):
