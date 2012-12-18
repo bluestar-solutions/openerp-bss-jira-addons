@@ -21,15 +21,10 @@
 
 from openerp.osv import fields, osv
 
-class bss_company(osv.osv):
-    _inherit = 'res.company'
+class bss_employee(osv.osv):
+    _inherit = 'hr.employee'
 
-    _columns = {
-        'breaks_offered': fields.float('Breaks offered daily'),
-        'minimum_midday_break': fields.float('Minimum midday break'),
-        'midday_break_from': fields.float('Maximum working hours without midday Break'),
-    }
     
-bss_company()
+bss_employee()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
