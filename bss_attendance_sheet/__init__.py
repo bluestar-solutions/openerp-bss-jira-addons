@@ -23,6 +23,7 @@
 
 # From this project
 import bss_company
+import bss_employee
 import bss_holidays
 import bss_contract
 import bss_contract_week

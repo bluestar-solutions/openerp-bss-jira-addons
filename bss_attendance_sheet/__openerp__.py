@@ -32,6 +32,7 @@
     'init_xml': [],
     'update_xml': ['data/bss.webservice.csv',
                    
+                   'bss_employee_view.xml',
                    'bss_company_view.xml',
                    'bss_holidays_view.xml',
                    'bss_contract_view.xml',

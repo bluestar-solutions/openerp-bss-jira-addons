@@ -37,6 +37,7 @@ encoding//bss_resident_permit/resident_permit.py=utf-8
 encoding//bss_warranty/__openerp__.py=utf-8
 encoding//bss_warranty/bluestar_warranty.py=utf-8
 encoding//bss_web_test_warning/__openerp__.py=utf-8
+encoding//bss_webservice_handler/__init__.py=utf-8
 encoding//bss_webservice_handler/__openerp__.py=utf-8
 encoding//bss_webservice_handler/webservice.py=utf-8
 encoding//bss_webservice_handler/webservice_call.py=utf-8

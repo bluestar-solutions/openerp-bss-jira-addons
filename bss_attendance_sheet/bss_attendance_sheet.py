@@ -19,13 +19,8 @@
 #
 ##############################################################################
 
-import time
 from datetime import date, datetime, timedelta
-from dateutil.relativedelta import relativedelta
-
 from openerp.osv import fields, osv
-from openerp.tools.translate import _
-
 from bss_contract_week import DAY_FIELDS
 
 class bss_attendance_sheet(osv.osv):

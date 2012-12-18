@@ -203,7 +203,7 @@ class webservice(osv.osv):
                 if key in field_list:
                     if decoded[key]:
                         if field_list[key]['type'] in ('date','datetime','time'):
-                            data[key]=self.str2date(decode[key],field_list[key]['type'],datetime_format)
+                            data[key]=self.str2date(decoded[key],field_list[key]['type'],datetime_format)
                         else:
                             data[key]=decoded[key]
                     else:
@@ -274,6 +274,9 @@ class webservice(osv.osv):
         return (success, response, resp_content)
     
     def do_run(self, cr, uid, service_id, context=None):
+        if not context:
+            context = {}
+        
         logger = logging.getLogger('bss.webservice')
         db = self.pool.db
         service_cr = db.cursor()
@@ -283,7 +286,8 @@ class webservice(osv.osv):
         now = datetime.now()
         
         try:
-            service = self.browse(service_cr, uid, service_id, context)[0] 
+            service = self.browse(service_cr, uid, service_id, context={})[0] 
+            print str(service)
             logger.info('Model name is %s', service.model_name)
             model = self.pool.get(service.model_name)
             logger.info('Model  is %s', model)
