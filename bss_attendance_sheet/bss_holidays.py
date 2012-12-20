@@ -93,17 +93,31 @@ class bss_holidays(osv.osv):
             self.write(cr, uid, [holiday['id']], {'date_to': '%s %s UTC' % (holiday['date_to'][:10], value)} , context)
 
     _columns = {
-        'date_from_day': fields.function(_date_from_day, fnct_inv=_date_from_day_inv, type="date", 
+        'date_from_day': fields.function(_date_from_day, fnct_inv=_date_from_day_inv, type="date", readonly=True, required=True,
                                          states={'draft':[('readonly',False)], 'confirm':[('readonly',False)]}),
-        'date_to_day': fields.function(_date_to_day, fnct_inv=_date_to_day_inv, type="date", 
+        'date_to_day': fields.function(_date_to_day, fnct_inv=_date_to_day_inv, type="date", readonly=True, required=True,
                                        states={'draft':[('readonly',False)], 'confirm':[('readonly',False)]}),
         'date_from_period': fields.function(_date_from_period, fnct_inv=_date_from_period_inv, type="selection",
-                                            selection=[('full', 'from morning'), ('half', 'from noon')],
+                                            selection=[('full', 'from morning'), ('half', 'from noon')], readonly=True, required=True,
                                             states={'draft':[('readonly',False)], 'confirm':[('readonly',False)]}),
         'date_to_period': fields.function(_date_to_period, fnct_inv=_date_to_period_inv, type="selection",
-                                          selection=[('full', 'until evening'), ('half', 'until noon')],
+                                          selection=[('full', 'until evening'), ('half', 'until noon')], readonly=True, required=True,
                                           states={'draft':[('readonly',False)], 'confirm':[('readonly',False)]}),
     }
+    
+    def get_holiday_factor(self, cr, uid, employee_id, day):
+        ids = self.search(cr, uid, [('state', '=', 'validate'),
+                                    ('employee_id', '=', employee_id),
+                                    ('date_from', '<=', '%s 24:00:00' % day),
+                                    ('date_to', '>=', '%s 00:00:00' % day)], limit=1)
+        if ids:
+            period = self.read(cr, uid, ids[0], ['date_from_day', 'date_to_day', 'date_from_period', 'date_to_period'])
+            if day == period['date_from_day'] and period['date_from_period'] == 'half':
+                return 0.5
+            if day == period['date_to_day'] and period['date_to_period'] == 'half':
+                return 0.5
+            return 1.0
+        return 0.0
 
 bss_holidays()
 

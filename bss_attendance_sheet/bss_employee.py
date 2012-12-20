@@ -41,10 +41,10 @@ class bss_employee(osv.osv):
 
     def ws_encode_employee(self, cr, uid, model, last_success, parameters, datetime_format):
         sheet_obj = self.pool.get('bss_attendance_sheet.sheet')
+        log_obj = self.pool.get('bss_attendance_sheet.attendance_log')
         att_obj = self.pool.get('hr.attendance')
         
         employee_list = []
-#        search_param = ['|', ('create_date', '>=', last_success), '&', ('write_date', '!=', False), ('write_date', '>=', last_success)]
         for employee in self.browse(cr, uid, self.search(cr, uid, [])):
             sheet = {'create_date': '1900-01-01 00:00:00',
                      'write_date': None,
@@ -64,6 +64,12 @@ class bss_employee(osv.osv):
                 if sheet.create_date >= last_success.isoformat(' ') or sheet.write_date and sheet.write_date >= last_success.isoformat(' '):
                     process = True
             
+            log_ids = log_obj.search(cr, uid, [('employee_id', '=', employee.id)], limit=1, order='create_date desc')
+            if log_ids:
+                log = log_obj.browse(cr, uid, log_ids)[0]
+                if log.create_date >= last_success.isoformat(' '):
+                    process = True
+
             att_ids = att_obj.search(cr, uid, [('employee_id', '=', employee.id)], limit=1, order='name desc')
             if att_ids:
                 attendance = att_obj.browse(cr, uid, att_ids)[0]

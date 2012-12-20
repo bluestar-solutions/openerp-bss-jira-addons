@@ -30,7 +30,7 @@
 	        		</group>
 
 					<separator string="Log" />
-	        		<field name="attendance_ids" colspan="4" nolabel="1" /> 
+	        		<field name="attendance_ids" colspan="4" nolabel="1" readonly="1" /> 
         		</sheet>
         		</form>            
             </field>
@@ -45,6 +45,7 @@
 	        		<field name="employee_id" />
 	        		<field name="total_attendance" widget="float_time" />
 	        		<field name="total_recorded" widget="float_time" />
+	        		<field name="holidays_time" widget="float_time" />  
 	        		<field name="expected_time" widget="float_time" />  
 	        		<field name="time_difference" widget="float_time" />
 	        		<field name="cumulative_difference" widget="float_time" />

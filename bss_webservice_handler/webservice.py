@@ -25,7 +25,7 @@ from datetime import date, datetime
 from time import mktime, strptime
 import json
 import httplib2
-import iso8601
+from dateutil import parser as dateparser
 
 WEBSERVICE_TYPE = [('GET','Get'),('PUSH', 'Push'),('PUSH_GET','Push Get Sync'),('GET_PUSH','Get Push Sync'),]
 #HTTP_METHOD= [('GET','GET'),('POST','POST')]
@@ -90,11 +90,11 @@ class webservice(osv.osv):
                 return datetime.fromtimestamp(string).time()
         elif format == 'ISO8601':
             if type=='date':
-                return iso8601.parse_date(string).date()
+                return dateparser.parse(string).date()
             elif type=='datetime':
-                return iso8601.parse_date(string)
+                return dateparser.parse(string)
             elif type=='time':
-                return iso8601.parse_date(string).time()
+                return dateparser.parse(string).time()
         elif format == 'SWISS':
             if type=='date':
                 return datetime.strptime(string,'%d.%m.%Y').date()
