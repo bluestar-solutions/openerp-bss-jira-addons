@@ -61,7 +61,7 @@
                     <field name="last_run" readonly="1"/>
                     <field name="last_success" readonly="1"/>
                     <newline />
-                    <field name="call_ids" mode="tree" nolabel="1" colspan = "4" readonly="1">
+                    <field name="call_ids" nolabel="1" colspan = "4" readonly="1">
                         <tree string="">
                             <field name="service_id" />
                             <field name="call_moment" />
@@ -69,7 +69,7 @@
                             <field name="status" />
                             <field name="reason" />                          
                         </tree>
-<!--                         <form string="">
+                         <form string="">
                             <field name="service_id" />
                             <field name="call_moment" />
                             <field name="success" />
@@ -80,7 +80,7 @@
                             <group string="Body" colspan="4">                
                                 <field name="body" colspan="4" nolabel="1"/>   
                             </group>                       
-                        </form> -->
+                        </form>
                     </field>
                 </form>
             </field>

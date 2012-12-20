@@ -39,6 +39,7 @@
                    'bss_attendance_view.xml',
                    
                    'bss_attendance_sheet_view.xml'],
+    'css': ['static/src/css/style.css'],
     'demo_xml': [],
     'test': [],
     'installable': True,

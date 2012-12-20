@@ -20,8 +20,29 @@
 ##############################################################################
 
 from openerp.osv import fields, osv
+from openerp.exceptions import AccessError
+from bss_webservice_handler.webservice import webservice 
+import json as nson
 
-class hr_attendance(osv.osv):
+WS_ACTIONS = {'IN': 'sign_in',
+              'OUT': 'sign_out'}
+
+WS_TYPES = {'STD': 'std',
+            'BREAK': 'break',
+            'MIDDAY': 'midday'}
+
+class bss_attendance_import_log(osv.osv):
+    _name = "bss_attendance_sheet.attendance_log"
+    
+    _columns = {
+        'website_id': fields.integer('Website ID', required=True),
+        'status': fields.selection([('OK', 'Success'), ('ERROR', 'Error')], 'Status', required=True),
+        'cause': fields.char('Cause', Size=255)
+    }    
+    
+bss_attendance_import_log()
+
+class bss_attendance(osv.osv):
     _inherit = "hr.attendance"
     
     def _attendance_sheet(self, cr, uid, ids, name, args, context=None):
@@ -39,13 +60,11 @@ class hr_attendance(osv.osv):
         return res
 
     _columns = {
-        'test': fields.boolean('Test'),
+        'create_date': fields.datetime(),
+        'write_date': fields.datetime(),
         'type': fields.selection([('std', 'Standard'), ('break', 'Break'), ('midday', 'Midday Break')], 'Type', required=True),
-        'attendance_sheet_id': fields.function(_attendance_sheet, type="many2one", obj="hr.attendance", method=True, string='Attendances', store={
-            'hr.attendance': (lambda self, cr, uid, ids, c={}: ids,
-                              ['test'], 
-                              1)
-        }),
+        'attendance_sheet_id': fields.function(_attendance_sheet, type="many2one", obj="hr.attendance", method=True, string='Attendances', store=True),
+        'website_id': fields.integer('Website ID')
     }
     _defaults = {
         'type': 'std'
@@ -66,9 +85,58 @@ class hr_attendance(osv.osv):
                     return False
         return True
 
-    _constraints = [(_altern_same_type, 'Error ! Sign out must follow Sign out with same type', ['type'])]
+    _constraints = [(_altern_same_type, 'Error ! Sign out must follow Sign out with same type', ['type'])]    
+    
+    def ws_decode_attendance(self, cr, uid, model, content, datetime_format):
+        log_obj = self.pool.get('bss_attendance_sheet.attendance_log')
+        
+        datas = nson.loads(content)
+        for data in datas :
+            log_ids = log_obj.search(cr, uid, [('website_id', '=', data['id'])])
+            if not log_ids:
+                try:
+                    self.create(cr, uid, {
+                        'name': webservice.str2date(data['time'], 'datetime', datetime_format),
+                        'type': WS_TYPES[data['attendance_type']],
+                        'action': WS_ACTIONS[data['status']],
+                        'action_desc': None,
+                        'employee_id': data['openerp_id'],      
+                        'website_id': data['id'],                         
+                    })
+                except Exception as e:
+                    cr.rollback()
+                    log_obj.create(cr, uid, {
+                        'website_id': data['id'],
+                        'status': 'ERROR',
+                        'cause': str(e),                  
+                    })
+                    cr.commit()
+                else:
+                    log_obj.create(cr, uid, {
+                        'website_id': data['id'],
+                        'status': 'OK',
+                        'cause': '',                   
+                    })
+                    cr.commit()          
+            
+        return True
+    
+    def ws_encode_attendance(self, cr, uid, model, last_success, parameters, datetime_format):
+        log_obj = self.pool.get('bss_attendance_sheet.attendance_log')
+        
+        attendance_list = []
+        search_param = [('create_date', '>=', last_success.isoformat(' '))]
 
-hr_attendance()
+        for log in log_obj.browse(cr, uid, log_obj.search(cr, uid, search_param)):
+            attendance_list.append({
+                "id": log.website_id,
+                "error": log.status if log.status == 'ERROR' else '',
+                "message": log.cause,
+            })
+
+        return nson.dumps(attendance_list) 
+
+bss_attendance()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

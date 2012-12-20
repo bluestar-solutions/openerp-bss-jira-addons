@@ -20,7 +20,6 @@
 ##############################################################################
 
 from openerp.osv import fields, osv
-import calendar
 
 DAY_FIELDS = {1: 'monday_hours',
               2: 'tuesday_hours',

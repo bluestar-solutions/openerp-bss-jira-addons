@@ -33,7 +33,10 @@ class bss_employee(osv.osv):
     _inherit = 'hr.employee'
     
     _columns = {
+        'create_date': fields.datetime(),
+        'write_date': fields.datetime(),
         'mobile_device_id': fields.char('Mobile Devide ID', size=128),
+        'last_cumul_check': fields.datetime('Last Cumul. Check'),
     }
 
     def ws_encode_employee(self, cr, uid, model, last_success, parameters, datetime_format):
@@ -41,22 +44,38 @@ class bss_employee(osv.osv):
         att_obj = self.pool.get('hr.attendance')
         
         employee_list = []
+#        search_param = ['|', ('create_date', '>=', last_success), '&', ('write_date', '!=', False), ('write_date', '>=', last_success)]
         for employee in self.browse(cr, uid, self.search(cr, uid, [])):
-            sheet = {'expected_time': 0.0,
+            sheet = {'create_date': '1900-01-01 00:00:00',
+                     'write_date': None,
+                     'expected_time': 0.0,
                      'total_recorded': 0.0,
                      'cumulative_difference': 0.0}
-            attendance = {'action': 'sign_out',
+            attendance = {'create_date': '1900-01-01 00:00:00',
+                          'write_date': None,
+                          'action': 'sign_out',
                           'type': 'std'}
+            
+            process = False
             
             sheet_ids = sheet_obj.search(cr, uid, [('employee_id', '=', employee.id)], limit=1, order='name desc')
             if sheet_ids:
-                sheet = sheet_obj.read(cr, uid, sheet_ids[0], ['expected_time', 'total_recorded', 'cumulative_difference'])
+                sheet = sheet_obj.browse(cr, uid, sheet_ids)[0]
+                if sheet.create_date >= last_success.isoformat(' ') or sheet.write_date and sheet.write_date >= last_success.isoformat(' '):
+                    process = True
             
             att_ids = att_obj.search(cr, uid, [('employee_id', '=', employee.id)], limit=1, order='name desc')
             if att_ids:
-                attendance = att_obj.read(cr, uid, att_ids[0], ['action', 'type'])
+                attendance = att_obj.browse(cr, uid, att_ids)[0]
+                if attendance.create_date >= last_success.isoformat(' ') or attendance.write_date and attendance.write_date >= last_success.isoformat(' '):
+                    process = True
             
-            print str(attendance)
+            if employee.create_date >= last_success.isoformat(' ') or employee.write_date and employee.write_date >= last_success.isoformat(' '):
+                process = True
+                
+            if not process:
+                continue
+             
             employee_list.append({
                 "openerp_id": employee.id,
                 "status": WS_ACTIONS[attendance['action']],

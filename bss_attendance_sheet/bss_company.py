@@ -21,13 +21,27 @@
 
 from openerp.osv import fields, osv
 
+class breaks_settings(osv.osv):
+    _name = 'bss_attendance_sheet.breaks_settings'
+
+    _columns = {
+        'company_id': fields.many2one('res.company', string='Company'),
+        'name': fields.date('Date from'),
+        'break_offered': fields.float('Offered'),
+        'minimum_break': fields.float('Minimum'),
+        'midday_break_from': fields.float('Midday From'),
+        'minimum_midday': fields.float('Midday Minimum'),
+    }
+    
+    _order_by = 'name desc'
+    
+breaks_settings()
+
 class bss_company(osv.osv):
     _inherit = 'res.company'
 
     _columns = {
-        'breaks_offered': fields.float('Breaks offered daily'),
-        'minimum_midday_break': fields.float('Minimum midday break'),
-        'midday_break_from': fields.float('Maximum working hours without midday Break'),
+        'breaks_settings_ids': fields.one2many('bss_attendance_sheet.breaks_settings', 'company_id', string='Breaks Settings'),
     }
     
 bss_company()

@@ -8,10 +8,16 @@
 			<field name="inherit_id" ref="base.view_company_form" />
 			<field name="arch" type="xml">
 				<xpath expr="//group[@name='account_grp']" position="after">
-					<group name="project_grp" string="Attendances">
-						<field name="breaks_offered" widget="float_time" />
-						<field name="minimum_midday_break" widget="float_time" />
-						<field name="midday_break_from" widget="float_time" />
+					<group name="project_grp" string="Attendances" col="1">
+						<field name="breaks_settings_ids">
+							<tree string="" editable="top" >
+								<field name="name" />
+								<field name="break_offered" widget="float_time" />
+								<field name="minimum_break" widget="float_time" />
+								<field name="midday_break_from" widget="float_time" />
+								<field name="minimum_midday" widget="float_time" />
+							</tree>
+						</field>
 					</group>
 				</xpath>
 			</field>

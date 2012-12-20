@@ -25,6 +25,7 @@ from datetime import date, datetime
 from time import mktime, strptime
 import json
 import httplib2
+import iso8601
 
 WEBSERVICE_TYPE = [('GET','Get'),('PUSH', 'Push'),('PUSH_GET','Push Get Sync'),('GET_PUSH','Get Push Sync'),]
 #HTTP_METHOD= [('GET','GET'),('POST','POST')]
@@ -76,7 +77,8 @@ class webservice(osv.osv):
     }
     _order = "priority, last_success"
     
-    def str2date(self, string, type, format):
+    @staticmethod
+    def str2date(string, type, format):
         if not string:
             return None
         if format == 'TIMESTAMP':
@@ -88,11 +90,11 @@ class webservice(osv.osv):
                 return datetime.fromtimestamp(string).time()
         elif format == 'ISO8601':
             if type=='date':
-                return datetime.strptime(string,'%Y-%m-%d').date()
+                return iso8601.parse_date(string).date()
             elif type=='datetime':
-                return datetime.strptime(string,'%Y-%m-%dT%H:%M:S')
+                return iso8601.parse_date(string)
             elif type=='time':
-                return datetime.strptime(string,'%H:%M:S').time()
+                return iso8601.parse_date(string).time()
         elif format == 'SWISS':
             if type=='date':
                 return datetime.strptime(string,'%d.%m.%Y').date()
@@ -102,7 +104,8 @@ class webservice(osv.osv):
                 return datetime.strptime(string,'%H:%M:S').time()
         return None
       
-    def date2str(self, string, type, format):
+    @staticmethod
+    def date2str(string, type, format):
         if not string:
             return None
         if format == 'TIMESTAMP':
@@ -155,7 +158,7 @@ class webservice(osv.osv):
                         encode_dict[key]=None
                 elif field_list[key]['type'] in ('date','datetime','time'):
                     if encode[key]:
-                        encode_dict[key]=self.date2str(encode[key],field_list[key]['type'],datetime_format)
+                        encode_dict[key]=webservice.date2str(encode[key],field_list[key]['type'],datetime_format)
                     else:
                         encode_dict[key]=None                        
                 else:
@@ -203,7 +206,7 @@ class webservice(osv.osv):
                 if key in field_list:
                     if decoded[key]:
                         if field_list[key]['type'] in ('date','datetime','time'):
-                            data[key]=self.str2date(decoded[key],field_list[key]['type'],datetime_format)
+                            data[key]=webservice.str2date(decoded[key],field_list[key]['type'],datetime_format)
                         else:
                             data[key]=decoded[key]
                     else:
@@ -225,7 +228,7 @@ class webservice(osv.osv):
                    "Accept": "application/json",
                    }  
         if service.last_success:
-            headers['Last-Success'] = self.date2str(service.last_success, 'datetime', 'ISO8601')
+            headers['Last-Success'] = webservice.date2str(service.last_success, 'datetime', 'ISO8601')
         logger.debug('Url : %s \\n', url)
         response, content = http.request(url, "GET", headers=headers)
         logger.debug('Response: %s \n%s', response, content)
@@ -255,7 +258,7 @@ class webservice(osv.osv):
 
         if service.last_success:
             last_success = datetime.strptime(service.last_success,"%Y-%m-%d %H:%M:%S.%f")
-            headers['Last-Success'] = self.date2str(service.last_success, 'datetime', 'ISO8601')
+            headers['Last-Success'] = webservice.date2str(service.last_success, 'datetime', 'ISO8601')
         else:
             last_success = datetime(1970,1,1) 
         if model and service.encode_method_name and hasattr(model, service.encode_method_name):
@@ -287,7 +290,6 @@ class webservice(osv.osv):
         
         try:
             service = self.browse(service_cr, uid, service_id, context={})[0] 
-            print str(service)
             logger.info('Model name is %s', service.model_name)
             model = self.pool.get(service.model_name)
             logger.info('Model  is %s', model)

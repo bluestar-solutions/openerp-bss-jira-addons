@@ -29,7 +29,7 @@ class webservice_call(osv.osv):
     _logger = logging.getLogger(_name)
 
     _columns= {
-        'service_id': fields.many2one('bss.webservice', 'Webservice', required=True),
+        'service_id': fields.many2one('bss.webservice', 'Webservice', required=True, ondelete='cascade'),
         'call_moment': fields.datetime('Call'),
         'success': fields.boolean('Success'),
         'status': fields.integer('Status'),
