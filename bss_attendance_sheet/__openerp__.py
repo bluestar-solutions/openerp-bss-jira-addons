@@ -28,9 +28,14 @@
     'author': 'bluestar solutions sàrl',
     'website': 'http://www.blues2.ch',
     'depends': ['hr_attendance',
-                'hr_holidays'],
+                'hr_timesheet_sheet',
+                'hr_contract',
+                'hr_holidays',
+                'bss_webservice_handler'],
     'init_xml': [],
-    'update_xml': ['data/bss.webservice.csv',
+    'update_xml': ['security/ir.model.access.csv',
+                   
+                   'data/bss.webservice.csv',
                    
                    'bss_employee_view.xml',
                    'bss_company_view.xml',

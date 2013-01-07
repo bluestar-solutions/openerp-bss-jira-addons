@@ -36,6 +36,8 @@ class bss_holidays(osv.osv):
             ids = [ids]
             
         for holiday in self.read(cr, uid, ids, ['id', 'date_from'], context=context):
+            if not holiday['date_from']:
+                holiday['date_from'] = '00:00:00'
             self.write(cr, uid, [holiday['id']], {'date_from': '%s %s' % (field_value, holiday['date_from'][-8:])} , context)
 
     def _date_to_day(self, cr, uid, ids, field_name, args, context=None):
@@ -50,6 +52,8 @@ class bss_holidays(osv.osv):
             ids = [ids]
 
         for holiday in self.read(cr, uid, ids, ['id', 'date_to'], context=context):
+            if not holiday['date_to']:
+                holiday['date_to'] = '00:00:00'
             self.write(cr, uid, [holiday['id']], {'date_to': '%s %s' % (field_value, holiday['date_to'][-8:])} , context)
     
     def _date_from_period(self, cr, uid, ids, field_name, args, context=None):
@@ -70,6 +74,8 @@ class bss_holidays(osv.osv):
         if field_value == 'half':
             value = '12:00:00+00:00'
         for holiday in self.read(cr, uid, ids, ['id', 'date_from'], context=context):
+            if not holiday['date_from']:
+                holiday['date_from'] = '1970-01-01'
             self.write(cr, uid, [holiday['id']], {'date_from': '%s %s' % (holiday['date_from'][:10], value)} , context)
 
     def _date_to_period(self, cr, uid, ids, field_name, args, context=None):
@@ -90,6 +96,8 @@ class bss_holidays(osv.osv):
         if field_value == 'half':
             value = '12:00:00'
         for holiday in self.read(cr, uid, ids, ['id', 'date_to'], context=context):
+            if not holiday['date_to']:
+                holiday['date_to'] = '1970-01-01'
             self.write(cr, uid, [holiday['id']], {'date_to': '%s %s UTC' % (holiday['date_to'][:10], value)} , context)
 
     _columns = {

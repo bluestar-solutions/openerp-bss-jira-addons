@@ -51,6 +51,9 @@ class bss_attendance(osv.osv):
     __logger = logging.getLogger(_inherit)
     
     def _attendance_sheet(self, cr, uid, ids, name, args, context=None):
+        if not isinstance(ids, list):
+            ids = [ids]
+            
         sheet_obj = self.pool.get('bss_attendance_sheet.sheet')
         
         res = {}
@@ -78,8 +81,8 @@ class bss_attendance(osv.osv):
         'write_date': fields.datetime(),
         'type': fields.selection([('std', 'Standard'), ('break', 'Break'), ('midday', 'Midday Break')], 'Type', required=True),
         'attendance_sheet_id': fields.function(_attendance_sheet, type="many2one", obj="bss_attendance_sheet.sheet", method=True, string='Sheet', store={
-            'bss_attendance_sheet.sheet' : (_get_sheet_attendance_ids, ['name'], 10),
-            'hr.attendance' : (lambda cr, uid, ids, context=None: ids, ['create_date'], 10)                                                                                                                                             
+            'bss_attendance_sheet.sheet' : (_get_sheet_attendance_ids, ['name'], 10),   
+            'hr.attendance': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),                                                                                                                                       
         }),
         'website_id': fields.integer('Website ID')
     }
@@ -166,11 +169,11 @@ class bss_attendance(osv.osv):
             ids = [ids]
         
         value_set = set()
-        for vals in self.read(cr, uid, ids, ['employee_id', 'name'], context):
+        for vals in self.read(cr, 1, ids, ['employee_id', 'name'], context):
             value_set.add((vals['employee_id'][0], vals['name'][:10]))
             
         for value in value_set:
-            sheet_obj._check_sheet(cr, uid, value[0], value[1], context)  
+            sheet_obj._check_sheet(cr, 1, value[0], value[1], context)  
     
     def _round_minute(self, vals):
         if 'name' in vals:

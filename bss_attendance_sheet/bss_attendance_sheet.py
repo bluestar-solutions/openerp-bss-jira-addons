@@ -19,7 +19,7 @@
 #
 ##############################################################################
 
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from openerp.osv import fields, osv
 from bss_contract_week import DAY_FIELDS
 
@@ -37,6 +37,8 @@ class bss_attendance_sheet(osv.osv):
         hol_obj = self.pool.get('hr.holidays')
              
         res = {}
+        if not isinstance(ids, list):
+            ids = [ids]
         for sheet in self.browse(cr, uid, ids, context=context):
             res.setdefault(sheet.id, {
                 'total_attendance': 0.0,
@@ -154,8 +156,8 @@ class bss_attendance_sheet(osv.osv):
     def _get_attendance_sheet_ids(self, cr, uid, ids, context=None):
         sheet_ids = []
         for attendance in self.browse(cr, uid, ids, context):
-            if attendance.attendance_sheet_id not in sheet_ids:
-                sheet_ids.append(attendance.attendance_sheet_id)
+            if attendance.attendance_sheet_id.id not in sheet_ids:
+                sheet_ids.append(attendance.attendance_sheet_id.id)
         return sheet_ids
 
     def _get_breaks_settings_sheet_ids(self, cr, uid, ids, context=None):
@@ -197,30 +199,36 @@ class bss_attendance_sheet(osv.osv):
         'attendance_ids': fields.one2many('hr.attendance', 'attendance_sheet_id', string="Attendances"),
         'total_attendance': fields.function(_total, type="float", method=True, string='Total Attendance', multi=True, store={
             'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'action'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),  
         }),
         'total_break': fields.function(_total, type="float", method=True, string='Total Breaks', multi=True, store={
             'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'action'], 10),
             'bss_attendance_sheet.breaks_settings' : (_get_breaks_settings_sheet_ids, ['company_id', 'name', 'break_offered', 'minimum_break'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),
         }),
         'total_midday': fields.function(_total, type="float", method=True, string='Midday Break', multi=True, store={
             'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'action'], 10),                                                        
             'bss_attendance_sheet.breaks_settings' : (_get_breaks_settings_sheet_ids, ['company_id', 'name', 'midday_break_from', 'minimum_midday'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),
         }),
         'total_recorded': fields.function(_total, type="float", method=True, string='Total Recorded', multi=True, store={
             'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'action'], 10),
             'bss_attendance_sheet.breaks_settings' : (_get_breaks_settings_sheet_ids, ['company_id', 'name', 'break_offered', 'minimum_break', 
                                                                                        'midday_break_from', 'minimum_midday'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),       
         }),
         'holidays_time': fields.function(_total, type="float", method=True, string='Holidays Time', multi=True, store={
             'bss_attendance_sheet.contract_week' : (_get_contract_week_sheet_ids, 
                                                     ['sunday_hours', 'monday_hours', 'tuesday_hours', 'wednesday_hours', 
                                                      'thursday_hours', 'friday_hours', 'saturday_hours'], 10),
             'hr.holidays' : (_get_holidays_sheet_ids, ['state'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),
         }),
         'expected_time': fields.function(_total, type="float", method=True, string='Expected Time', multi=True, store={
             'bss_attendance_sheet.contract_week' : (_get_contract_week_sheet_ids, 
                                                     ['sunday_hours', 'monday_hours', 'tuesday_hours', 'wednesday_hours', 
                                                      'thursday_hours', 'friday_hours', 'saturday_hours'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),
         }),
         'time_difference': fields.function(_total, type="float", method=True, string='Difference', multi=True, store={
             'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'action'], 10),
@@ -230,6 +238,7 @@ class bss_attendance_sheet(osv.osv):
                                                     ['sunday_hours', 'monday_hours', 'tuesday_hours', 'wednesday_hours', 
                                                      'thursday_hours', 'friday_hours', 'saturday_hours'], 10),
             'hr.holidays' : (_get_holidays_sheet_ids, ['state'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),
         }),
         'cumulative_difference': fields.function(_cumulative_difference, type="float", method=True, string='Cumulative Difference', store={
             'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'action'], 20),
@@ -239,14 +248,17 @@ class bss_attendance_sheet(osv.osv):
                                                     ['sunday_hours', 'monday_hours', 'tuesday_hours', 'wednesday_hours', 
                                                      'thursday_hours', 'friday_hours', 'saturday_hours'], 20),
             'hr.holidays' : (_get_holidays_sheet_ids, ['state'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),
         }),
     }
+    
+    _order = 'name asc'
     
     def _check_sheet(self, cr, uid, employee_id, day, context=None):  
         sheet_ids = self.search(cr, uid, [('employee_id', '=', employee_id), ('name', '=', day)], 
                                 limit=1, context=context)
         if not sheet_ids:
-            self.create(cr, uid, {'name': day, 'employee_id': employee_id}, context)
+            self.create(cr, 1, {'name': day, 'employee_id': employee_id}, context)
     
     def _check_all_sheet(self, cr, uid, day, context=None):
         emp_obj = self.pool.get('hr.employee')
