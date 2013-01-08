@@ -10,16 +10,16 @@ openerp.bss_partner_phonenumbers = function(instance) {
         },
         render_value: function() {
         	var field = this
-        	var conv = new instance.web.Model('bss.phonenumbers.converter');
-        	conv.call('format', [this.get('value')]).then(function (result) {
-            	if (!field.get("effective_readonly")) {
-        			field.$el.find('input').val(result.international || '');
-                } else {
+        	if (!field.get("effective_readonly")) {
+        		field.$el.find('input').val(this.get('value') || '');
+        	} else {
+            	var conv = new instance.web.Model('bss.phonenumbers.converter');
+            	conv.call('format', [this.get_value()]).then(function (result) {
                 	field.$el.find('a')
                             .attr('href', result.rfc3966)
                             .text(result.international || '');
-                }
-        	});
+            	});
+        	}
         },
         get_value: function() {
         	val = this.get('value')

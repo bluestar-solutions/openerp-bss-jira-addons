@@ -35,7 +35,7 @@ class bss_employee(osv.osv):
     _columns = {
         'create_date': fields.datetime(),
         'write_date': fields.datetime(),
-        'mobile_device_id': fields.char('Mobile Devide ID', size=128),
+        'mobile_device_id': fields.char('Mobile IMEI', size=128),
         'last_cumul_check': fields.datetime('Last Cumul. Check'),
     }
 

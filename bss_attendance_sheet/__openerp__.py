@@ -20,7 +20,7 @@
 ##############################################################################
 
 {
-    'name': 'Timesheet',
+    'name': 'Attendances Sheets',
     'version': '1.0-1',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
