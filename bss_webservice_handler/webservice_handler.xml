@@ -7,6 +7,7 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Webservices">
+                    <button name="run_service_multithread" string="Run Service" type="object" icon="gtk-execute"/>
                     <field name="name" />
                     <field name="service_type" />
                     <field name="ws_protocol" />
@@ -30,6 +31,8 @@
                     <field name="active" />
                     <field name="last_run" />
                     <field name="last_success" />
+                    <field name="is_running" />
+                    <field name="next_service" />
                 </tree>
             </field>
         </record>
@@ -62,6 +65,9 @@
                     <field name="active" />
                     <field name="last_run" readonly="1"/>
                     <field name="last_success" readonly="1"/>
+                    <button name="run_service_multithread" string="Run Service" type="object" />
+                    <field name="is_running" />
+                    <field name="next_service" />
                     <newline />
                     <field name="call_ids" mode="tree,form" nolabel="1" colspan = "4" readonly="1">
                         <tree>
