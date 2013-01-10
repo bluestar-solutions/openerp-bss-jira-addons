@@ -22,8 +22,11 @@
 from openerp.osv import fields, osv
 from bss_webservice_handler.webservice import webservice 
 import json as nson
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
+from bss_utils.logging_template import *
+from pytz import timezone
+import pytz
 
 WS_ACTIONS = {'IN': 'sign_in',
               'OUT': 'sign_out'}
@@ -31,6 +34,8 @@ WS_ACTIONS = {'IN': 'sign_in',
 WS_TYPES = {'STD': 'std',
             'BREAK': 'break',
             'MIDDAY': 'midday'}
+
+_logger = logging.getLogger(__name__)
 
 class bss_attendance_import_log(osv.osv):
     _name = "bss_attendance_sheet.attendance_log"
@@ -48,8 +53,6 @@ bss_attendance_import_log()
 class bss_attendance(osv.osv):
     _inherit = "hr.attendance"
     
-    __logger = logging.getLogger(_inherit)
-    
     def _attendance_sheet(self, cr, uid, ids, name, args, context=None):
         if not isinstance(ids, list):
             ids = [ids]
@@ -58,22 +61,33 @@ class bss_attendance(osv.osv):
         
         res = {}
         for attendance in self.browse(cr, uid, ids, context=context):
+            server_tz = pytz.UTC
+            employee_tz = timezone(attendance.employee_id.tz)
+            
             res[attendance.id] = None
+            attendance_time = server_tz.localize(datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S')).astimezone(employee_tz)
             sheet_ids = sheet_obj.search(cr, uid, [('employee_id', '=', attendance.employee_id.id), 
-                                                   ('name', '=', attendance.name[:10])], 
+                                                   ('name', '=', attendance_time.strftime('%Y-%m-%d'))], 
                                          limit=1, context=context)
             if sheet_ids:
                 res[attendance.id] = sheet_ids[0]
                 
+        _logger.debug('Update attendance_sheet_id of hr.attendance : %s' % str(res))
         return res
     
     def _get_sheet_attendance_ids(self, cr, uid, ids, context=None):
         attendance_obj = self.pool.get('hr.attendance')
         attendance_ids = set()
         for sheet in self.browse(cr, uid, ids, context):
-            attendance_ids.union(attendance_obj.search(cr, uid, [('employee_id', '=', sheet.employee_id.id),
-                                                                 ('name', '>=', '%s 00:00:00' % sheet.name),
-                                                                 ('name', '<=', '%s 24:00:00' % sheet.name)], context=context))
+            server_tz = pytz.UTC
+            employee_tz = timezone(sheet.employee_id.tz)
+            sheet_start = employee_tz.localize(datetime.strptime('%s 00:00:00' % sheet.name, '%Y-%m-%d %H:%M:%S')).astimezone(server_tz)
+            sheet_end = sheet_start + timedelta(days=1)
+            
+            attendance_ids = attendance_ids.union(set(attendance_obj.search(cr, uid, [('employee_id', '=', sheet.employee_id.id),
+                                                                                      ('name', '>=', sheet_start.strftime('%Y-%m-%d %H:%M:%S')),
+                                                                                      ('name', '<=', sheet_end.strftime('%Y-%m-%d %H:%M:%S'))], context=context)))
+        log_debug_trigger(_logger, 'hr.attendance', attendance_ids, 'bss_attendance_sheet.sheet')
         return list(attendance_ids)
 
     _columns = {
@@ -81,8 +95,8 @@ class bss_attendance(osv.osv):
         'write_date': fields.datetime(),
         'type': fields.selection([('std', 'Standard'), ('break', 'Break'), ('midday', 'Midday Break')], 'Type', required=True),
         'attendance_sheet_id': fields.function(_attendance_sheet, type="many2one", obj="bss_attendance_sheet.sheet", method=True, string='Sheet', store={
-            'bss_attendance_sheet.sheet' : (_get_sheet_attendance_ids, ['name'], 10),   
-            'hr.attendance': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),                                                                                                                                       
+            'bss_attendance_sheet.sheet' : (_get_sheet_attendance_ids, ['name'], 1),   
+            'hr.attendance': (lambda self, cr, uid, ids, context=None: ids, ['name'], 1),                                                                                                                                       
         }),
         'website_id': fields.integer('Website ID')
     }

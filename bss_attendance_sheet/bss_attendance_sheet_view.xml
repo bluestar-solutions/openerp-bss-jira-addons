@@ -1,37 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
+    
+       <record id="view_attendance_sheet_filter" model="ir.ui.view">
+            <field name="name">bss_attendance_sheet.sheet.select</field>
+            <field name="model">bss_attendance_sheet.sheet</field>
+            <field name="arch" type="xml">
+                <search string="Search Attendance Sheet">
+                	<filter icon="terp-go-today" string="This Month" name="this_month" domain="[('month','=',time.strftime('%%Y-%%m'))]" />
+                    <field name="employee_id"/>
+               </search>
+            </field>
+        </record>
 	
 	    <record id="view_attendance_sheet_form" model="ir.ui.view">
             <field name="name">bss_attendance_sheet.sheet.form</field>
             <field name="model">bss_attendance_sheet.sheet</field>
             <field name="arch" type="xml">
-            	<form string="Account Entry" version="7.0">
-                <sheet string="My sheet" >
-	        		<group colspan="4" col="3">
-		        		<group col="1">
-		                	<h1><field name="name" /></h1>
-		                	<h3><field name="employee_id" nolabel="1" /></h3>
-		        		</group>
-	        		
-		        		<group col="2">
-		        			<field name="total_attendance" widget="float_time" />
-		        			<field name="total_midday" widget="float_time" />
-		        			<field name="total_break" widget="float_time" />
-		        		</group>
+            	<form string="" version="7.0">
+	                <sheet string="" >
+		        		<group colspan="4" col="3">
+			        		<group col="1">
+			                	<h1><field name="name" /></h1>
+			                	<h3><field name="employee_id" nolabel="1" /></h3>
+			        		</group>
 		        		
-		        		<group col="2">
-		        			<field name="expected_time" widget="float_time" />
-		        			<field name="total_recorded" widget="float_time" />
-		        			<field name="time_difference" widget="float_time" />
-		        			<separator orientation="horizontal" colspan="2" />
-		        			<field name="cumulative_difference" widget="float_time" />
+			        		<group col="2">
+			        			<field name="total_attendance" widget="float_time" />
+			        			<field name="total_midday" widget="float_time" />
+			        			<field name="total_break" widget="float_time" />
+			        		</group>
+			        		
+			        		<group col="2">
+			        			<field name="expected_time" widget="float_time" />
+			        			<field name="total_recorded" widget="float_time" />
+			        			<field name="time_difference" widget="float_time" />
+			        			<separator orientation="horizontal" colspan="2" />
+			        			<field name="cumulative_difference" widget="float_time" />
+			        		</group>
 		        		</group>
-	        		</group>
-
-					<separator string="Log" />
-	        		<field name="attendance_ids" colspan="4" nolabel="1" readonly="1" /> 
-        		</sheet>
+	
+						<separator string="Log" />
+		        		<field name="attendance_ids" colspan="4" nolabel="1" readonly="1" /> 
+	        		</sheet>
         		</form>            
             </field>
         </record>	
@@ -59,7 +70,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <!-- <field name="view_id" eval="view_holiday_simple"/> -->
-            <!-- <field name="context">{'search_default_year':1, 'search_default_This Month':1, 'search_default_group_employee': 1, 'search_default_group_type': 1}</field> -->
+            <!-- <field name="context">{'search_default_year':1, 'search_default_this_month':1, 'search_default_group_employee': 1, 'search_default_group_type': 1}</field> -->
             <!-- <field name="domain">[('holiday_type','=','employee')]</field> -->
             <!-- <field name="search_view_id" ref="view_hr_holidays_filter"/> -->
         </record>

@@ -21,6 +21,7 @@
 
 from openerp.osv import fields, osv
 import json
+import pytz
 
 WS_ACTIONS = {'sign_in': 'IN',
               'sign_out': 'OUT'}
@@ -28,6 +29,9 @@ WS_ACTIONS = {'sign_in': 'IN',
 WS_TYPES = {'std': 'STD',
             'break': 'BREAK',
             'midday': 'MIDDAY'}
+
+def _tz_get(self,cr,uid, context=None):
+    return [(x, x) for x in pytz.all_timezones]
 
 class bss_employee(osv.osv):
     _inherit = 'hr.employee'
@@ -37,6 +41,8 @@ class bss_employee(osv.osv):
         'write_date': fields.datetime(),
         'mobile_device_id': fields.char('Mobile IMEI', size=128),
         'last_cumul_check': fields.datetime('Last Cumul. Check'),
+        'tz': fields.selection(_tz_get,  'Timezone', size=64, required=True,
+            help="The employee Timezone. Used to decide the time to switch day for consolidate attendance."),
     }
 
     def ws_encode_employee(self, cr, uid, model, last_success, parameters, datetime_format):

@@ -9,6 +9,7 @@
             <field name="arch" type="xml">
 	            <field name="active" position="after">
 	            	<field name="mobile_device_id" />
+	            	<field name="tz" />
 	            </field> 
             </field>
         </record>

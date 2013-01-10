@@ -38,6 +38,9 @@ class bss_phonenumbers_converter(osv.TransientModel):
         else :
             return None
         
+        if not number[0] or number[0] == '':
+            return None
+        
         return phonenumbers.parse(*number)  
     
     def parse(self, cr, uid, vals, context=None):

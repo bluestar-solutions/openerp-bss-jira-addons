@@ -22,6 +22,12 @@
 from datetime import datetime, timedelta
 from openerp.osv import fields, osv
 from bss_contract_week import DAY_FIELDS
+import logging
+from bss_utils.logging_template import *
+from pytz import timezone
+import pytz
+
+_logger = logging.getLogger(__name__)
 
 class bss_attendance_sheet(osv.osv):
     _name = "bss_attendance_sheet.sheet"
@@ -40,6 +46,11 @@ class bss_attendance_sheet(osv.osv):
         if not isinstance(ids, list):
             ids = [ids]
         for sheet in self.browse(cr, uid, ids, context=context):
+            _logger.debug('Recalculate total for sheet : %s/%s' % (sheet.employee_id.name, sheet.name))
+            
+            server_tz = pytz.UTC
+            employee_tz = timezone(sheet.employee_id.tz)
+            
             res.setdefault(sheet.id, {
                 'total_attendance': 0.0,
                 'total_break': 0.0,
@@ -48,7 +59,9 @@ class bss_attendance_sheet(osv.osv):
                 'expected_time': 0.0,
                 'time_difference': 0.0
             })
-            day_start = datetime.strptime('%s 00:00:00' % sheet.name, '%Y-%m-%d %H:%M:%S')
+            
+            day_start = employee_tz.localize(datetime.strptime('%s 00:00:00' % sheet.name, '%Y-%m-%d %H:%M:%S'))
+            day_end = day_start + timedelta(days=1)
 
             breaks = {'break_offered': 0.0,
                       'minimum_break': 0.0,
@@ -68,7 +81,7 @@ class bss_attendance_sheet(osv.osv):
             res[sheet.id]['expected_time'] = 0.0
             for contract in sheet.employee_id.contract_ids:
                 if contract.date_start <= sheet.name and (not contract.date_end or contract.date_end >= sheet.name):
-                    week_ids = week_obj.search(cr, uid, [('name', '<=', sheet.name)], limit=1, order='name desc', context=context)
+                    week_ids = week_obj.search(cr, uid, [('contract_id', '=', contract.id), ('name', '<=', sheet.name)], limit=1, order='name desc', context=context)
                     if week_ids:
                         day_field = DAY_FIELDS[datetime.strptime(sheet.name, '%Y-%m-%d').date().isoweekday()]
                         res[sheet.id]['expected_time'] += week_obj.read(cr, uid, week_ids, [day_field], context=context)[0][day_field]
@@ -78,33 +91,44 @@ class bss_attendance_sheet(osv.osv):
                 last_sign_in = day_start
                 last_arrival = day_start
                 last_pause_start = day_start
+                last_attendance = (None, None)
                 
                 attendance_time = timedelta(0)
                 day_time = timedelta(0)
                 break_time = timedelta(0)
                 midday_time = timedelta(0)
                 for attendance in sorted(sheet.attendance_ids, key=lambda a: a.name):
+                    _logger.debug('Process %s attendance : %s/%s' % (attendance.name, attendance.type, attendance.action))
                     if attendance.action == 'sign_in':
-                        last_sign_in = datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S')
+                        last_sign_in = server_tz.localize(datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S'))
                         
                         if attendance.type == 'std':
-                            last_arrival = datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S')
+                            last_arrival = server_tz.localize(datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S'))
                         elif attendance.type == 'break':
-                            break_diff = datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S') - last_pause_start
+                            break_diff = server_tz.localize(datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S')) - last_pause_start
                             if break_diff < timedelta(hours=breaks['minimum_break']):
                                 break_diff = timedelta(hours=breaks['minimum_break'])
                             break_time += break_diff
                         elif attendance.type == 'midday':
-                            midday_time += datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S') - last_pause_start
+                            midday_time += server_tz.localize(datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S')) - last_pause_start
                             
                     elif attendance.action ==  'sign_out':
-                        attendance_time += datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S') - last_sign_in
+                        attendance_time += server_tz.localize(datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S')) - last_sign_in
                         
                         if attendance.type == 'std':
-                            day_time += datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S') - last_arrival
+                            day_time += server_tz.localize(datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S')) - last_arrival
                         else:
-                            last_pause_start = datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S')
-                            
+                            last_pause_start = server_tz.localize(datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S'))
+                    last_attendance = (attendance.type, attendance.action)
+                    
+                if last_attendance != ('std', 'sign_out'):
+                    if sheet.name == datetime.today().date().isoformat():
+                        attendance_time += server_tz.localize(datetime.today()) - last_sign_in
+                        day_time += server_tz.localize(datetime.today()) - last_arrival
+                    else:
+                        attendance_time += day_end - last_sign_in
+                        day_time += day_end - last_arrival
+                         
                 if break_time >= timedelta(hours=breaks['break_offered']):
                     break_time -= timedelta(hours=breaks['break_offered'])
                 else:
@@ -152,13 +176,29 @@ class bss_attendance_sheet(osv.osv):
                     res[sheet.id] = cumul
         
         return res
+
+    def _month(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        
+        for sheet in self.browse(cr, uid, ids, context):
+            res[sheet.id] = sheet.name[:7]
+        
+        return res
     
     def _get_attendance_sheet_ids(self, cr, uid, ids, context=None):
-        sheet_ids = []
+        sheet_obj = self.pool.get('bss_attendance_sheet.sheet')
+        
+        sheet_ids = set()
         for attendance in self.browse(cr, uid, ids, context):
-            if attendance.attendance_sheet_id.id not in sheet_ids:
-                sheet_ids.append(attendance.attendance_sheet_id.id)
-        return sheet_ids
+            server_tz = pytz.UTC
+            employee_tz = timezone(attendance.employee_id.tz)
+            attendance_time = server_tz.localize(datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S')).astimezone(employee_tz)
+            sheet_ids = sheet_ids.union(set(sheet_obj.search(cr, uid, [('name', '=', attendance_time.strftime('%Y-%m-%d')), 
+                                                                       ('employee_id', '=', attendance.employee_id.id)], 
+                                                             order='name asc', context=context)))
+        
+        log_debug_trigger(_logger, 'bss_attendance_sheet.sheet', sheet_ids, 'hr.attendance')
+        return list(sheet_ids)
 
     def _get_breaks_settings_sheet_ids(self, cr, uid, ids, context=None):
         employee_obj = self.pool.get('hr.employee')
@@ -166,11 +206,13 @@ class bss_attendance_sheet(osv.osv):
         sheet_ids = set()
         for break_offered in self.browse(cr, uid, ids, context):
             employee_ids = employee_obj.search(cr, uid, [('company_id', '=', break_offered.company_id.id)], context=context)
-            for employee_id in employee_ids:         
+            for employee_id in employee_ids:
                 sheet_ids = sheet_ids.union(set(sheet_obj.search(cr, uid, [('name', '>=', break_offered.name), 
                                                                            ('employee_id', '=', employee_id)], 
                                                                  order='name asc', context=context)))
-        return sheet_ids
+                
+        log_debug_trigger(_logger, 'bss_attendance_sheet.sheet', sheet_ids, 'bss_attendance_sheet.breaks_settings')
+        return list(sheet_ids)
 
     def _get_contract_week_sheet_ids(self, cr, uid, ids, context=None):
         sheet_obj = self.pool.get('bss_attendance_sheet.sheet')
@@ -179,7 +221,9 @@ class bss_attendance_sheet(osv.osv):
             sheet_ids = sheet_ids.union(set(sheet_obj.search(cr, uid, [('name', '>=', contract_week.name), 
                                                                        ('employee_id', '=', contract_week.contract_id.employee_id.id)], 
                                                              order='name asc', context=context)))
-        return sheet_ids
+            
+        log_debug_trigger(_logger, 'bss_attendance_sheet.sheet', sheet_ids, 'bss_attendance_sheet.contract_week')
+        return list(sheet_ids)
 
     def _get_holidays_sheet_ids(self, cr, uid, ids, context=None):
         sheet_obj = self.pool.get('bss_attendance_sheet.sheet')
@@ -189,66 +233,71 @@ class bss_attendance_sheet(osv.osv):
                                                                        ('name', '<=', holidays.date_to_day), 
                                                                        ('employee_id', '=', holidays.employee_id.id)], 
                                                              order='name asc', context=context)))
-        return sheet_ids
+            
+        log_debug_trigger(_logger, 'bss_attendance_sheet.sheet', sheet_ids, 'hr.holidays')
+        return list(sheet_ids)
     
     _columns = {
         'name': fields.date('Date', readonly=True),
+        'month': fields.function(_month, type="char", method=True, string='Month', store={
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),  
+        }),
         'create_date': fields.datetime(),
         'write_date': fields.datetime(),
         'employee_id': fields.many2one('hr.employee', 'Employee', readonly=True),
         'attendance_ids': fields.one2many('hr.attendance', 'attendance_sheet_id', string="Attendances"),
         'total_attendance': fields.function(_total, type="float", method=True, string='Total Attendance', multi=True, store={
-            'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'action'], 10),
-            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),  
+            'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'employee_id', 'type', 'action', 'attendance_sheet_id'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 10),  
         }),
         'total_break': fields.function(_total, type="float", method=True, string='Total Breaks', multi=True, store={
-            'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'action'], 10),
+            'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'employee_id', 'type', 'action', 'attendance_sheet_id'], 10),
             'bss_attendance_sheet.breaks_settings' : (_get_breaks_settings_sheet_ids, ['company_id', 'name', 'break_offered', 'minimum_break'], 10),
-            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 10),
         }),
         'total_midday': fields.function(_total, type="float", method=True, string='Midday Break', multi=True, store={
-            'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'action'], 10),                                                        
+            'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'employee_id', 'type', 'action', 'attendance_sheet_id'], 10),                                                        
             'bss_attendance_sheet.breaks_settings' : (_get_breaks_settings_sheet_ids, ['company_id', 'name', 'midday_break_from', 'minimum_midday'], 10),
-            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 10),
         }),
         'total_recorded': fields.function(_total, type="float", method=True, string='Total Recorded', multi=True, store={
-            'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'action'], 10),
+            'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'employee_id', 'type', 'action', 'attendance_sheet_id'], 10),
             'bss_attendance_sheet.breaks_settings' : (_get_breaks_settings_sheet_ids, ['company_id', 'name', 'break_offered', 'minimum_break', 
                                                                                        'midday_break_from', 'minimum_midday'], 10),
-            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),       
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 10),       
         }),
         'holidays_time': fields.function(_total, type="float", method=True, string='Holidays Time', multi=True, store={
             'bss_attendance_sheet.contract_week' : (_get_contract_week_sheet_ids, 
                                                     ['sunday_hours', 'monday_hours', 'tuesday_hours', 'wednesday_hours', 
                                                      'thursday_hours', 'friday_hours', 'saturday_hours'], 10),
             'hr.holidays' : (_get_holidays_sheet_ids, ['state'], 10),
-            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 10),
         }),
         'expected_time': fields.function(_total, type="float", method=True, string='Expected Time', multi=True, store={
             'bss_attendance_sheet.contract_week' : (_get_contract_week_sheet_ids, 
                                                     ['sunday_hours', 'monday_hours', 'tuesday_hours', 'wednesday_hours', 
                                                      'thursday_hours', 'friday_hours', 'saturday_hours'], 10),
-            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 10),
         }),
         'time_difference': fields.function(_total, type="float", method=True, string='Difference', multi=True, store={
-            'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'action'], 10),
+            'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'employee_id', 'type', 'action', 'attendance_sheet_id'], 10),
             'bss_attendance_sheet.breaks_settings' : (_get_breaks_settings_sheet_ids, ['company_id', 'name', 'break_offered', 'minimum_break', 
                                                                                        'midday_break_from', 'minimum_midday'], 10),
             'bss_attendance_sheet.contract_week' : (_get_contract_week_sheet_ids, 
                                                     ['sunday_hours', 'monday_hours', 'tuesday_hours', 'wednesday_hours', 
                                                      'thursday_hours', 'friday_hours', 'saturday_hours'], 10),
             'hr.holidays' : (_get_holidays_sheet_ids, ['state'], 10),
-            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 10),
         }),
         'cumulative_difference': fields.function(_cumulative_difference, type="float", method=True, string='Cumulative Difference', store={
-            'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'action'], 20),
+            'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'employee_id', 'type', 'action', 'attendance_sheet_id'], 20),
             'bss_attendance_sheet.breaks_settings' : (_get_breaks_settings_sheet_ids, ['company_id', 'name', 'break_offered', 'minimum_break', 
                                                                                        'midday_break_from', 'minimum_midday'], 20),
             'bss_attendance_sheet.contract_week' : (_get_contract_week_sheet_ids, 
                                                     ['sunday_hours', 'monday_hours', 'tuesday_hours', 'wednesday_hours', 
                                                      'thursday_hours', 'friday_hours', 'saturday_hours'], 20),
             'hr.holidays' : (_get_holidays_sheet_ids, ['state'], 10),
-            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 10),
         }),
     }
     

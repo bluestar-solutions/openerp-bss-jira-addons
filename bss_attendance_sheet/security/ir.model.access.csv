@@ -1,2 +1,5 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-"access_bss_attendance_sheet_sheet","bss_attendance_sheet.sheet","model_bss_attendance_sheet_sheet","base.group_user",1,0,0,0
+"access_bss_attendance_sheet_sheet.user","bss_attendance_sheet.sheet","model_bss_attendance_sheet_sheet","base.group_user",1,0,0,0
+"access_bss_attendance_sheet_sheet.manager","bss_attendance_sheet.sheet","model_bss_attendance_sheet_sheet","base.group_hr_manager",1,1,1,1
+"bss_attendance_sheet_contract_week_user","bss_attendance_sheet.contract_week","model_bss_attendance_sheet_contract_week","base.group_user",1,0,0,0
+"bss_attendance_sheet_contract_week_manager","bss_attendance_sheet.contract_week","model_bss_attendance_sheet_contract_week","base.group_hr_manager",1,1,1,1
