@@ -90,15 +90,27 @@ class bss_attendance(osv.osv):
         log_debug_trigger(_logger, 'hr.attendance', attendance_ids, 'bss_attendance_sheet.sheet')
         return list(attendance_ids)
 
+    def _is_vector_phone(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for attendance in self.browse(cr, uid, ids, context=context):
+            res[attendance.id] = attendance.website_id and attendance.create_uid.id == 1 \
+                    and (not attendance.write_uid.id or attendance.write_uid.id == 1)
+                                
+        return res
+    
+
     _columns = {
-        'create_date': fields.datetime(),
-        'write_date': fields.datetime(),
+        'create_date': fields.datetime(readonly=True),
+        'create_uid': fields.many2one('res.users', 'User', readonly=True),
+        'write_date': fields.datetime(readonly=True),
+        'write_uid': fields.many2one('res.users', 'User', readonly=True),
         'type': fields.selection([('std', 'Standard'), ('break', 'Break'), ('midday', 'Midday Break')], 'Type', required=True),
         'attendance_sheet_id': fields.function(_attendance_sheet, type="many2one", obj="bss_attendance_sheet.sheet", method=True, string='Sheet', store={
             'bss_attendance_sheet.sheet' : (_get_sheet_attendance_ids, ['name'], 1),   
             'hr.attendance': (lambda self, cr, uid, ids, context=None: ids, ['name'], 1),                                                                                                                                       
         }),
-        'website_id': fields.integer('Website ID')
+        'website_id': fields.integer('Website ID'),
+        'is_vector_phone': fields.function(_is_vector_phone, type="boolean", method=True, string='Vector'),
     }
     
     _defaults = {
@@ -140,7 +152,7 @@ class bss_attendance(osv.osv):
                 try:
                     self.create(cr, uid, vals)
                 except Exception as e:
-                    self.__logger.error(str(e))
+                    _logger.error(str(e))
                     cr.rollback()
                     
                     log_obj.create(cr, uid, {

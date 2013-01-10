@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-08 16:41+0000\n"
-"PO-Revision-Date: 2013-01-08 16:41+0000\n"
+"POT-Creation-Date: 2013-01-10 15:48+0000\n"
+"PO-Revision-Date: 2013-01-10 15:48+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -30,15 +30,20 @@ msgstr "De"
 msgid "Log"
 msgstr "Journal"
 
+#: field:bss_attendance_sheet.contract_week,tuesday_hours:0
+#. module: bss_attendance_sheet
+msgid "Tuesday"
+msgstr "mardi"
+
 #: view:hr.contract:0
 #. module: bss_attendance_sheet
 msgid "Mon."
 msgstr "lun."
 
-#: field:bss_attendance_sheet.sheet,total_attendance:0
+#: field:bss_attendance_sheet.contract_week,saturday_hours:0
 #. module: bss_attendance_sheet
-msgid "Total Attendance"
-msgstr "Présence totale"
+msgid "Saturday"
+msgstr "samedi"
 
 #: field:bss_attendance_sheet.contract_week,thursday_hours:0
 #. module: bss_attendance_sheet
@@ -100,7 +105,7 @@ msgstr "Heures"
 #: field:bss_attendance_sheet.breaks_settings,minimum_midday:0
 #. module: bss_attendance_sheet
 msgid "Midday Minimum"
-msgstr "Paude de midi minimale"
+msgstr "Pause de midi minimale"
 
 #: field:bss_attendance_sheet.sheet,attendance_ids:0
 #: view:res.company:0
@@ -122,7 +127,12 @@ msgstr "lundi"
 #: selection:hr.attendance,type:0
 #. module: bss_attendance_sheet
 msgid "Midday Break"
-msgstr "Paude de midi"
+msgstr "Pause de midi"
+
+#: field:bss_attendance_sheet.sheet,total_attendance:0
+#. module: bss_attendance_sheet
+msgid "Total Attendance"
+msgstr "Présence totale"
 
 #: field:hr.attendance,type:0
 #. module: bss_attendance_sheet
@@ -159,10 +169,21 @@ msgstr "Pause"
 msgid "Thu."
 msgstr "jeu."
 
+#: field:hr.attendance,is_vector_phone:0
+#. module: bss_attendance_sheet
+msgid "Vector"
+msgstr "Vector"
+
 #: view:hr.contract:0
 #. module: bss_attendance_sheet
 msgid "Sun."
 msgstr "dim."
+
+#: field:hr.attendance,create_uid:0
+#: field:hr.attendance,write_uid:0
+#. module: bss_attendance_sheet
+msgid "User"
+msgstr "Utilisateur"
 
 #: model:ir.model,name:bss_attendance_sheet.model_bss_attendance_sheet_contract_week
 #. module: bss_attendance_sheet
@@ -183,6 +204,16 @@ msgstr "bss_attendance_sheet.attendance_log"
 #. module: bss_attendance_sheet
 msgid "Difference"
 msgstr "Différence"
+
+#: view:bss_attendance_sheet.sheet:0
+#. module: bss_attendance_sheet
+msgid "This Month"
+msgstr "Ce mois"
+
+#: view:bss_attendance_sheet.sheet:0
+#. module: bss_attendance_sheet
+msgid "Search Attendance Sheet"
+msgstr "Search Attendance Sheet"
 
 #: model:ir.model,name:bss_attendance_sheet.model_bss_attendance_sheet_breaks_settings
 #. module: bss_attendance_sheet
@@ -219,11 +250,10 @@ msgstr "Sociétés"
 msgid "Wednesday"
 msgstr "mercredi"
 
-#: field:bss_attendance_sheet.contract_week,contract_id:0
-#: model:ir.model,name:bss_attendance_sheet.model_hr_contract
+#: field:bss_attendance_sheet.sheet,expected_time:0
 #. module: bss_attendance_sheet
-msgid "Contract"
-msgstr "Contrat"
+msgid "Expected Time"
+msgstr "Temps attendu"
 
 #: constraint:hr.attendance:0
 #. module: bss_attendance_sheet
@@ -240,10 +270,11 @@ msgstr "Congé"
 msgid "Leave Request"
 msgstr "Demande de congé"
 
-#: field:bss_attendance_sheet.sheet,expected_time:0
+#: field:bss_attendance_sheet.contract_week,contract_id:0
+#: model:ir.model,name:bss_attendance_sheet.model_hr_contract
 #. module: bss_attendance_sheet
-msgid "Expected Time"
-msgstr "Temps attendu"
+msgid "Contract"
+msgstr "Contrat"
 
 #: selection:bss_attendance_sheet.attendance_log,status:0
 #. module: bss_attendance_sheet
@@ -260,6 +291,11 @@ msgstr "Les heures doivent être entre 00:00 et 24:00 !"
 msgid "Mode"
 msgstr "Mode"
 
+#: help:hr.employee,tz:0
+#. module: bss_attendance_sheet
+msgid "The employee Timezone. Used to decide the time to switch day for consolidate attendance."
+msgstr "Le fuseau horaire de l'employé. Utilisé pour décider de l'heure à laquelle la date change."
+
 #: view:hr.contract:0
 #. module: bss_attendance_sheet
 msgid "Sat."
@@ -269,16 +305,6 @@ msgstr "sam."
 #. module: bss_attendance_sheet
 msgid "Total Recorded"
 msgstr "Total enregistré"
-
-#: view:bss_attendance_sheet.sheet:0
-#. module: bss_attendance_sheet
-msgid "My sheet"
-msgstr "Ma feuille"
-
-#: view:bss_attendance_sheet.sheet:0
-#. module: bss_attendance_sheet
-msgid "Account Entry"
-msgstr "Entrée comptable"
 
 #: view:hr.contract:0
 #. module: bss_attendance_sheet
@@ -310,12 +336,12 @@ msgstr "ID du site Internet"
 #: view:hr.holidays:0
 #. module: bss_attendance_sheet
 msgid "days"
-msgstr "jours"
+msgstr "days"
 
-#: field:bss_attendance_sheet.contract_week,saturday_hours:0
+#: field:bss_attendance_sheet.sheet,month:0
 #. module: bss_attendance_sheet
-msgid "Saturday"
-msgstr "samedi"
+msgid "Month"
+msgstr "Month"
 
 #: view:hr.contract:0
 #. module: bss_attendance_sheet
@@ -355,12 +381,12 @@ msgstr "inconnu"
 #: view:hr.holidays:0
 #. module: bss_attendance_sheet
 msgid "Duration"
-msgstr "Durée"
+msgstr "Duration"
 
-#: field:bss_attendance_sheet.contract_week,tuesday_hours:0
+#: field:hr.employee,tz:0
 #. module: bss_attendance_sheet
-msgid "Tuesday"
-msgstr "mardi"
+msgid "Timezone"
+msgstr "Fuseau horaire"
 
 #: field:bss_attendance_sheet.sheet,total_break:0
 #. module: bss_attendance_sheet
@@ -385,7 +411,7 @@ msgstr "Offertes"
 #: view:hr.holidays:0
 #. module: bss_attendance_sheet
 msgid "The default duration interval between the start date and the end date is 8 hours.  Feel free to adapt it to your needs."
-msgstr "L'intervale par défaut entre la date de début et de fin est de 8 heures. Vous pouvez sans autre l'adapter à vos besoins."
+msgstr "The default duration interval between the start date and the end date is 8 hours.  Feel free to adapt it to your needs."
 
 #: field:hr.employee,mobile_device_id:0
 #. module: bss_attendance_sheet
