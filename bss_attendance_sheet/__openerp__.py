@@ -41,7 +41,9 @@
                    'bss_contract_view.xml',
                    'bss_attendance_view.xml',
                    
-                   'bss_attendance_sheet_view.xml'],
+                   'bss_attendance_sheet_view.xml',
+                   
+                   'bss_attendance_sheet_generate_view.xml'],
     'css': ['static/src/css/style.css'],
     'demo_xml': [],
     'test': [],

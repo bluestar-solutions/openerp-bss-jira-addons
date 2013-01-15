@@ -19,20 +19,10 @@
 #
 ##############################################################################
 
-# From openerp addons
+from datetime import datetime
 
-# From this project
-import bss_company
-import bss_employee
-import bss_holidays
-import bss_contract
-import bss_contract_week
-import bss_attendance
-import bss_attendance_sheet
-import bss_attendance_sheet_generate
+def orm_datetime(orm_datetime):
+    return datetime.strptime(orm_datetime, '%Y-%m-%d %H:%M:%S')
 
-#import report
-#import wizard
-#import report
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+def orm_date(orm_date):
+    return datetime.strptime(orm_date, '%Y-%m-%d')

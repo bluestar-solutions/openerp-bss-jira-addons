@@ -7,8 +7,12 @@
             <field name="model">bss_attendance_sheet.sheet</field>
             <field name="arch" type="xml">
                 <search string="Search Attendance Sheet">
-                	<filter icon="terp-go-today" string="This Month" name="this_month" domain="[('month','=',time.strftime('%%Y-%%m'))]" />
+                	<filter icon="terp-go-month" string="This Month" name="this_month" domain="[('month','=',time.strftime('%%Y-%%m'))]" />
                     <field name="employee_id"/>
+                    <group expand="0" string="Group By...">
+                        <filter name="group_employee" string="Employee" icon="terp-personal" domain="[]" context="{'group_by':'employee_id'}"/>
+                        <filter string="Month" icon="terp-go-month" domain="[]" context="{'group_by':'month'}"/>
+                    </group>
                </search>
             </field>
         </record>
@@ -51,7 +55,8 @@
             <field name="name">bss_attendance_sheet.sheet.tree</field>
             <field name="model">bss_attendance_sheet.sheet</field>
             <field name="arch" type="xml">
-            	<tree string="" colors="darkgreen:time_difference&gt;=0;darkred:time_difference&lt;0">
+            	<tree string="" colors="grey:total_attendance==0 and expected_time==0;darkgreen:time_difference&gt;=0;darkred:time_difference&lt;0;">
+	        		<field name="day_of_week" />
 	        		<field name="name" />
 	        		<field name="employee_id" />
 	        		<field name="total_attendance" widget="float_time" />
@@ -69,10 +74,7 @@
             <field name="res_model">bss_attendance_sheet.sheet</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <!-- <field name="view_id" eval="view_holiday_simple"/> -->
-            <!-- <field name="context">{'search_default_year':1, 'search_default_this_month':1, 'search_default_group_employee': 1, 'search_default_group_type': 1}</field> -->
-            <!-- <field name="domain">[('holiday_type','=','employee')]</field> -->
-            <!-- <field name="search_view_id" ref="view_hr_holidays_filter"/> -->
+            <field name="context">{'search_default_this_month':1}</field>
         </record>
 
         <menuitem

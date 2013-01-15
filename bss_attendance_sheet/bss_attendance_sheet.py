@@ -24,6 +24,7 @@ from openerp.osv import fields, osv
 from bss_contract_week import DAY_FIELDS
 import logging
 from bss_utils.logging_template import *
+from bss_utils.dateutils import orm_date
 from pytz import timezone
 import pytz
 
@@ -32,6 +33,42 @@ _logger = logging.getLogger(__name__)
 class bss_attendance_sheet(osv.osv):
     _name = "bss_attendance_sheet.sheet"
     _description = "Attendance Sheet"
+    
+    def init(self, cr):
+        cr.execute("""
+            -- Source : http://wiki.postgresql.org/wiki/First/last_(aggregate) 
+            
+            -- Create a function that always returns the first non-NULL item
+            CREATE OR REPLACE FUNCTION public.first_agg ( anyelement, anyelement )
+            RETURNS anyelement LANGUAGE sql IMMUTABLE STRICT AS $$
+                    SELECT $1;
+            $$;
+             
+            -- And then wrap an aggregate around it
+            CREATE AGGREGATE public.first (
+                    sfunc    = public.first_agg,
+                    basetype = anyelement,
+                    stype    = anyelement
+            );
+             
+            -- Create a function that always returns the last non-NULL item
+            CREATE OR REPLACE FUNCTION public.last_agg ( anyelement, anyelement )
+            RETURNS anyelement LANGUAGE sql IMMUTABLE STRICT AS $$
+                    SELECT $2;
+            $$;
+             
+            -- And then wrap an aggregate around it
+            CREATE AGGREGATE public.last (
+                    sfunc    = public.last_agg,
+                    basetype = anyelement,
+                    stype    = anyelement
+            );
+            """)
+        
+    def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
+        result = super(bss_attendance_sheet, self).fields_view_get(cr, uid, view_id, view_type, context=context, toolbar=toolbar, submenu=submenu)
+        result['context']['search_default_group_employee'] = 1
+        return result       
     
     @staticmethod
     def _td2str(td):
@@ -177,6 +214,14 @@ class bss_attendance_sheet(osv.osv):
         
         return res
 
+    def _day_of_week(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        
+        for sheet in self.browse(cr, uid, ids, context):
+            res[sheet.id] = orm_date(sheet.name).strftime('%a')
+        
+        return res
+
     def _month(self, cr, uid, ids, name, args, context=None):
         res = {}
         
@@ -236,9 +281,20 @@ class bss_attendance_sheet(osv.osv):
             
         log_debug_trigger(_logger, 'bss_attendance_sheet.sheet', sheet_ids, 'hr.holidays')
         return list(sheet_ids)
+
+    def _get_employee_sheet_ids(self, cr, uid, ids, context=None):
+        sheet_obj = self.pool.get('bss_attendance_sheet.sheet')
+        sheet_ids = set()
+        for employee in self.browse(cr, uid, ids, context):
+            sheet_ids = sheet_ids.union(set(sheet_obj.search(cr, uid, [('employee_id', '=', employee.id)], 
+                                                             order='name asc', context=context)))
+            
+        log_debug_trigger(_logger, 'bss_attendance_sheet.sheet', sheet_ids, 'hr.employee')
+        return list(sheet_ids)
     
     _columns = {
         'name': fields.date('Date', readonly=True),
+        'day_of_week': fields.function(_day_of_week, type="char", method=True, string='Day'),
         'month': fields.function(_month, type="char", method=True, string='Month', store={
             'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name'], 10),  
         }),
@@ -271,6 +327,7 @@ class bss_attendance_sheet(osv.osv):
                                                     ['sunday_hours', 'monday_hours', 'tuesday_hours', 'wednesday_hours', 
                                                      'thursday_hours', 'friday_hours', 'saturday_hours'], 10),
             'hr.holidays' : (_get_holidays_sheet_ids, ['state'], 10),
+            'hr.employee' : (_get_employee_sheet_ids, ['category_ids'], 10),
             'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 10),
         }),
         'expected_time': fields.function(_total, type="float", method=True, string='Expected Time', multi=True, store={
@@ -287,17 +344,19 @@ class bss_attendance_sheet(osv.osv):
                                                     ['sunday_hours', 'monday_hours', 'tuesday_hours', 'wednesday_hours', 
                                                      'thursday_hours', 'friday_hours', 'saturday_hours'], 10),
             'hr.holidays' : (_get_holidays_sheet_ids, ['state'], 10),
+            'hr.employee' : (_get_employee_sheet_ids, ['category_ids'], 10),
             'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 10),
         }),
-        'cumulative_difference': fields.function(_cumulative_difference, type="float", method=True, string='Cumulative Difference', store={
+        'cumulative_difference': fields.function(_cumulative_difference, type="float", group_operator="last" ,method=True, string='Cumulative Difference', store={
             'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'employee_id', 'type', 'action', 'attendance_sheet_id'], 20),
             'bss_attendance_sheet.breaks_settings' : (_get_breaks_settings_sheet_ids, ['company_id', 'name', 'break_offered', 'minimum_break', 
                                                                                        'midday_break_from', 'minimum_midday'], 20),
             'bss_attendance_sheet.contract_week' : (_get_contract_week_sheet_ids, 
                                                     ['sunday_hours', 'monday_hours', 'tuesday_hours', 'wednesday_hours', 
                                                      'thursday_hours', 'friday_hours', 'saturday_hours'], 20),
-            'hr.holidays' : (_get_holidays_sheet_ids, ['state'], 10),
-            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 10),
+            'hr.holidays' : (_get_holidays_sheet_ids, ['state'], 20),
+            'hr.employee' : (_get_employee_sheet_ids, ['category_ids'], 20),
+            'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 20),
         }),
     }
     
@@ -311,7 +370,7 @@ class bss_attendance_sheet(osv.osv):
     
     def _check_all_sheet(self, cr, uid, day, context=None):
         emp_obj = self.pool.get('hr.employee')
-        for employee_id in emp_obj.search(cr, uid, [], context):
+        for employee_id in emp_obj.search(cr, uid, [], context=context):
             self._check_sheet(cr, uid, employee_id, day, context)
 
 bss_attendance_sheet()

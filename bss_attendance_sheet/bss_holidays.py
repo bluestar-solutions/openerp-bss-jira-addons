@@ -24,6 +24,18 @@ from openerp.osv import fields, osv
 class bss_holidays(osv.osv):
     _inherit = "hr.holidays"
     
+    def _label(self, cr, uid, ids, field_name, args, context=None):
+        res={}
+        for holiday in self.browse(cr, uid, ids, context=context):
+            if holiday.user_id:
+                res[holiday.id] = '%s, %s' % (holiday.user_id.name, holiday.holiday_status_id)
+            elif holiday.category_id:
+                res[holiday.id] = '%s, %s' % (holiday.name, holiday.category_id.name)
+            else:
+                res[holiday.id] = '%s' % (holiday.name)
+            
+        return res
+
     def _date_from_day(self, cr, uid, ids, field_name, args, context=None):
         res={}
         for holiday in self.read(cr, uid, ids, ['id', 'date_from'], context=context):
@@ -99,8 +111,23 @@ class bss_holidays(osv.osv):
             if not holiday['date_to']:
                 holiday['date_to'] = '1970-01-01'
             self.write(cr, uid, [holiday['id']], {'date_to': '%s %s UTC' % (holiday['date_to'][:10], value)} , context)
+            
+    def default_get(self, cr, uid, fields, context=None):            
+        res = super(bss_holidays, self).default_get(cr, uid, fields, context)
+        print str(context)
+        
+        if 'default_date_from' in context:
+            res['date_from_day'] = context['default_date_from']
+            res['date_from_period'] = 'full'
+
+        if 'default_date_to' in context:
+            res['date_to_day'] = context['default_date_to']
+            res['date_to_period'] = 'full'
+
+        return res     
 
     _columns = {
+        'label': fields.function(_label, type="char", readonly=True, required=True),
         'date_from_day': fields.function(_date_from_day, fnct_inv=_date_from_day_inv, type="date", readonly=True, required=True,
                                          states={'draft':[('readonly',False)], 'confirm':[('readonly',False)]}),
         'date_to_day': fields.function(_date_to_day, fnct_inv=_date_to_day_inv, type="date", readonly=True, required=True,
