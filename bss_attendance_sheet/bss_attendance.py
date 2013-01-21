@@ -118,7 +118,7 @@ class bss_attendance(osv.osv):
         'type': 'std'
     }
 
-    def _altern_same_type(self, cr, uid, ids, context=None):
+    def _altern_same_type(self, cr, uid, ids, context=None):       
         for att in self.browse(cr, uid, ids, context=context):
             # search and browse for first previous and first next records
             prev_att_ids = self.search(cr, uid, [('employee_id', '=', att.employee_id.id), ('name', '<', att.name), ('action', 'in', ('sign_in', 'sign_out'))], limit=1, order='name DESC')
@@ -126,20 +126,22 @@ class bss_attendance(osv.osv):
             prev_atts = self.browse(cr, uid, prev_att_ids, context=context)
             next_atts = self.browse(cr, uid, next_add_ids, context=context)
 
-            if att.type != 'std':
-                if prev_atts and att.action == 'sign_in' and prev_atts[0].type != att.type:
+            if att.action == 'sign_in':
+                if prev_atts and att.action == 'sign_out' and prev_atts[0].type != att.type:
                     return False
-                if next_atts and att.action == 'sign_out' and next_atts[0].type != att.type:
+            if att.action == 'sign_out':
+                if next_atts and att.action == 'sign_in' and next_atts[0].type != att.type:
                     return False
         return True
 
     def _is_locked(self, cr, uid, ids, context=None):
+        return True
         for att in self.browse(cr, uid, ids, context=context):
             if (datetime.today() -  orm_datetime(att.name)).days > 3:
                 return False
         return True
 
-    _constraints = [(_altern_same_type, 'Error ! Sign out must follow Sign out with same type', ['type']),
+    _constraints = [(_altern_same_type, 'Error ! Sign in must follow Sign out with same type', ['type']),
                     (_is_locked, 'Error ! This date is locked', ['date'])]
     
     def ws_decode_attendance(self, cr, uid, model, content, datetime_format):

@@ -35,7 +35,10 @@
                 'bss_webservice_handler'],
     'init_xml': [],
     'update_xml': ['security/ir.model.access.csv',
-                   'security/ir_rule.xml',              
+                   'security/ir_rule.xml',
+                   
+                   'wizard/attendance_wizard_view.xml',
+                               
                    'bss_employee_view.xml',
                    'bss_company_view.xml',
                    'bss_holidays_view.xml',
@@ -46,6 +49,8 @@
                    
                    'bss_attendance_sheet_generate_view.xml'],
     'css': ['static/src/css/style.css'],
+    'js': ['static/src/js/resource.js'],
+    'qweb': ['static/src/xml/resource.xml'], 
     'demo_xml': [],
     'test': [],
     'installable': True,
