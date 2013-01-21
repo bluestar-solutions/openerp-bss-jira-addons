@@ -25,6 +25,7 @@ import json as nson
 from datetime import datetime, timedelta
 import logging
 from bss_utils.logging_template import *
+from bss_utils.dateutils import orm_datetime
 from pytz import timezone
 import pytz
 
@@ -132,13 +133,20 @@ class bss_attendance(osv.osv):
                     return False
         return True
 
-    _constraints = [(_altern_same_type, 'Error ! Sign out must follow Sign out with same type', ['type'])]
+    def _is_locked(self, cr, uid, ids, context=None):
+        for att in self.browse(cr, uid, ids, context=context):
+            if (datetime.today() -  orm_datetime(att.name)).days > 3:
+                return False
+        return True
+
+    _constraints = [(_altern_same_type, 'Error ! Sign out must follow Sign out with same type', ['type']),
+                    (_is_locked, 'Error ! This date is locked', ['date'])]
     
     def ws_decode_attendance(self, cr, uid, model, content, datetime_format):
         log_obj = self.pool.get('bss_attendance_sheet.attendance_log')
         
         datas = nson.loads(content)
-        for data in datas :
+        for data in sorted(datas, key=lambda k: k['name']) :
             log_ids = log_obj.search(cr, uid, [('website_id', '=', data['id'])])
             if not log_ids:
                 vals = {

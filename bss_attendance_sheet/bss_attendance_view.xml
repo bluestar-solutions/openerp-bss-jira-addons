@@ -26,7 +26,7 @@
         </record>
         
         <record id="view_attendance_who" model="ir.ui.view">
-            <field name="name">bss.attendance.tree</field>
+            <field name="name">bss.attendance.who.tree</field>
             <field name="model">hr.attendance</field>
             <field name="inherit_id" ref="hr_attendance.view_attendance_who"/>
             <field name="arch" type="xml">

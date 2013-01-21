@@ -45,6 +45,7 @@ class bss_attendance_sheet(osv.osv):
             $$;
              
             -- And then wrap an aggregate around it
+            DROP AGGREGATE IF EXISTS public.first(anyelement);
             CREATE AGGREGATE public.first (
                     sfunc    = public.first_agg,
                     basetype = anyelement,
@@ -58,17 +59,13 @@ class bss_attendance_sheet(osv.osv):
             $$;
              
             -- And then wrap an aggregate around it
+            DROP AGGREGATE IF EXISTS public.last(anyelement);
             CREATE AGGREGATE public.last (
                     sfunc    = public.last_agg,
                     basetype = anyelement,
                     stype    = anyelement
             );
-            """)
-        
-    def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
-        result = super(bss_attendance_sheet, self).fields_view_get(cr, uid, view_id, view_type, context=context, toolbar=toolbar, submenu=submenu)
-        result['context']['search_default_group_employee'] = 1
-        return result       
+            """)    
     
     @staticmethod
     def _td2str(td):
@@ -208,6 +205,9 @@ class bss_attendance_sheet(osv.osv):
                 cumul = 0.0
                 if prev_sheet_ids:
                     cumul = self.read(cr, uid, prev_sheet_ids[0], ['cumulative_difference'], context)['cumulative_difference']
+                else:
+                    cumul = employee.attendance_start
+                    
                 for sheet in self.browse(cr, uid, sheet_ids, context):                    
                     cumul += sheet.time_difference
                     res[sheet.id] = cumul
@@ -355,7 +355,7 @@ class bss_attendance_sheet(osv.osv):
                                                     ['sunday_hours', 'monday_hours', 'tuesday_hours', 'wednesday_hours', 
                                                      'thursday_hours', 'friday_hours', 'saturday_hours'], 20),
             'hr.holidays' : (_get_holidays_sheet_ids, ['state'], 20),
-            'hr.employee' : (_get_employee_sheet_ids, ['category_ids'], 20),
+            'hr.employee' : (_get_employee_sheet_ids, ['category_ids', 'attendance_start'], 20),
             'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 20),
         }),
     }

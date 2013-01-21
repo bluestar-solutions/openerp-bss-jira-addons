@@ -28,7 +28,7 @@ class bss_holidays(osv.osv):
         res={}
         for holiday in self.browse(cr, uid, ids, context=context):
             if holiday.user_id:
-                res[holiday.id] = '%s, %s' % (holiday.user_id.name, holiday.holiday_status_id)
+                res[holiday.id] = '%s, %s' % (holiday.user_id.name, holiday.holiday_status_id.name)
             elif holiday.category_id:
                 res[holiday.id] = '%s, %s' % (holiday.name, holiday.category_id.name)
             else:
@@ -39,7 +39,10 @@ class bss_holidays(osv.osv):
     def _date_from_day(self, cr, uid, ids, field_name, args, context=None):
         res={}
         for holiday in self.read(cr, uid, ids, ['id', 'date_from'], context=context):
-            res[holiday['id']] = holiday['date_from'][:10]
+            if holiday['date_from']:
+                res[holiday['id']] = holiday['date_from'][:10]
+            else:
+                res[holiday['id']] = None
             
         return res
     
@@ -50,12 +53,15 @@ class bss_holidays(osv.osv):
         for holiday in self.read(cr, uid, ids, ['id', 'date_from'], context=context):
             if not holiday['date_from']:
                 holiday['date_from'] = '00:00:00'
-            self.write(cr, uid, [holiday['id']], {'date_from': '%s %s' % (field_value, holiday['date_from'][-8:])} , context)
+            self.write(cr, uid, [holiday['id']], {'date_from': '%s %s' % (field_value[:10], holiday['date_from'][-8:])} , context)
 
     def _date_to_day(self, cr, uid, ids, field_name, args, context=None):
         res={}
         for holiday in self.read(cr, uid, ids, ['id', 'date_to'], context=context):
-            res[holiday['id']] = holiday['date_to'][:10]
+            if holiday['date_to']:
+                res[holiday['id']] = holiday['date_to'][:10]
+            else:
+                res[holiday['id']] = None
             
         return res
     
@@ -66,7 +72,7 @@ class bss_holidays(osv.osv):
         for holiday in self.read(cr, uid, ids, ['id', 'date_to'], context=context):
             if not holiday['date_to']:
                 holiday['date_to'] = '00:00:00'
-            self.write(cr, uid, [holiday['id']], {'date_to': '%s %s' % (field_value, holiday['date_to'][-8:])} , context)
+            self.write(cr, uid, [holiday['id']], {'date_to': '%s %s' % (field_value[:10], holiday['date_to'][-8:])} , context)
     
     def _date_from_period(self, cr, uid, ids, field_name, args, context=None):
         res={}

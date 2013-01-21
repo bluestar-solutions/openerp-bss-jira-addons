@@ -45,7 +45,7 @@
 		        		</group>
 	
 						<separator string="Log" />
-		        		<field name="attendance_ids" colspan="4" nolabel="1" readonly="1" /> 
+		        		<field name="attendance_ids" colspan="4" nolabel="1" /> 
 	        		</sheet>
         		</form>            
             </field>
@@ -56,6 +56,7 @@
             <field name="model">bss_attendance_sheet.sheet</field>
             <field name="arch" type="xml">
             	<tree string="" colors="grey:total_attendance==0 and expected_time==0;darkgreen:time_difference&gt;=0;darkred:time_difference&lt;0;">
+	        		<field name="month" invisible="1"/>
 	        		<field name="day_of_week" />
 	        		<field name="name" />
 	        		<field name="employee_id" />
@@ -70,18 +71,35 @@
         </record>	
 
         <record model="ir.actions.act_window" id="action_hr_attendance_report">
+            <field name="name">My Attendances</field>
+            <field name="res_model">bss_attendance_sheet.sheet</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('employee_id.user_id', '=', uid), ('name', '&lt;', time.strftime('%Y-%m-%d'))]</field>
+            <field name="context">{'search_default_this_month':1}</field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_hr_attendance_manager_report">
             <field name="name">Attendances Analysis</field>
             <field name="res_model">bss_attendance_sheet.sheet</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="context">{'search_default_this_month':1}</field>
+            <field name="domain">[('name', '&lt;', time.strftime('%Y-%m-%d'))]</field>
+            <field name="context">{'search_default_this_month':1, 'search_default_group_employee':1}</field>
         </record>
 
         <menuitem
-            name="Attendances Analysis" 
+            name="My Attendances" 
             id="menu_hr_attendance_report_tree" 
             action="action_hr_attendance_report" 
             parent="hr.menu_hr_reporting" sequence="4" />
+            
+        <menuitem
+            name="Attendances Analysis" 
+            id="menu_hr_attendance_manager_report_tree" 
+            action="action_hr_attendance_manager_report" 
+            parent="hr.menu_hr_reporting" sequence="4" 
+            groups="base.group_hr_user,base.group_hr_manager" />
 
     </data>
 </openerp>

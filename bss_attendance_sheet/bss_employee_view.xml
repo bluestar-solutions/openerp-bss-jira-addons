@@ -10,6 +10,7 @@
 	            <field name="active" position="after">
 	            	<field name="mobile_device_id" />
 	            	<field name="tz" />
+	            	<field name="attendance_start" widget="float_time" />
 	            </field> 
             </field>
         </record>

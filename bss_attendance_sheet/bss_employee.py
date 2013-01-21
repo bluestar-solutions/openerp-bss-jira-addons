@@ -44,6 +44,7 @@ class bss_employee(osv.osv):
         'last_cumul_check': fields.datetime('Last Cumul. Check'),
         'tz': fields.selection(_tz_get,  'Timezone', size=64, required=True,
             help="The employee Timezone. Used to decide the time to switch day for consolidate attendance."),
+        'attendance_start': fields.float('Attendance Start', required=True),
     }
     
     def _update_tags_holidays(self, cr, uid, ids):
@@ -78,13 +79,13 @@ class bss_employee(osv.osv):
             
     def create(self, cr, uid, data, context=None):
         employee_id = super(bss_employee, self).create(cr, uid, data, context=context)
-        if data['category_ids']:    
+        if 'category_ids' in data and data['category_ids']:    
             self._update_tags_holidays(cr, uid, [employee_id])
         return employee_id
 
     def write(self, cr, uid, ids, data, context=None):
         res = super(bss_employee, self).write(cr, uid, ids, data, context=context)
-        if data['category_ids']:
+        if 'category_ids' in data and data['category_ids']:
             self._update_tags_holidays(cr, uid, ids)
         return res
 
