@@ -326,20 +326,23 @@ class webservice(osv.osv):
     #                service_field = service_field_obj.browse(cr,uid,service_field_id)
     
             success = False
-            response = None
-            resp_content = None
+            get_response = None
+            get_resp_content = None
+            push_response = None
+            push_resp_content = None
+            
             if service.service_type == 'GET':
-                success, response, resp_content = self.service_get(service_cr, uid, service, model)
+                success, get_response, get_resp_content = self.service_get(service_cr, uid, service, model)
             elif service.service_type == 'PUSH':
-                success, response, resp_content = self.service_push(service_cr, uid, service, model) 
+                success, push_response, push_resp_content = self.service_push(service_cr, uid, service, model) 
             elif service.service_type == 'PUSH_GET':
-                success, response, resp_content = self.service_push(service_cr, uid, service, model)
+                success, push_response, push_resp_content = self.service_push(service_cr, uid, service, model)
                 if success:
-                    success, response, resp_content = self.service_get(service_cr, uid, service, model)
+                    success, get_response, get_resp_content = self.service_get(service_cr, uid, service, model)
             elif service.service_type == 'GET_PUSH':
-                success, response, resp_content = self.service_get(service_cr, uid, service, model) 
+                success, get_response, get_resp_content = self.service_get(service_cr, uid, service, model) 
                 if success:
-                    success, response, resp_content = self.service_push(service_cr, uid, service, model)  
+                    success, push_response, push_resp_content = self.service_push(service_cr, uid, service, model)  
                   
             if success and model and service.after_method_name and hasattr(model,service.after_method_name):
                 method = getattr(model,service.after_method_name)       
@@ -356,10 +359,14 @@ class webservice(osv.osv):
                     service_cr.commit()
                                
             call_param = {'service_id': service_id, 'call_moment': now, 'success': success}
-            if response:
-                call_param['status']= response.status
-                call_param['reason']=response.reason
-                call_param['body']= resp_content
+            if get_response:
+                call_param['get_status']= get_response.status
+                call_param['get_reason']=get_response.reason
+                call_param['get_body']= get_resp_content
+            if push_response:
+                call_param['push_status']= push_response.status
+                call_param['push_reason']=push_response.reason
+                call_param['push_body']= push_resp_content
                 
             call_obj.create(service_cr, uid, call_param)
             service_cr.commit()
@@ -377,7 +384,7 @@ class webservice(osv.osv):
         finally:    
             service_cr.close()  
         if success and service and service.next_service:
-            success = success and self._run_service(cr, uid, list(service.next_service), context)
+            success = success and self._run_service(cr, uid, [service.next_service.id], context)
         return success
 
     def _run_service(self, cr, uid, ids, context=None):

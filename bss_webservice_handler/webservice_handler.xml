@@ -74,19 +74,28 @@
                             <field name="service_id" />
                             <field name="call_moment" />
                             <field name="success" />
-                            <field name="status" />
-                            <field name="reason" />                          
+                            <field name="get_status" />
+                            <field name="get_reason" />                          
+                            <field name="push_status" />
+                            <field name="push_reason" />                          
                         </tree>
                         <form>
                             <field name="service_id" />
                             <field name="call_moment" />
                             <field name="success" />
-                            <field name="status" />
-                            <group string="Reason" colspan="4">
-                                <field name="reason" colspan="4" nolabel="1"/>   
+                            <field name="get_status" />
+                            <group string="Get Reason" colspan="4">
+                                <field name="get_reason" colspan="4" nolabel="1"/>   
                             </group>       
-                            <group string="Body" colspan="4">                
-                                <field name="body" colspan="4" nolabel="1"/>   
+                            <group string="Get Body" colspan="4">                
+                                <field name="get_body" colspan="4" nolabel="1"/>   
+                            </group>                       
+                            <field name="push_status" />
+                            <group string="Push Reason" colspan="4">
+                                <field name="push_reason" colspan="4" nolabel="1"/>   
+                            </group>       
+                            <group string="Push Body" colspan="4">                
+                                <field name="push_body" colspan="4" nolabel="1"/>   
                             </group>                       
                         </form>
                     </field>
