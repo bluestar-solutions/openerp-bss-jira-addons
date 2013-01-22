@@ -8,7 +8,6 @@
             <field name="inherit_id" ref="hr_attendance.view_attendance_form"/>
             <field name="arch" type="xml">
                 <field name="action" position="before">
-                	<field name="is_vector_phone" widget="device_type" />
                 	<field name="type" />
                 </field>
             </field>
