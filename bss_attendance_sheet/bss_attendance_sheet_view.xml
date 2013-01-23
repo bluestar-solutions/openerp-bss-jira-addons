@@ -8,6 +8,9 @@
             <field name="arch" type="xml">
                 <search string="Search Attendance Sheet">
                 	<filter icon="terp-go-month" string="This Month" name="this_month" domain="[('month','=',time.strftime('%%Y-%%m'))]" />
+                	<filter icon="terp-go-today" string="Hide Today" name="hide_today" domain="[('name','&lt;',time.strftime('%%Y-%%m-%%d'))]" />
+                	<filter icon="terp-go-today" string="This Month and Hide Today" name="this_month_and_hide_today" 
+                			domain="[('month','=',time.strftime('%%Y-%%m')),('name','&lt;',time.strftime('%%Y-%%m-%%d'))]" />
                     <field name="employee_id"/>
                     <group expand="0" string="Group By...">
                         <filter name="group_employee" string="Employee" icon="terp-personal" domain="[]" context="{'group_by':'employee_id'}"/>
@@ -75,7 +78,7 @@
             <field name="res_model">bss_attendance_sheet.sheet</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('employee_id.user_id', '=', uid), ('name', '&lt;', time.strftime('%Y-%m-%d'))]</field>
+            <field name="domain">[('employee_id.user_id', '=', uid)]</field>
             <field name="context">{'search_default_this_month':1}</field>
         </record>
         
@@ -84,8 +87,8 @@
             <field name="res_model">bss_attendance_sheet.sheet</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('name', '&lt;', time.strftime('%Y-%m-%d'))]</field>
-            <field name="context">{'search_default_this_month':1, 'search_default_group_employee':1}</field>
+            <field name="domain">[]</field>
+            <field name="context">{'search_default_this_month_and_hide_today':1, 'search_default_group_employee':1}</field>
         </record>
 
         <menuitem

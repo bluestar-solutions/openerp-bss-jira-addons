@@ -373,6 +373,11 @@ class bss_attendance_sheet(osv.osv):
         for employee_id in emp_obj.search(cr, uid, [], context=context):
             self._check_sheet(cr, uid, employee_id, day, context)
 
+    def _check_today(self, cr, uid, context=None):
+        emp_obj = self.pool.get('hr.employee')
+        for employee_id in emp_obj.search(cr, uid, [], context=context):
+            self._check_sheet(cr, uid, employee_id, datetime.today().isoformat()[:10], context)
+
 bss_attendance_sheet()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

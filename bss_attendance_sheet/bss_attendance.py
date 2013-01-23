@@ -135,7 +135,8 @@ class bss_attendance(osv.osv):
         return True
 
     def _is_locked(self, cr, uid, ids, context=None):
-        return True
+        
+        
         for att in self.browse(cr, uid, ids, context=context):
             if (datetime.today() -  orm_datetime(att.name)).days > 3:
                 return False

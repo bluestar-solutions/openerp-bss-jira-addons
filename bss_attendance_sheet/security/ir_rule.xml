@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <openerp>
   <data>
+  
     <record id="property_rule_holidays_employee" model="ir.rule">
         <field name="name">Employee Holidays</field>
         <field model="ir.model" name="model_id" ref="model_hr_holidays"/>
