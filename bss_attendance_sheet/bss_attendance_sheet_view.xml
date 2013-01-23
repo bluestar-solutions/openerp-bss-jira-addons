@@ -82,7 +82,7 @@
             <field name="context">{'search_default_this_month':1}</field>
         </record>
         
-        <record model="ir.actions.act_window" id="action_hr_attendance_manager_report">
+        <record model="ir.actions.act_window" id="action_hr_attendance_analysis_report">
             <field name="name">Attendances Analysis</field>
             <field name="res_model">bss_attendance_sheet.sheet</field>
             <field name="view_type">form</field>
@@ -99,10 +99,9 @@
             
         <menuitem
             name="Attendances Analysis" 
-            id="menu_hr_attendance_manager_report_tree" 
-            action="action_hr_attendance_manager_report" 
-            parent="hr.menu_hr_reporting" sequence="4" 
-            groups="base.group_hr_user,base.group_hr_manager" />
+            id="menu_hr_attendance_analysis_report_tree" 
+            action="action_hr_attendance_analysis_report" 
+            parent="hr.menu_hr_reporting" sequence="4" />
 
     </data>
 </openerp>
