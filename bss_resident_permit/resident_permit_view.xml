@@ -7,7 +7,7 @@
 			<field name="model">bluestar.resident_permit</field>
 			<field name="type">tree</field>
 			<field name="arch" type="xml">
-				<form>
+				<form string="">
 					<field name="name" />
 					<field name="description" />
 				</form>

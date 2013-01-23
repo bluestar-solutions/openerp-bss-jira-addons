@@ -89,16 +89,7 @@ class bss_attendance(osv.osv):
                                                                                       ('name', '>=', sheet_start.strftime('%Y-%m-%d %H:%M:%S')),
                                                                                       ('name', '<=', sheet_end.strftime('%Y-%m-%d %H:%M:%S'))], context=context)))
         log_debug_trigger(_logger, 'hr.attendance', attendance_ids, 'bss_attendance_sheet.sheet')
-        return list(attendance_ids)
-
-    def _is_vector_phone(self, cr, uid, ids, field_name, arg, context=None):
-        res = {}
-        for attendance in self.browse(cr, uid, ids, context=context):
-            res[attendance.id] = attendance.website_id and attendance.create_uid.id == 1 \
-                    and (not attendance.write_uid.id or attendance.write_uid.id == 1)
-                                
-        return res
-    
+        return list(attendance_ids)   
 
     _columns = {
         'create_date': fields.datetime(readonly=True),
@@ -111,7 +102,7 @@ class bss_attendance(osv.osv):
             'hr.attendance': (lambda self, cr, uid, ids, context=None: ids, ['name'], 1),                                                                                                                                       
         }),
         'website_id': fields.integer('Website ID'),
-        'is_vector_phone': fields.function(_is_vector_phone, type="boolean", method=True, string='Vector'),
+        'is_vector_phone': fields.boolean('Vector'),
     }
     
     _defaults = {
@@ -149,7 +140,7 @@ class bss_attendance(osv.osv):
         log_obj = self.pool.get('bss_attendance_sheet.attendance_log')
         
         datas = nson.loads(content)
-        for data in sorted(datas, key=lambda k: k['name']) :
+        for data in sorted(datas, key=lambda k: k['time']) :
             log_ids = log_obj.search(cr, uid, [('website_id', '=', data['id'])])
             if not log_ids:
                 vals = {
@@ -218,11 +209,15 @@ class bss_attendance(osv.osv):
         return vals
     
     def create(self, cr, uid, vals, context=None):
+        if 'website_id' in vals and vals['website_id']:
+            vals['is_vector_phone'] = 1
         res = super(bss_attendance,self).create(cr, uid, self._round_minute(vals), context)
         self._check_sheet(cr, uid, [res], context)
         return res
 
     def write(self, cr, uid, ids, vals, context=None):
+        if 'employee_id' in vals or 'name' in vals or 'type' in vals or 'action' in vals:
+            vals['is_vector_phone'] = 0
         res = super(bss_attendance,self).write(cr, uid, ids, self._round_minute(vals), context)
         self._check_sheet(cr, uid, ids, context)
         return res

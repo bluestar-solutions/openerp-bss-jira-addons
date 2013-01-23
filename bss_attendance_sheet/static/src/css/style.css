@@ -4,7 +4,7 @@
 	visibility: hidden;
 }
 
-span.bss_device_type_phone { 
+span.bss_device_type_computer { 
 	display:inline-block; 
 	width: 16px; height: 16px; 
 	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJT\
@@ -17,7 +17,7 @@ span.bss_device_type_phone {
 	llNiYjfgIsF4OiouzsLOHQzcXepqnJ/Y0MigmoaBPixIiIWIuIuQAHY2dv/KOV0bazaYJHCa3KPfG9zO4WrzM3NuXsYiEXChaxh9gDgPxS/AlNNnlWGAAAAAElFTkSuQmCC') 0 0px no-repeat #fff;
 }
 
-span.bss_device_type_computer { 
+span.bss_device_type_phone { 
     display:inline-block; 
 	width: 16px; height: 16px; 
 	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAABU0lEQVQ4jZWTvU4CQRSFz8wOUVhYICqFD\
