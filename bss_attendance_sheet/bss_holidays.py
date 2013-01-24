@@ -77,10 +77,13 @@ class bss_holidays(osv.osv):
     def _date_from_period(self, cr, uid, ids, field_name, args, context=None):
         res={}
         for holiday in self.read(cr, uid, ids, ['id', 'date_from'], context=context):
-            if holiday['date_from'][-8:] >= '12:00:00':
-                res[holiday['id']] = 'half'
+            if 'date_from' in holiday and holiday['date_from']:
+                if holiday['date_from'][-8:] >= '12:00:00':
+                    res[holiday['id']] = 'half'
+                else:
+                    res[holiday['id']] = 'full'
             else:
-                res[holiday['id']] = 'full'
+                res[holiday['id']] = None
             
         return res
     
@@ -99,10 +102,13 @@ class bss_holidays(osv.osv):
     def _date_to_period(self, cr, uid, ids, field_name, args, context=None):
         res={}
         for holiday in self.read(cr, uid, ids, ['id', 'date_to'], context=context):
-            if holiday['date_to'][-8:] <= '12:00:00':
-                res[holiday['id']] = 'half'
+            if 'date_to' in holiday and holiday['date_to']:
+                if holiday['date_to'][-8:] <= '12:00:00':
+                    res[holiday['id']] = 'half'
+                else:
+                    res[holiday['id']] = 'full'
             else:
-                res[holiday['id']] = 'full'
+                res[holiday['id']] = None
             
         return res
     

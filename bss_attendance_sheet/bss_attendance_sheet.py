@@ -360,7 +360,7 @@ class bss_attendance_sheet(osv.osv):
         }),
     }
     
-    _order = 'name asc'
+    _order = 'employee_id asc, name asc'
     
     def _check_sheet(self, cr, uid, employee_id, day, context=None):  
         sheet_ids = self.search(cr, uid, [('employee_id', '=', employee_id), ('name', '=', day)], 
