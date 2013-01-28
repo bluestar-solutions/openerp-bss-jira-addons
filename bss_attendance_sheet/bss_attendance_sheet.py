@@ -35,37 +35,19 @@ class bss_attendance_sheet(osv.osv):
     _description = "Attendance Sheet"
     
     def init(self, cr):
-        cr.execute("""
-            -- Source : http://wiki.postgresql.org/wiki/First/last_(aggregate) 
-            
-            -- Create a function that always returns the first non-NULL item
-            CREATE OR REPLACE FUNCTION public.first_agg ( anyelement, anyelement )
+        cr.execute("""                  
+            CREATE OR REPLACE FUNCTION public.empty_agg ( anyelement, anyelement )
             RETURNS anyelement LANGUAGE sql IMMUTABLE STRICT AS $$
-                    SELECT $1;
+                    SELECT 0.0;
             $$;
              
-            -- And then wrap an aggregate around it
-            DROP AGGREGATE IF EXISTS public.first(anyelement);
-            CREATE AGGREGATE public.first (
-                    sfunc    = public.first_agg,
+            DROP AGGREGATE IF EXISTS public.empty(anyelement);
+            CREATE AGGREGATE public.empty (
+                    sfunc    = public.empty_agg,
                     basetype = anyelement,
                     stype    = anyelement
             );
-             
-            -- Create a function that always returns the last non-NULL item
-            CREATE OR REPLACE FUNCTION public.last_agg ( anyelement, anyelement )
-            RETURNS anyelement LANGUAGE sql IMMUTABLE STRICT AS $$
-                    SELECT $2;
-            $$;
-             
-            -- And then wrap an aggregate around it
-            DROP AGGREGATE IF EXISTS public.last(anyelement);
-            CREATE AGGREGATE public.last (
-                    sfunc    = public.last_agg,
-                    basetype = anyelement,
-                    stype    = anyelement
-            );
-            """)    
+        """)    
     
     @staticmethod
     def _td2str(td):
@@ -347,7 +329,7 @@ class bss_attendance_sheet(osv.osv):
             'hr.employee' : (_get_employee_sheet_ids, ['category_ids'], 10),
             'bss_attendance_sheet.sheet': (lambda self, cr, uid, ids, context=None: ids, ['name', 'attendance_ids'], 10),
         }),
-        'cumulative_difference': fields.function(_cumulative_difference, type="float", group_operator="last", method=True, string='Cumulative Difference', store={
+        'cumulative_difference': fields.function(_cumulative_difference, type="float", group_operator="empty", method=True, string='Cumulative Difference', store={
             'hr.attendance' : (_get_attendance_sheet_ids, ['name', 'employee_id', 'type', 'action', 'attendance_sheet_id'], 20),
             'bss_attendance_sheet.breaks_settings' : (_get_breaks_settings_sheet_ids, ['company_id', 'name', 'break_offered', 'minimum_break', 
                                                                                        'midday_break_from', 'minimum_midday'], 20),
