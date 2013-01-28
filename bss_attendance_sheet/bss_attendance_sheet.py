@@ -38,7 +38,7 @@ class bss_attendance_sheet(osv.osv):
         cr.execute("""                  
             CREATE OR REPLACE FUNCTION public.empty_agg ( anyelement, anyelement )
             RETURNS anyelement LANGUAGE sql IMMUTABLE STRICT AS $$
-                    SELECT 0.0;
+                    SELECT 0.0::numeric;
             $$;
              
             DROP AGGREGATE IF EXISTS public.empty(anyelement);
@@ -138,12 +138,33 @@ class bss_attendance_sheet(osv.osv):
                     last_attendance = (attendance.type, attendance.action)
                     
                 if last_attendance != ('std', 'sign_out'):
-                    if sheet.name == datetime.today().date().isoformat():
-                        attendance_time += server_tz.localize(datetime.today()) - last_sign_in
-                        day_time += server_tz.localize(datetime.today()) - last_arrival
-                    else:
-                        attendance_time += day_end - last_sign_in
-                        day_time += day_end - last_arrival
+                    if last_attendance[1] == 'sign_in':
+                        if sheet.name == datetime.today().date().isoformat():
+                            attendance_time += server_tz.localize(datetime.today()) - last_sign_in
+                            day_time += server_tz.localize(datetime.today()) - last_arrival
+                        else:
+                            attendance_time += day_end - last_sign_in
+                            day_time += day_end - last_arrival
+                    elif last_attendance[0] == 'break':
+                        if sheet.name == datetime.today().date().isoformat():
+                            break_diff = server_tz.localize(datetime.today()) - last_pause_start
+                            if break_diff < timedelta(hours=breaks['minimum_break']):
+                                break_diff = timedelta(hours=breaks['minimum_break'])
+                            break_time += break_diff
+                            day_time += server_tz.localize(datetime.today()) - last_arrival
+                        else:
+                            break_diff = day_end - last_pause_start
+                            if break_diff < timedelta(hours=breaks['minimum_break']):
+                                break_diff = timedelta(hours=breaks['minimum_break'])
+                            break_time += break_diff
+                            day_time += day_end - last_arrival
+                    elif last_attendance[0] == 'midday':
+                        if sheet.name == datetime.today().date().isoformat():
+                            midday_time += server_tz.localize(datetime.today()) - last_pause_start
+                            day_time += server_tz.localize(datetime.today()) - last_arrival
+                        else:
+                            midday_time += day_end - last_pause_start
+                            day_time += day_end - last_arrival
                          
                 if break_time >= timedelta(hours=breaks['break_offered']):
                     break_time -= timedelta(hours=breaks['break_offered'])
@@ -349,6 +370,8 @@ class bss_attendance_sheet(osv.osv):
                                 limit=1, context=context)
         if not sheet_ids:
             self.create(cr, 1, {'name': day, 'employee_id': employee_id}, context)
+        else:
+            self.write(cr, 1, sheet_ids, {'name': day}, context)
     
     def _check_all_sheet(self, cr, uid, day, context=None):
         emp_obj = self.pool.get('hr.employee')
@@ -359,7 +382,7 @@ class bss_attendance_sheet(osv.osv):
         emp_obj = self.pool.get('hr.employee')
         for employee_id in emp_obj.search(cr, uid, [], context=context):
             self._check_sheet(cr, uid, employee_id, datetime.today().isoformat()[:10], context)
-
+            
 bss_attendance_sheet()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

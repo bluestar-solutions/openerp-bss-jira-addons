@@ -112,8 +112,10 @@ class bss_attendance(osv.osv):
     def _altern_same_type(self, cr, uid, ids, context=None):       
         for att in self.browse(cr, uid, ids, context=context):
             # deny same time event
-            same_att_ids = self.search(cr, uid, [('employee_id', '=', att.employee_id.id), ('name', '=', att.name), ('action', 'in', ('sign_in', 'sign_out'))])
+            same_att_ids = self.search(cr, uid, [('id', '!=', att.id), ('employee_id', '=', att.employee_id.id), 
+                                                 ('name', '=', att.name), ('action', 'in', ('sign_in', 'sign_out'))])
             if same_att_ids:
+                print str(same_att_ids)
                 return False
             
             # search and browse for first previous and first next records
@@ -122,7 +124,7 @@ class bss_attendance(osv.osv):
             prev_atts = self.browse(cr, uid, prev_att_ids, context=context)
             next_atts = self.browse(cr, uid, next_add_ids, context=context)
 
-            if att.action == 'sign_in':
+            if att.action == 'sign_in': 
                 if prev_atts and prev_atts[0].type != att.type:
                     return False
             if att.action == 'sign_out':

@@ -140,7 +140,7 @@ class bss_employee(osv.osv):
                 "name": employee.name,
                 "todo_time": sheet['expected_time'],
                 "done_time": sheet['total_recorded'],
-                "dt_todo_done": sheet['cumulative_difference']
+                "dt_todo_done": sheet['time_difference']
             })
         return json.dumps(employee_list) 
         
