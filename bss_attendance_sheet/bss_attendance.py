@@ -119,8 +119,13 @@ class bss_attendance(osv.osv):
                 return False
             
             # search and browse for first previous and first next records
-            prev_att_ids = self.search(cr, uid, [('employee_id', '=', att.employee_id.id), ('name', '<', att.name), ('action', 'in', ('sign_in', 'sign_out'))], limit=1, order='name DESC')
-            next_add_ids = self.search(cr, uid, [('employee_id', '=', att.employee_id.id), ('name', '>', att.name), ('action', 'in', ('sign_in', 'sign_out'))], limit=1, order='name ASC')
+            # except herself in case of update
+            prev_att_ids = self.search(cr, uid, [('id', '!=', att.id), ('employee_id', '=', att.employee_id.id), 
+                                                 ('name', '<', att.name), ('action', 'in', ('sign_in', 'sign_out'))], 
+                                       limit=1, order='name DESC')
+            next_add_ids = self.search(cr, uid, [('id', '!=', att.id), ('employee_id', '=', att.employee_id.id), 
+                                                 ('name', '>', att.name), ('action', 'in', ('sign_in', 'sign_out'))], 
+                                       limit=1, order='name ASC')
             prev_atts = self.browse(cr, uid, prev_att_ids, context=context)
             next_atts = self.browse(cr, uid, next_add_ids, context=context)
 

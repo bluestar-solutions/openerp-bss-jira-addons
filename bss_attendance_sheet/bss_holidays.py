@@ -140,15 +140,15 @@ class bss_holidays(osv.osv):
 
     _columns = {
         'label': fields.function(_label, type="char", readonly=True, required=True),
-        'date_from_day': fields.function(_date_from_day, fnct_inv=_date_from_day_inv, type="date", readonly=True, required=True,
+        'date_from_day': fields.function(_date_from_day, fnct_inv=_date_from_day_inv, type="date", readonly=True,
                                          states={'draft':[('readonly',False)], 'confirm':[('readonly',False)]}),
-        'date_to_day': fields.function(_date_to_day, fnct_inv=_date_to_day_inv, type="date", readonly=True, required=True,
+        'date_to_day': fields.function(_date_to_day, fnct_inv=_date_to_day_inv, type="date", readonly=True,
                                        states={'draft':[('readonly',False)], 'confirm':[('readonly',False)]}),
         'date_from_period': fields.function(_date_from_period, fnct_inv=_date_from_period_inv, type="selection",
-                                            selection=[('full', 'from morning'), ('half', 'from noon')], readonly=True, required=True,
+                                            selection=[('full', 'from morning'), ('half', 'from noon')], readonly=True,
                                             states={'draft':[('readonly',False)], 'confirm':[('readonly',False)]}),
         'date_to_period': fields.function(_date_to_period, fnct_inv=_date_to_period_inv, type="selection",
-                                          selection=[('full', 'until evening'), ('half', 'until noon')], readonly=True, required=True,
+                                          selection=[('full', 'until evening'), ('half', 'until noon')], readonly=True,
                                           states={'draft':[('readonly',False)], 'confirm':[('readonly',False)]}),
     }
     
