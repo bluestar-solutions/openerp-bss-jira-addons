@@ -32,9 +32,12 @@ class webservice_call(osv.osv):
         'service_id': fields.many2one('bss.webservice', 'Webservice', required=True, ondelete='cascade'),
         'call_moment': fields.datetime('Call'),
         'success': fields.boolean('Success'),
-        'status': fields.integer('Status'),
-        'reason': fields.text('Reason'),
-        'body': fields.text('Body'),
+        'get_status': fields.integer('Get Status'),
+        'push_status': fields.integer('Push Status'),
+        'get_reason': fields.text('Get Reason'),
+        'push_reason': fields.text('Push Reason'),
+        'get_body': fields.text('Get Body'),
+        'push_body': fields.text('Push Body'),
     }
     _defaults = {
         'call_moment': lambda *x: datetime.now(),
