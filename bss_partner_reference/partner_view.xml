@@ -3,9 +3,16 @@
 	<data>
 		
 		<record id="view_bluestar_partner_reference_config_form" model="ir.ui.view">
+<<<<<<< HEAD
 			<field name="name">bss.partner.reference.config.form</field>
 			<field name="model">bss.partner.reference.config</field>
 			<field name="inherit_id" ref="base.res_config_view_base" />
+=======
+			<field name="name">bluestar.partner.reference.config.form</field>
+			<field name="model">bluestar.config</field>
+			<field name="type">form</field>
+			<field name="inherit_id" ref="bss_config.view_bluestar_config_form" />
+>>>>>>> refs/remotes/origin/6.1.1.4
 			<field name="arch" type="xml">
 				<form position="attributes" version="7.0">
 					<attribute name="string">Migrate Partner Reference</attribute>

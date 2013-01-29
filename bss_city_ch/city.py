@@ -34,10 +34,10 @@ class bluestar_city(osv.osv):
                     
 bluestar_city()
 
-class bluestar_partner_address(osv.osv):
+class bluestar_partner(osv.osv):
 
-    _inherit = 'res.partner.address'
-    _description = "Bluestar City Partner Address"
+    _inherit = 'res.partner'
+    _description = "Bluestar City Partner"
 
     _columns = {
         'city_id': fields.many2one('bluestar.city', 
@@ -59,4 +59,4 @@ class bluestar_partner_address(osv.osv):
         
         return {'value': v} 
     
-bluestar_partner_address()
+bluestar_partner()

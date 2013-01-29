@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-from osv import osv, fields
+from openerp.osv import osv, fields
 
 CB_NUMBER_TYPES = [('1', 'Headquarters'),
                   ('2', 'Central'),

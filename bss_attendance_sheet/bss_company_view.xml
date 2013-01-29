@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<record id="bss_attendance_sheet_company" model="ir.ui.view">
+			<field name="name">res.company.bss_attendance_sheet.config</field>
+			<field name="model">res.company</field>
+			<field name="inherit_id" ref="base.view_company_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//group[@name='account_grp']" position="after">
+					<group name="project_grp" string="Attendances" col="1">
+						<field name="breaks_settings_ids">
+							<tree string="" editable="top" >
+								<field name="name" />
+								<field name="break_offered" widget="float_time" />
+								<field name="minimum_break" widget="float_time" />
+								<field name="midday_break_from" widget="float_time" />
+								<field name="minimum_midday" widget="float_time" />
+							</tree>
+						</field>
+					</group>
+				</xpath>
+			</field>
+		</record>
+
+	</data>
+</openerp>

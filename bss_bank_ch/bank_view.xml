@@ -7,7 +7,7 @@
 			<field name="model">bluestar.bank_ch</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
-				<form>
+				<form string="">
 					<field name="name" colspan="4" />
 					<field name="group" />
 					<field name="cb_number" />
@@ -42,7 +42,7 @@
 			<field name="model">bluestar.bank_ch</field>
 			<field name="type">tree</field>
 			<field name="arch" type="xml">
-				<tree>
+				<tree string="">
 					<field name="group" />
 					<field name="current_cb_number" />
 					<field name="branch_id" />

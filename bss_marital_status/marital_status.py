@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-from osv import osv, fields
+from openerp.osv import osv, fields
 
 class bluestar_marital_status(osv.osv):
 

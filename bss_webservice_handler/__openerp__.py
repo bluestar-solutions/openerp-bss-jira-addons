@@ -29,12 +29,12 @@
     "website": "http://www.blues2.ch",
     'depends': [],
     'init_xml': [],
-    'update_xml': ['module_data.xml'
+    'update_xml': ['module_data.xml',
                    
-                   ,'security/ws_handler_security.xml'
-                   ,'security/ir.model.access.csv'
+                   'security/ws_handler_security.xml',
+                   'security/ir.model.access.csv',
                    
-                   ,'webservice_handler.xml'],
+                   'webservice_handler.xml'],
     'demo_xml': [],
     'test': [],
     'installable': True,

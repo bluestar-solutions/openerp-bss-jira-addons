@@ -22,6 +22,7 @@ import time
 
 from openerp.osv import osv, fields
 from openerp.netsvc import logging
+from openerp.tools.translate import _
 from datetime import datetime, timedelta
 
 class webservice_handler(osv.osv_memory):
@@ -49,7 +50,7 @@ class webservice_handler(osv.osv_memory):
             'nextcall': time.strftime("%Y-%m-%d %H:%M:%S",
                                       datetime.now().timetuple()),  # in one minute
             'numbercall': -1,
-            'doall': True,
+            'doall': False,
             'model': 'bss.webservice_handler',
             'function': 'run_all',
             'args': '()',
@@ -79,6 +80,7 @@ class webservice_handler(osv.osv_memory):
             _logger.debug('Webservices started at %s', datetime.now())
         webservice_obj = self.pool.get('bss.webservice')
         service_ids = webservice_obj.search(cr, uid, [('active','=',True),('wait_next_minutes','>',0)], order='priority,last_run')
+        _logger.debug('service ids = %s ', str(service_ids))
         services = webservice_obj.browse(cr,uid,service_ids,context)
 
         for service in services:           

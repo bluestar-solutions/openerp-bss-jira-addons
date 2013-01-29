@@ -20,7 +20,7 @@
 ##############################################################################
 
 from openerp.osv import osv, fields
-from openerp import tools
+from openerp.addons.base.ir.ir_fields import ir_fields_converter
 import phonenumbers
 
 class bss_phonenumbers_converter(osv.TransientModel):
@@ -28,30 +28,36 @@ class bss_phonenumbers_converter(osv.TransientModel):
     _name = 'bss.phonenumbers.converter'
 
     @staticmethod
-    def _parse(number, country):           
-        if not number or number == '':
+    def _parse(vals):
+        if isinstance(vals, dict):
+            number = [vals['e164'], None]
+        elif vals:
+            number = vals.split(',')
+            if len(number) == 1:
+                number = [number[0], None]
+        else :
             return None
         
-        pn = phonenumbers.parse(number, country)  
-        return phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.E164)  
+        if not number[0] or number[0] == '':
+            return None
+        
+        return phonenumbers.parse(*number)  
     
-    def parse(self, cr, uid, number, country, context=None):
+    def parse(self, cr, uid, vals, context=None):
         try:
-            return bss_phonenumbers_converter._parse(number, country)
+            return bss_phonenumbers_converter._parse(vals)
         except phonenumbers.NumberParseException:
             return None
 
     @staticmethod
-    def _format(number):           
-        if not number or number == '':
+    def _format(vals):    
+        pn = bss_phonenumbers_converter._parse(vals)
+        if not pn:          
             return {
                 'e164': None,
                 'international': None,
                 'rfc3966': None,
-            } 
-        
-        print str(number)
-        pn = phonenumbers.parse(number, None)  
+            }   
         return {
             'e164': phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.E164),
             'international': phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.INTERNATIONAL),
@@ -77,34 +83,26 @@ class phonenumber(fields.char):
         fields.char.__init__(self, string=string, size=64, **args)
         
     def _symbol_set_char(self, vals):
-        if isinstance(vals, dict):
-            number = [vals['e164'], None]
-        elif vals:
-            number = vals.split(',')
-            if len(number) == 1:
-                number = [number[0], None]
-        else:
-            return None           
-            
+        vals = super(phonenumber, self)._symbol_set_char(vals)
         try:
-            res = bss_phonenumbers_converter._parse(*number)
+            res = bss_phonenumbers_converter._format(vals)
         except phonenumbers.NumberParseException:
             raise osv.except_osv('Error', 'Invalid phone number for field : %s' % self.string)
         
-        return res
+        return res['e164']
         
     def _symbol_get(self, number):
         result = {}
         if number:
-            pn = phonenumbers.parse(number, None)
-            result = phonenumbers.format_number(pn, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
+            pn = bss_phonenumbers_converter._format(number)
+            result = pn['international']
         else:
             result = None
         return result
-    
-    @classmethod
-    def _as_display_name(cls, field, cr, uid, obj, value, context=None):
-        return tools.ustr(value['international'])
+
+class pn_fields_converter(ir_fields_converter):
+    def _str_to_phonenumber(self, cr, uid, model, column, value, context=None):
+        return super(pn_fields_converter, self)._str_to_char(cr, uid, model, column, value, context)
 
 
 

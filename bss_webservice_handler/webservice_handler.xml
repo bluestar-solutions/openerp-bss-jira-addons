@@ -4,9 +4,9 @@
        <record model="ir.ui.view" id="bss_webservice_tree">
             <field name="name">bss.webservice.tree</field>
             <field name="model">bss.webservice</field>
-            <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Webservices">
+                    <button name="run_service_multithread" string="Run Service" type="object" icon="gtk-execute"/>
                     <field name="name" />
                     <field name="service_type" />
                     <field name="ws_protocol" />
@@ -30,13 +30,14 @@
                     <field name="active" />
                     <field name="last_run" />
                     <field name="last_success" />
+                    <field name="is_running" />
+                    <field name="next_service" />
                 </tree>
             </field>
         </record>
         <record model="ir.ui.view" id="bss_webservice_form">
             <field name="name">bss.webservice.form</field>
             <field name="model">bss.webservice</field>
-            <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Webservices">
                     <field name="name" />
@@ -62,25 +63,37 @@
                     <field name="active" />
                     <field name="last_run" readonly="1"/>
                     <field name="last_success" readonly="1"/>
+                    <button name="run_service_multithread" string="Run Service" type="object" />
+                    <field name="is_running" />
+                    <field name="next_service" />
                     <newline />
-                    <field name="call_ids" mode="tree,form" nolabel="1" colspan = "4" readonly="1">
-                        <tree>
+                    <field name="call_ids" nolabel="1" colspan = "4" readonly="1">
+                        <tree string="">
                             <field name="service_id" />
                             <field name="call_moment" />
                             <field name="success" />
-                            <field name="status" />
-                            <field name="reason" />                          
+                            <field name="get_status" />
+                            <field name="get_reason" />                          
+                            <field name="push_status" />
+                            <field name="push_reason" />                          
                         </tree>
-                        <form>
+                         <form string="">
                             <field name="service_id" />
                             <field name="call_moment" />
                             <field name="success" />
-                            <field name="status" />
-                            <group string="Reason" colspan="4">
-                                <field name="reason" colspan="4" nolabel="1"/>   
+                            <field name="get_status" />
+                            <group string="Get Reason" colspan="4">
+                                <field name="get_reason" colspan="4" nolabel="1"/>   
                             </group>       
-                            <group string="Body" colspan="4">                
-                                <field name="body" colspan="4" nolabel="1"/>   
+                            <group string="Get Body" colspan="4">                
+                                <field name="get_body" colspan="4" nolabel="1"/>   
+                            </group>                       
+                            <field name="push_status" />
+                            <group string="Push Reason" colspan="4">
+                                <field name="push_reason" colspan="4" nolabel="1"/>   
+                            </group>       
+                            <group string="Push Body" colspan="4">                
+                                <field name="push_body" colspan="4" nolabel="1"/>   
                             </group>                       
                         </form>
                     </field>
@@ -116,6 +129,6 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <menuitem action="bss_ws_act" id="menu_bss_ws_act" parent="base.next_id_10" sequence="20"/>
+        <menuitem action="bss_ws_act" id="menu_bss_ws_act" parent="base.menu_custom" sequence="23"/>
     </data>
 </openerp>

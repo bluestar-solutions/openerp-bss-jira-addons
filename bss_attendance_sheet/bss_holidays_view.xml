@@ -1,0 +1,88 @@
+<openerp>
+    <data> 
+    
+        <record id="view_hr_holidays_filter" model="ir.ui.view">
+            <field name="name">hr.holidays.filter</field>
+            <field name="model">hr.holidays</field>
+            <field name="inherit_id" ref="hr_holidays.view_hr_holidays_filter" />
+            <field name="arch" type="xml">
+            	<filter name="my_leaves" position="replace">
+            		<filter string="My Leaves" icon="terp-personal" name="my_leaves" domain="['|', ('employee_id', '=', False), ('employee_id.user_id','=', uid)]" help="My Leaves"/>
+            	</filter>
+            </field>
+        </record>
+
+        <record id="edit_holiday_new" model="ir.ui.view">
+            <field name="name">Leave Request</field>
+            <field name="model">hr.holidays</field>
+            <field name="inherit_id" ref="hr_holidays.edit_holiday_new" />
+            <field name="arch" type="xml">
+            	<sheet string="Leave Request" position="replace">
+					<sheet string="Leave Request">
+	                    <group>
+	                        <group>
+	                            <field name="name" attrs="{'readonly':[('state','!=','draft'),('state','!=','confirm')]}"/>
+	                            <field name="holiday_status_id" context="{'employee_id':employee_id}"/>
+	                            <field name="category_id" attrs="{'required':[('holiday_type','=','category')], 'invisible':[('holiday_type','=','employee')], 'readonly':[('state','!=','draft'), ('state','!=','confirm')]}"/>
+	                        </group>
+	                        <group>
+	                            <field name="holiday_type" on_change="onchange_type(holiday_type)" attrs="{'readonly':[('state','!=','draft')]}" width="130" string="Mode" groups="base.group_hr_user"/>
+	                            <field name="employee_id" attrs="{'required':[('holiday_type','=','employee')],'invisible':[('holiday_type','=','category')]}" on_change="onchange_employee(employee_id)" groups="base.group_hr_user"/>
+	                            <field name="department_id" attrs="{'readonly':[('holiday_type','=','category')]}" groups="base.group_hr_user"/>
+	                        </group>
+	                        <group colspan="4">
+	                        	<label for="number_of_days_temp" string="Duration" help="The default duration interval between the start date and the end date is 8 hours.  Feel free to adapt it to your needs."/>
+                        		<div>
+	                        		<div>
+			                        	<field name="date_from_day" required="1" nolabel="1" class="oe_inline"/>
+										<field name="date_from_period" required="1" nolabel="1" class="oe_inline"/>	 
+										<label string="-" class="oe_inline"/> 
+										<field name="date_to_day" required="1" nolabel="1" class="oe_inline"/>
+										<field name="date_to_period" required="1" nolabel="1" class="oe_inline"/>
+									</div>
+									<div>
+										<field name="number_of_days_temp" class="oe_inline"/> days
+									</div>
+								</div>				                    	
+	                        </group>
+	                    </group>
+	                </sheet>  
+	            </sheet>
+            </field>
+        </record>
+        
+        <record id="view_holiday_new_calendar" model="ir.ui.view">
+            <field name="name">Leave Request</field>
+            <field name="model">hr.holidays</field>
+            <field name="inherit_id" ref="hr_holidays.view_holiday_new_calendar" />
+            <field name="arch" type="xml">
+            	<field name="user_id" position="replace">
+            		<field name="label"/>
+            	</field>
+	            <field name="holiday_status_id" position="replace">
+	            </field>
+            </field>
+        </record>
+        
+		<record model="ir.actions.act_window" id="hr_holidays.open_ask_holidays">
+            <field name="name">Leave Requests</field>
+            <field name="res_model">hr.holidays</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="edit_holiday_new"/>
+            <field name="context">{'default_type': 'remove', 'search_default_my_leaves':1}</field>
+            <field name="domain">[('type','=','remove'), ('parent_id','=',False)]</field>
+            <field name="search_view_id" ref="view_hr_holidays_filter"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a new leave request.
+              </p><p>
+                Once you have recorded your leave request, it will be sent
+                to a manager for validation. Be sure to set the right leave
+                type (recuperation, legal holidays, sickness) and the exact
+                number of open days related to your leave.
+              </p>
+            </field>
+        </record>
+
+    </data>
+</openerp>

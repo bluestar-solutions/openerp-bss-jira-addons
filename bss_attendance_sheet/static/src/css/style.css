@@ -1,0 +1,28 @@
+
+.oe_attendance_status {
+	display: none;
+	visibility: hidden;
+}
+
+span.bss_device_type_computer { 
+	display:inline-block; 
+	width: 16px; height: 16px; 
+	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJT\
+	UUH3QEKDyk5ILY8WwAAAsZJREFUOMtVkrtrn2UcxT/f53neN2kbkthqRaMiqIXSWpx0EAdBBKcOunkZi4OLm1uhg+Lf4epgOwgOLipWKCIFRUuoiCZtUnNrLu/t+V4c8ls8+zkHzucIQETMm\
+	x2cybl188rQDwzjyDBW+r6nqsY4jtRpoh8nhq5Pb77x1r8iUktEnHj3g/e/Wltff3kcp87MMDNMFVXFTDEzXC3MHdVKyfnU2cfP/vBwf+3t0nVbZ9bW11/Z1keXnjl3ftlNEQFBQISIwM1wd\
+	8KdlDO/377F+tofr339zXePlZSL16l2K8+fX7ry4ZUYx0natom2aaVpSoiIqGpMWkVrjZMnTvLZp5/Lr9/+cqTqXkRARDg46Lh952/CjaZpaEohl4wgeDh1qhz2IxoiO7sHJAG1kTKOFQi6c\
+	eKvezskCZqmoZRCzhkC+qmyd9Bz2PV0k7N32JMEqVUpU1Ukgq6fWP3nAU2WWXshpYSZo+aoKaaGI0Q47s44VimqFY/jkfphoncl50wpmSQJRCDiOMAcciEiCHdUjTLVCTOXAFIS3GOGTvmfA\
+	hDIuYEIZkijjP2UTbXUSemOJgmtM4bHlpmP2eFESlCrYap5HKdcFhbmjxYfOW3D5i3i9k+YOW5KrZWcEk3bsLW1BQhNU2jblmF7h4XFZRZOzR8JwNWrnzy3+WDnbDWzruvbvd39Z7d2d78Id\
+	0cEVU3zc807T608sX3p4oXp+vUbuW3Kxs2bt1YF4NKrr5+rw/CkR+zPN+njtjTviRBVFSJo2hYBxmm88fCwu3Z6eWmRiPs///j9nQLw0oUXvhy67kWdXdbdGYZBnl5Zwd1YXf0TBFKau9yUc\
+	llNiYjfgIsF4OiouzsLOHQzcXepqnJ/Y0MigmoaBPixIiIWIuIuQAHY2dv/KOV0bazaYJHCa3KPfG9zO4WrzM3NuXsYiEXChaxh9gDgPxS/AlNNnlWGAAAAAElFTkSuQmCC') 0 0px no-repeat #fff;
+}
+
+span.bss_device_type_phone { 
+    display:inline-block; 
+	width: 16px; height: 16px; 
+	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAABU0lEQVQ4jZWTvU4CQRSFz8wOUVhYICqFD\
+	YmJNFsTCw29D2Drk1j7Hr6DhbGkcBtLKyv5SdCG3SW7Ljsz3LEQCNldCJzy3Hu+O3cyw5CR67pVx6k9L4guwGA4s4hbTIJMKETptd/vP2z2syyg17t5ImPuB18DSKXWftW20elcRkEwa3ueN\
+	135IgvQmhrN8w5ur++yJXy+v5S11jaA7QBjDJtEAseinQNMI42jjMdzXQdqb4AxxX5uhZWkIgSxBBHAGSA17Q8gWuDbT7ZO3VThCkrTXuGtgEN0EMCY/LkK70DOfoDhW0EhoWwiByiVLGXPJ\
+	1DjIdJUwg98VCoVNBt1nLVaahaq3YBUaqd71UXg+yAiNE9OEfr/LzeK50bESbwL4IxHo0duWS7RwgHAR+MJ54yRMUYLYX14nucAiABIoOA3ArAA1ADUAZSXQ1IAvwDCZXitP052keE95eWCA\
+	AAAAElFTkSuQmCC') 0 0px no-repeat #fff;
+}
