@@ -3,11 +3,8 @@
 	<data>
 
 		<!-- Top menu item -->
-		<menuitem name="Visit Report" id="bss_visit_report.menu_main"
-			sequence="50" />
-
-		<menuitem id="menu_visit_management" name="Visits"
-			parent="bss_visit_report.menu_main" sequence="10" />
+		<menuitem name="Visit Report" id="bss_visit_report.menu_visit_report"
+			parent="base.menu_main_pm" sequence="4" />
 
 	</data>
 </openerp>

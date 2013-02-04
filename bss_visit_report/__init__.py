@@ -22,7 +22,10 @@
 # From openerp addons
 
 # From this project
-
+import bss_project
+import bss_task
+import bss_visit
+import bss_visit_task_rel
 
 #import report
 #import wizard

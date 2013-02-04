@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+        <record model="ir.actions.act_window" id="action_visit_management">
+            <field name="name">Visits</field>
+            <field name="res_model">bss_visit_report.visit</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem
+            name="Visits" 
+            id="menu_visit_management" 
+            action="action_visit_management" 
+            parent="bss_visit_report.menu_visit_report" sequence="1" />
+
+	</data>
+</openerp>
