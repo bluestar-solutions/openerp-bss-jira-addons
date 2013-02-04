@@ -29,7 +29,7 @@
     'website': 'http://www.blues2.ch',
     'depends': ['project'],
     'init_xml': [],
-    'update_xml': ['bss_visit_report_vire.xml'],
+    'update_xml': ['bss_visit_report_view.xml'],
     'css': [],
     'js': [],
     'qweb': [], 
