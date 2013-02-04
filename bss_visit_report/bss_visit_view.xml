@@ -1,6 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 	<data>
+	
+		<!-- Visit -->
+        <record id="edit_visit" model="ir.ui.view">
+            <field name="name">bss_visit_report.visit</field>
+            <field name="model">bss_visit_report.visit</field>
+            <field name="arch" type="xml">
+                <form string="Project" version="7.0">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_colors='{"draft":"blue"}' readonly="1"/>
+                </header>
+                <sheet string="Visit">
+                    <div class="oe_title">
+                        <h1>
+                        	<label string="Visit Report" class="oe_inline" />
+                            <field name="ref" nolabel="True" class="oe_inline" />
+                        </h1>
+                        <h3>
+                        	<field name="customer_id" nolabel="True" />
+                        </h3>
+                    </div>
+                    <group>
+                   		<field name="project_id" />
+                   		<field name="project_members" invisible="1" />
+                   		<field name="user_id" />
+                   		<label for="date_from" string="Date" />
+                   		<span>
+                   			<label string="From" attrs="{'invisible': [('date_from', '=', False)]}" />
+                   			<field name="date_from" class="oe_inline" placeholder="From..." />
+                   			<label string="to" attrs="{'invisible': [('date_to', '=', False)]}" />
+                   			<field name="date_to" class="oe_inline" placeholder="To..." />
+                   		</span>  
+                   		<field name="time" />
+                   		<label for="time" string="Travel Time" /> 
+                   		<span>     
+                        	<field name="travel_time" class="oe_inline" />
+                        	<label string="for"/>
+                        	<field name="travel_zone" class="oe_inline" />
+                        </span>
+                    </group>
+                    <group name="initial_tasks" string="Initial Tasks">
+                        <field name="task_ids" nolabel="1" />
+                    </group>
+                    <group name="done_tasks" string="Done Tasks">
+                        <field name="task_ids" nolabel="1" />
+                    </group>
+                    <group name="undone_tasks" string="Undone Tasks">
+                        <field name="task_ids" nolabel="1" />
+                    </group>
+                </sheet>
+                </form>
+            </field>
+        </record>
 
         <record model="ir.actions.act_window" id="action_visit_management">
             <field name="name">Visits</field>

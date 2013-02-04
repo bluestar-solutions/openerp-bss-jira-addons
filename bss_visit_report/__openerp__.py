@@ -30,6 +30,9 @@
     'depends': ['project'],
     'init_xml': [],
     'update_xml': ['bss_visit_report_view.xml',
+                   'bss_visit_sequence.xml',
+                   
+                   'bss_visit_travel_zone_view.xml',
                    'bss_visit_view.xml',],
     'css': [],
     'js': [],

@@ -11,6 +11,6 @@
 
 	<pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
 		<path>${workspace}/openerp-7.0/server</path>
-		<path>${workspace}/openerp-7.0/addons</path>
+		<path>${workspace}/openerp-7.0</path>
 	</pydev_pathproperty>
 </pydev_project>
