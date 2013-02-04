@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<!-- Top menu item -->
+		<menuitem name="Visit Report" id="bss_visit_report.menu_main"
+			sequence="50" />
+
+		<menuitem id="menu_visit_management" name="Visits"
+			parent="bss_visit_report.menu_main" sequence="10" />
+
+	</data>
+</openerp>
