@@ -33,7 +33,9 @@
                    'bss_visit_sequence.xml',
                    
                    'bss_visit_travel_zone_view.xml',
-                   'bss_visit_view.xml',],
+                   'bss_visit_view.xml',
+                   
+                   'report/visit_report.xml'],
     'css': [],
     'js': [],
     'qweb': [], 

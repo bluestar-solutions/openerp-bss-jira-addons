@@ -2,6 +2,7 @@
 
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
+from bss_utils.dateutils import orm_date
 
 STATE = (('draft', 'Draft'),
          ('pending', 'Pending'),
@@ -53,11 +54,23 @@ class bss_visit(osv.osv):
         if not 'ref' in vals:
             vals['ref'] = self.pool.get('ir.sequence').get(cr, uid, 'bss_visit_report.visit.ref')
         return super(bss_visit, self).create(cr, uid, vals, context=context)
+
+    def write(self, cr, uid, ids, vals, context=None):
+        res = super(bss_visit, self).write(cr, uid, ids, vals, context=context)
+        if 'date' in vals:
+            for visit in self.browse(cr, uid, ids, context):
+                self.pool.get('project.task').write(cr, uid, [visit.linked_task_id.id], 
+                                                    {'name': 'Visite du %s' % orm_date(visit.date).strftime('%d.%m.%Y')}, context)
+        if 'user_id' in vals:
+            for visit in self.browse(cr, uid, ids, context):
+                self.pool.get('project.task').write(cr, uid, [visit.linked_task_id.id], 
+                                                    {'user_id': visit.user_id.id}, context)
+        return res
     
     def action_validate(self, cr, uid, ids, context=None):
         for visit in self.browse(cr, uid, ids, context):
             task_id = self.pool.get('project.task').create(cr, uid, {
-                'name': _('Visit'),
+                'name': 'Visite du %s' % orm_date(visit.date).strftime('%d.%m.%Y'),
                 'description': '',
                 'project_id': visit.project_id.id,
                 'user_id': visit.user_id.id,
@@ -73,8 +86,6 @@ class bss_visit(osv.osv):
                 raise osv.except_osv(_('Error'), _('Visit time must be greater than 00:00 !'))
             if not visit.travel_zone:
                 raise osv.except_osv(_('Error'), _('Travel zone must be set !'))
-            self.pool.get('project.task').write(cr, uid, visit.linked_task_id.id, 
-                                                {'user_id': visit.user_id.id}, context)
         self.write(cr, uid, ids, {'state': 'terminated'}, context)
 
     def action_reopen(self, cr, uid, ids, context=None):
