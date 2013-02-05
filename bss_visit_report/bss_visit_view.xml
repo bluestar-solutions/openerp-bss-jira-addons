@@ -46,8 +46,13 @@
 	                     	<field name="travel_zone" />
 	                    </group>
                     </group>
-                    <group name="tasks" string="Tasks">
-                        <field name="task_ids" nolabel="1" />
+                    <group name="tasks" string="Tasks" attrs="{'invisible': [('state', '=', 'draft')]}">
+                        <field name="visit_task_ids" nolabel="1">
+                            <tree string="Tasks" version="7.0" editable="bottom">
+                                <field name="task_id" />
+                                <field name="state" />
+                            </tree>
+                        </field>
                     </group>
                 </sheet>
                 </form>

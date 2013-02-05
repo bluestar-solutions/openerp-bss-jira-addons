@@ -34,7 +34,7 @@ class bss_visit(osv.osv):
                                           readonly=True),
         'user_id': fields.many2one('res.users', string="Visitor", readonly=False, states={'terminated': [('readonly', True)]}),
         'linked_task_id': fields.many2one('project.task', string="Visit Task", readonly=True),
-        'task_ids': fields.many2many('project.task', 'bss_visit_report_visit_initial_task_rel', 'visit_id', 'task_id', string='Initial Tasks',
+        'visit_task_ids': fields.one2many('bss_visit_report.visit_task', 'visit_id', string='Tasks',
                                      readonly=False, states={'terminated': [('readonly', True)]}),
         'state': fields.selection(STATE, string="State"),
         'date': fields.date("Date", readonly=False, states={'terminated': [('readonly', True)]}),
@@ -67,9 +67,21 @@ class bss_visit(osv.osv):
                 self.pool.get('project.task').write(cr, uid, [visit.linked_task_id.id], 
                                                     {'user_id': visit.user_id.id}, context)
         return res
+
+    def unlink(self, cr, uid, ids, context=None):
+        for visit in self.browse(cr, uid, ids, context):
+            self.pool.get('project.task').unlink(cr, uid, [visit.linked_task_id.id], context=context)
+        return super(bss_visit, self).unlink(cr, uid, ids, context=context)
     
     def action_validate(self, cr, uid, ids, context=None):
         for visit in self.browse(cr, uid, ids, context):
+            for task in visit.project_id.tasks:
+                if task.state != 'done' and task.state != 'cancelled':
+                    self.pool.get('bss_visit_report.visit_task').create(cr, uid, {
+                        'visit_id': visit.id,        
+                        'task_id': task.id,
+                        'state': 'todo',   
+                    }, context)
             task_id = self.pool.get('project.task').create(cr, uid, {
                 'name': 'Visite du %s' % orm_date(visit.date).strftime('%d.%m.%Y'),
                 'description': '',
@@ -118,10 +130,6 @@ class bss_visit(osv.osv):
         
         if project_id:
             project = self.pool.get('project.project').browse(cr, uid, project_id)
-            v['task_ids'] = []
-            for task in project.tasks:
-                if task.state != 'done' and task.state != 'cancelled':
-                    v['task_ids'].append(task.id)
             v['customer_id'] = project.partner_id.id
 
         return {'value': v} 
