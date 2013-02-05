@@ -32,23 +32,23 @@
                    			<label string="to" attrs="{'invisible': [('date_to', '=', False)]}" />
                    			<field name="date_to" class="oe_inline" placeholder="To..." />
                    		</span>  
-                   		<field name="time" />
+                   		<field name="time" widget="float_time" />
                    		<label for="time" string="Travel Time" /> 
                    		<span>     
-                        	<field name="travel_time" class="oe_inline" />
+                        	<field name="travel_time" class="oe_inline" widget="float_time" />
                         	<label string="for"/>
                         	<field name="travel_zone" class="oe_inline" />
                         </span>
                     </group>
                     <group name="initial_tasks" string="Initial Tasks">
-                        <field name="task_ids" nolabel="1" />
+                        <field name="initial_task_ids" nolabel="1" />
                     </group>
                     <group name="done_tasks" string="Done Tasks">
-                        <field name="task_ids" nolabel="1" />
+                        <field name="done_task_ids" nolabel="1" />
                     </group>
                     <group name="undone_tasks" string="Undone Tasks">
-                        <field name="task_ids" nolabel="1" />
-                    </group>
+                        <field name="undone_task_ids" />
+        			</group>
                 </sheet>
                 </form>
             </field>

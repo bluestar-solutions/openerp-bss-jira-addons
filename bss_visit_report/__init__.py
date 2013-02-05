@@ -26,7 +26,6 @@ import bss_project
 import bss_task
 import bss_visit_travel_zone
 import bss_visit
-import bss_visit_task_rel
 
 #import report
 #import wizard
