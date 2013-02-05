@@ -9,7 +9,13 @@
             <field name="arch" type="xml">
                 <form string="Project" version="7.0">
                 <header>
-                    <field name="state" widget="statusbar" statusbar_colors='{"draft":"blue"}' readonly="1"/>
+                	<button name="action_validate" string="Validate" type="object"
+                            states="draft" groups="base.group_user" class="oe_highlight" />
+                	<button name="action_terminate" string="Terminate" type="object"
+                            states="pending" groups="base.group_user" class="oe_highlight" />
+                	<button name="action_reopen" string="Re-open" type="object"
+                            states="terminated" groups="base.group_user" />
+                    <field name="state" widget="statusbar" statusbar_colors='{"draft":"blue"}' readonly="1" />
                 </header>
                 <sheet string="Visit">
                     <div class="oe_title">
@@ -22,33 +28,27 @@
                         </h3>
                     </div>
                     <group>
-                   		<field name="project_id" />
-                   		<field name="project_members" invisible="1" />
-                   		<field name="user_id" />
-                   		<label for="date_from" string="Date" />
-                   		<span>
-                   			<label string="From" attrs="{'invisible': [('date_from', '=', False)]}" />
-                   			<field name="date_from" class="oe_inline" placeholder="From..." />
-                   			<label string="to" attrs="{'invisible': [('date_to', '=', False)]}" />
-                   			<field name="date_to" class="oe_inline" placeholder="To..." />
-                   		</span>  
-                   		<field name="time" widget="float_time" />
-                   		<label for="time" string="Travel Time" /> 
-                   		<span>     
-                        	<field name="travel_time" class="oe_inline" widget="float_time" />
-                        	<label string="for"/>
-                        	<field name="travel_zone" class="oe_inline" />
-                        </span>
+	                    <group>
+	                   		<field name="project_id" on_change="onchange_project_id(project_id)" />
+	                   		<field name="user_id" />
+	                   		<field name="date" />
+	                   		<field name="linked_task_id" states="pending,terminated" />
+	                   	</group>
+	               		<group attrs="{'invisible': [('state', '=', 'draft')]}">
+	               			<label for="hour_from" string="Attendance" />
+	               			<span>
+		               			<field name="hour_from" widget="float_time" class="oe_inline" />
+		               			<label string="-" class="oe_inline" />
+		               			<field name="hour_to" widget="float_time" class="oe_inline" />
+	               			</span>
+	                		<field name="time" widget="float_time" />    
+	                     	<field name="travel_time" widget="float_time" />
+	                     	<field name="travel_zone" />
+	                    </group>
                     </group>
-                    <group name="initial_tasks" string="Initial Tasks">
-                        <field name="initial_task_ids" nolabel="1" />
+                    <group name="tasks" string="Tasks">
+                        <field name="task_ids" nolabel="1" />
                     </group>
-                    <group name="done_tasks" string="Done Tasks">
-                        <field name="done_task_ids" nolabel="1" />
-                    </group>
-                    <group name="undone_tasks" string="Undone Tasks">
-                        <field name="undone_task_ids" />
-        			</group>
                 </sheet>
                 </form>
             </field>
