@@ -2,6 +2,7 @@
 
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
+from datetime import timedelta
 from bss_utils.dateutils import orm_date
 
 STATE = (('draft', 'Draft'),
@@ -76,6 +77,7 @@ class bss_visit(osv.osv):
                 'user_id': visit.user_id.id,
                 'partner_id': visit.customer_id.id,
             }, context)
+            self.pool.get('project.task').do_open(cr, uid, [task_id], context)
             self.write(cr, uid, visit.id, {'state': 'pending', 'linked_task_id': task_id}, context)
 
     def action_terminate(self, cr, uid, ids, context=None):
@@ -86,9 +88,29 @@ class bss_visit(osv.osv):
                 raise osv.except_osv(_('Error'), _('Visit time must be greater than 00:00 !'))
             if not visit.travel_zone:
                 raise osv.except_osv(_('Error'), _('Travel zone must be set !'))
+            self.pool.get('project.task.work').create(cr, uid, {
+                'name': 'Intervention',
+                'date': '%s %s' % (visit.date, str(timedelta(hours=visit.hour_from))),
+                'task_id': visit.linked_task_id.id,
+                'hours': visit.time,
+                'user_id': visit.user_id.id,
+            }, context)
+            self.pool.get('project.task.work').create(cr, uid, {
+                'name': 'Déplacement',
+                'date': '%s %s' % (visit.date, str(timedelta(hours=visit.hour_from))),
+                'task_id': visit.linked_task_id.id,
+                'hours': visit.travel_time,
+                'user_id': visit.user_id.id,
+            }, context)
+            self.pool.get('project.task').do_close(cr, uid, [visit.linked_task_id.id], context)
         self.write(cr, uid, ids, {'state': 'terminated'}, context)
 
     def action_reopen(self, cr, uid, ids, context=None):
+        for visit in self.browse(cr, uid, ids, context):
+            self.pool.get('project.task').do_reopen(cr, uid, [visit.linked_task_id.id], context)
+            self.pool.get('project.task.work').unlink(cr, uid, 
+                                                      [work.id for work in visit.linked_task_id.work_ids], 
+                                                      context)
         self.write(cr, uid, ids, {'state': 'pending'}, context)
     
     def onchange_project_id(self, cr, uid, ids, project_id): 

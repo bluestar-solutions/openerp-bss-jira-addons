@@ -54,6 +54,21 @@
             </field>
         </record>
 
+        <record id="list_visit" model="ir.ui.view">
+            <field name="name">bss_visit_report.visit</field>
+            <field name="model">bss_visit_report.visit</field>
+            <field name="arch" type="xml">
+				<tree string="Project" version="7.0">
+					<field name="ref" />
+					<field name="customer_id" />
+					<field name="project_id" />
+					<field name="user_id" />
+					<field name="date" />
+					<field name="state" />
+                </tree>
+            </field>
+        </record>
+
         <record model="ir.actions.act_window" id="action_visit_management">
             <field name="name">Visits</field>
             <field name="res_model">bss_visit_report.visit</field>
