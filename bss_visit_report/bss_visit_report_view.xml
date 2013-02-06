@@ -5,6 +5,12 @@
 		<!-- Top menu item -->
 		<menuitem name="Visit Report" id="bss_visit_report.menu_visit_report"
 			parent="base.menu_main_pm" sequence="4" />
+		
+		<!-- Configuration menu item -->
+        <menuitem
+            name="Visits" 
+            id="menu_visit_configuration" 
+            parent="base.menu_definitions" sequence="1" />
 
 	</data>
 </openerp>

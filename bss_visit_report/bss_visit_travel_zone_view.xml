@@ -14,7 +14,7 @@
         </record>
 
         <record model="ir.actions.act_window" id="action_visit_travel_zone_management">
-            <field name="name">Visit Travel Zones</field>
+            <field name="name">Travel Zones</field>
             <field name="res_model">bss_visit_report.travel_zone</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree</field>
@@ -23,10 +23,10 @@
         </record>
 
         <menuitem
-            name="Visit Travel Zones" 
+            name="Travel Zones" 
             id="menu_visit_travel_zone_management" 
             action="action_visit_travel_zone_management" 
-            parent="base.menu_definitions" sequence="1" />
+            parent="bss_visit_report.menu_visit_configuration" sequence="1" />
 
 	</data>
 </openerp>
