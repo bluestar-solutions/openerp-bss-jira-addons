@@ -23,6 +23,7 @@ from openerp.osv import fields, osv
 import json
 import pytz
 from openerp import netsvc
+from datetime import datetime
 
 WS_ACTIONS = {'sign_in': 'IN',
               'sign_out': 'OUT'}
@@ -96,6 +97,8 @@ class bss_employee(osv.osv):
         
         employee_list = []
         for employee in self.browse(cr, uid, self.search(cr, uid, [])):
+            sheet_obj._check_sheet(cr, uid, employee.id, datetime.today().isoformat()[:10])
+            
             sheet = {'create_date': '1900-01-01 00:00:00',
                      'write_date': None,
                      'expected_time': 0.0,
