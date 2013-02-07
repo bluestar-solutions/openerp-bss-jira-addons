@@ -1,7 +1,83 @@
-body { 
-	font-family: helvetica; 
-	font-size: 10pt; 
-	border: 0; 
-	margin: 0;
-    background: transparent;
+body {
+font-family:helvetica;
+font-size:12;
 }
+
+
+.dest_address {
+margin-left:60%;
+font-size:12;
+}
+.header {
+margin-left:0;
+text-align:left;
+width:300px;
+font-size:12;
+}
+
+.title {
+font-size:16;
+font-weight: bold;
+
+}
+
+
+.basic_table{
+text-align:center;
+border:1px solid lightGrey;
+border-collapse: collapse;
+}
+.basic_table td {
+border:1px solid lightGrey;
+font-size:12;
+
+
+}
+
+.list_table {
+border-color:black;
+text-align:center;
+border-collapse: collapse;
+
+}
+.list_table td {
+border-color:gray;
+border-top:1px solid gray;
+text-align:left;
+font-size:12;
+padding-right:3px
+padding-left:3px
+padding-top:3px
+padding-bottom:3px
+}
+
+.list_table th {
+border-bottom:2px solid black;
+text-align:left;
+font-size:12;
+font-weight:bold;
+padding-right:3px
+padding-left:3px
+}
+
+.list_tabe thead {
+    display:table-header-group;
+}
+
+
+.total {
+width:100%;
+}
+.lib {
+width:10.3%;
+}
+.tot {
+text-align:right;
+width:15%;
+}
+.lefttot {
+width:74%;
+}
+.tax {
+width:50%;
+} 
