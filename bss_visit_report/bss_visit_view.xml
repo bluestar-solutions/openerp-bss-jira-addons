@@ -18,7 +18,7 @@
                     <field name="state" widget="statusbar" statusbar_colors='{"draft":"blue"}' readonly="1" />
                 </header>
                 <sheet string="Visit">
-                    <div class="oe_title">
+                    <div>
                         <h1>
                         	<label string="Visit Report" class="oe_inline" />
                             <field name="ref" nolabel="True" class="oe_inline" />
@@ -49,8 +49,39 @@
                     <group name="tasks" string="Tasks" attrs="{'invisible': [('state', '=', 'draft')]}">
                         <field name="visit_task_ids" nolabel="1">
                             <tree string="Tasks" version="7.0" editable="bottom">
-                                <field name="task_id" />
+                                <field name="task_id" domain="[('available_for_visit', '!=', False)]" />
+                                <field name="priority" />
+                                <field name="task_state" />
                                 <field name="state" />
+                                <field name="visit_state" invisible="1" />                                
+                                <button type="object" name="do_cancel" string="Cancel" icon="gtk-cancel"
+                                        attrs="{'invisible': ['|', ('state', '!=', 'todo'), ('visit_state', '=', 'terminated')]}" />
+                                <button type="object" name="do_close" string="Terminate" icon="gtk-apply"
+                                        attrs="{'invisible': ['|', ('state', '!=', 'todo'), ('visit_state', '=', 'terminated')]}" />
+                                <button type="object" name="do_reopen" string="Re-open" icon="gtk-undo"
+                                        attrs="{'invisible': ['|', ('state', '=', 'todo'), ('visit_state', '=', 'terminated')]}" />
+                            </tree>
+                        </field>
+                    </group>
+                    <group name="todo_tasks" string="Todo Tasks" attrs="{'invisible': [('state', '=', 'draft')]}">
+                        <field name="todo_task_ids" nolabel="1">
+                            <tree string="Todo Tasks" version="7.0">
+                                <field name="name" />
+                                <field name="priority" />
+                                <field name="user_id" />
+                                <field name="state" />
+                                <field name="progress" widget="progressbar" invisible="context.get('set_visible',False)"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group name="closed_tasks" string="Closed Tasks" attrs="{'invisible': [('state', '=', 'draft')]}">
+                        <field name="closed_task_ids" nolabel="1">
+                            <tree string="Closed Tasks" version="7.0">
+                                <field name="name" />
+                                <field name="priority" />
+                                <field name="user_id" />
+                                <field name="state" />
+                                <field name="progress" widget="progressbar" invisible="context.get('set_visible',False)"/>
                             </tree>
                         </field>
                     </group>

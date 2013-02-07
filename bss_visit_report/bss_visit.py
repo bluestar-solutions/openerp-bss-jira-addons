@@ -14,6 +14,24 @@ class bss_visit(osv.osv):
     _name = 'bss_visit_report.visit'
     _description = "Visit"
     _rec_name = 'ref'
+    
+    def _todo_task_ids(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for visit in self.browse(cr, uid, ids, context):
+            res[visit.id] = []
+            for vtask in visit.visit_task_ids:
+                if vtask.state == 'todo':
+                    res[visit.id].append(vtask.task_id.id)
+        return res
+
+    def _closed_task_ids(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for visit in self.browse(cr, uid, ids, context):
+            res[visit.id] = []
+            for vtask in visit.visit_task_ids:
+                if vtask.state != 'todo':
+                    res[visit.id].append(vtask.task_id.id)
+        return res
 
     _columns = {
         'ref': fields.char('Reference', size=64, select=1, readonly=True),    
@@ -36,6 +54,8 @@ class bss_visit(osv.osv):
         'linked_task_id': fields.many2one('project.task', string="Visit Task", readonly=True),
         'visit_task_ids': fields.one2many('bss_visit_report.visit_task', 'visit_id', string='Tasks',
                                      readonly=False, states={'terminated': [('readonly', True)]}),
+        'todo_task_ids': fields.function(_todo_task_ids, type='many2many', obj="project.task"),
+        'closed_task_ids': fields.function(_closed_task_ids, type='many2many', obj="project.task"),
         'state': fields.selection(STATE, string="State"),
         'date': fields.date("Date", readonly=False, states={'terminated': [('readonly', True)]}),
         'hour_from': fields.float("From", readonly=False, states={'terminated': [('readonly', True)]}),
@@ -61,7 +81,7 @@ class bss_visit(osv.osv):
         if 'date' in vals:
             for visit in self.browse(cr, uid, ids, context):
                 self.pool.get('project.task').write(cr, uid, [visit.linked_task_id.id], 
-                                                    {'name': 'Visite du %s' % orm_date(visit.date).strftime('%d.%m.%Y')}, context)
+                                                    {'name': 'Intervention du %s' % orm_date(visit.date).strftime('%d.%m.%Y')}, context)
         if 'user_id' in vals:
             for visit in self.browse(cr, uid, ids, context):
                 self.pool.get('project.task').write(cr, uid, [visit.linked_task_id.id], 
@@ -76,14 +96,14 @@ class bss_visit(osv.osv):
     def action_validate(self, cr, uid, ids, context=None):
         for visit in self.browse(cr, uid, ids, context):
             for task in visit.project_id.tasks:
-                if task.state != 'done' and task.state != 'cancelled':
+                if task.available_for_visit:
                     self.pool.get('bss_visit_report.visit_task').create(cr, uid, {
                         'visit_id': visit.id,        
                         'task_id': task.id,
                         'state': 'todo',   
                     }, context)
             task_id = self.pool.get('project.task').create(cr, uid, {
-                'name': 'Visite du %s' % orm_date(visit.date).strftime('%d.%m.%Y'),
+                'name': 'Intervention du %s' % orm_date(visit.date).strftime('%d.%m.%Y'),
                 'description': '',
                 'project_id': visit.project_id.id,
                 'user_id': visit.user_id.id,

@@ -21,12 +21,43 @@
 
 from openerp.osv import fields, osv
 
-class bss_project(osv.osv):
+class bss_task(osv.osv):
     _inherit = 'project.task'
+    
+    def _available_for_visit(self, cr, uid, ids, name, args, context=None):
+        vis_obj = self.pool.get('bss_visit_report.visit')
+        locked_by_visit_task_ids = []
+        open_visit_ids = vis_obj.search(cr, uid, [('state', '!=', 'terminated')])
+        for visit in vis_obj.browse(cr, uid, open_visit_ids, context):
+            locked_by_visit_task_ids.extend([visit_task_id.task_id.id for visit_task_id in visit.visit_task_ids])
+            locked_by_visit_task_ids.append(visit.linked_task_id.id)
+            
+        locked_by_visit_task_ids = list(set(locked_by_visit_task_ids))
+        
+        res = {}
+        for task in self.browse(cr, uid, ids, context):
+            if task.state in ['cancelled', 'done']:
+                res[task.id] = False
+            else:
+                res[task.id] = task.id not in locked_by_visit_task_ids
+            
+        return res
+
+    def _get_visit_task_ids(self, cr, uid, ids, context=None):
+        task_obj = self.pool.get('project.task')
+        task_ids = set()
+        for visit in self.browse(cr, uid, ids, context):
+            task_ids = task_ids.union(set(task_obj.search(cr, uid, [('project_id', '=', visit.project_id.id)], 
+                                                                    context=context)))
+            
+        return list(task_ids)
 
     _columns = {
+        'available_for_visit' : fields.function(_available_for_visit, type='boolean', store={
+            'bss_visit_report.visit' : (_get_visit_task_ids, ['visit_task_ids', 'state'], 10),   
+        }),
     }
     
-bss_project()
+bss_task()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
