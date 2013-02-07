@@ -43,6 +43,7 @@
                    'bss_employee_view.xml',
                    'bss_company_view.xml',
                    'bss_holidays_view.xml',
+                   'bss_holidays_workflow.xml',
                    'bss_contract_view.xml',
                    'bss_attendance_view.xml',
                    

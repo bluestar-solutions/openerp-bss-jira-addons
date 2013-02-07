@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<openerp>
+<data>
+
+    <record model="workflow.transition" id="hr_holidays.holiday_confirm2validate"> <!-- 2. submitted->accepted (validate signal) if not double_validation-->
+        <field name="group_id" ref="bss_attendance_sheet.group_hr_service_manager"/>
+    </record>
+
+    <record model="workflow.transition" id="hr_holidays.holiday_confirm2validate1"> <!-- 2. submitted -> first_accepted (validate signal) if double_validation-->
+        <field name="group_id" ref="bss_attendance_sheet.group_hr_service_manager"/>
+    </record>
+
+    <record model="workflow.transition" id="hr_holidays.holiday_confirm2refuse"> <!-- 2. submitted->refused (refuse signal) -->
+        <field name="group_id" ref="bss_attendance_sheet.group_hr_service_manager"/>
+    </record>
+
+    <record model="workflow.transition" id="hr_holidays.holiday_validate2refuse"> <!-- 3. accepted->refused (refuse signal) -->
+        <field name="group_id" ref="bss_attendance_sheet.group_hr_service_manager"/>
+    </record>
+
+    <record model="workflow.transition" id="hr_holidays.holiday_validate2refuse"> <!-- 3. accepted->refused (refuse signal) -->
+        <field name="group_id" ref="bss_attendance_sheet.group_hr_service_manager"/>
+    </record>
+
+    <record model="workflow.transition" id="hr_holidays.holiday_validate1_validate"> <!-- 4. first_accepted -> accepted (second_validate  signal) -->
+        <field name="group_id" ref="bss_attendance_sheet.group_hr_service_manager"/>
+    </record>
+
+    <record model="workflow.transition" id="hr_holidays.holiday_validate1_refuse"> <!-- 4. first_accepted->refused (refuse signal) -->
+        <field name="group_id" ref="bss_attendance_sheet.group_hr_service_manager"/>
+    </record>
+
+</data>
+</openerp>
