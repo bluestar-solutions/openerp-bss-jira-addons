@@ -34,8 +34,8 @@
                 'bss_utils',
                 'bss_webservice_handler'],
     'init_xml': [],
-    'update_xml': ['security/ir.model.access.csv',
-                   'security/ir_security.xml',
+    'update_xml': ['security/ir_security.xml',
+                   'security/ir.model.access.csv',
                    'security/ir_rule.xml',
                    
                    'wizard/attendance_wizard_view.xml',
