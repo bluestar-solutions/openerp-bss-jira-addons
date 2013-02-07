@@ -27,6 +27,7 @@ import bss_task
 import bss_visit_travel_zone
 import bss_visit_task
 import bss_visit
+import bss_visit_account_invoice
 
 #import report
 #import wizard

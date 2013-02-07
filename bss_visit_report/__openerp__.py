@@ -27,7 +27,7 @@
     'description': """A module for visit reports.""",
     'author': 'bluestar solutions sàrl',
     'website': 'http://www.blues2.ch',
-    'depends': ['project'],
+    'depends': ['account','project'],
     'init_xml': [],
     'update_xml': ['bss_visit_report_view.xml',
                    'bss_visit_sequence.xml',
