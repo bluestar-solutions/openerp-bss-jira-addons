@@ -17,6 +17,15 @@
             <field name="model">hr.holidays</field>
             <field name="inherit_id" ref="hr_holidays.edit_holiday_new" />
             <field name="arch" type="xml">
+                <header position="replace">
+                    <header>
+	                    <button string="Approve" name="validate" states="confirm" type="workflow" groups="bss_attendance_sheet.group_hr_service_manager" class="oe_highlight"/>
+	                    <button string="Validate" name="second_validate" states="validate1" type="workflow" groups="bss_attendance_sheet.group_hr_service_manager" class="oe_highlight"/>
+	                    <button string="Refuse" name="refuse" states="confirm,validate1,validate" type="workflow" groups="bss_attendance_sheet.group_hr_service_manager"/>
+	                    <button string="Reset to New" name="set_to_draft" states="refuse" type="object" groups="bss_attendance_sheet.group_hr_service_manager"/>
+	                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate" statusbar_colors='{"confirm":"blue","validate1":"blue","refuse":"red"}'/>
+                    </header>
+                </header>
             	<sheet string="Leave Request" position="replace">
 					<sheet string="Leave Request">
 	                    <group>
@@ -83,6 +92,10 @@
               </p>
             </field>
         </record>
+        
+        <menuitem name="Leave Requests to Approve" parent="hr_holidays.menu_open_ask_holidays" id="hr_holidays.menu_request_approve_holidays" 
+        action="hr_holidays.request_approve_holidays" groups="bss_attendance_sheet.group_hr_service_manager"/>
+        
 
     </data>
 </openerp>
