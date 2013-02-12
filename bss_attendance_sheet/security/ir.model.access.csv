@@ -1,6 +1,9 @@
-id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
-access_bss_attendance_sheet_sheet_user,bss_attendance_sheet.sheet,model_bss_attendance_sheet_sheet,base.group_user,1,1,0,0
-bss_attendance_sheet_contract_week_user,bss_attendance_sheet.contract_week,model_bss_attendance_sheet_contract_week,base.group_user,1,0,0,0
-bss_attendance_sheet_contract_week_manager,bss_attendance_sheet.contract_week,model_bss_attendance_sheet_contract_week,base.group_hr_manager,1,1,1,1
-access_hr_holidays_status_service_manager,hr.holidays.status service_manager,hr_holidays.model_hr_holidays_status,bss_attendance_sheet.group_hr_service_manager,1,1,1,1
-access_resource_calendar_leaves_service_manager,resource_calendar_leaves_service_manager,resource.model_resource_calendar_leaves,bss_attendance_sheet.group_hr_service_manager,1,1,1,1
+"id","name","model_id/id","group_id/id","perm_read","perm_write","perm_create","perm_unlink"
+"access_bss_attendance_sheet_sheet_user","bss_attendance_sheet.sheet","model_bss_attendance_sheet_sheet","base.group_user",1,1,0,0
+"bss_attendance_sheet_contract_week_user","bss_attendance_sheet.contract_week","model_bss_attendance_sheet_contract_week","base.group_user",1,0,0,0
+"bss_attendance_sheet_contract_week_manager","bss_attendance_sheet.contract_week","model_bss_attendance_sheet_contract_week","base.group_hr_manager",1,1,1,1
+"access_hr_holidays_status_service_manager","hr.holidays.status service_manager","hr_holidays.model_hr_holidays_status","bss_attendance_sheet.group_hr_service_manager",1,1,1,1
+"access_resource_calendar_leaves_service_manager","resource_calendar_leaves_service_manager","resource.model_resource_calendar_leaves","bss_attendance_sheet.group_hr_service_manager",1,1,1,1
+"access_bss_attendance_sheet_breaks_settings_user","bss_attendance_sheet_breaks_settings.user","model_bss_attendance_sheet_breaks_settings","base.group_user",1,0,0,0
+"access_bss_attendance_sheet_breaks_settings_service_manager","bss_attendance_sheet_breaks_settings.service_manager","model_bss_attendance_sheet_breaks_settings","base.group_hr_manager",1,1,1,1
+"access_bss_attendance_sheet_attendance_log_user","bss_attendance_sheet_attendance_log.user","model_bss_attendance_sheet_attendance_log","base.group_user",1,0,0,0

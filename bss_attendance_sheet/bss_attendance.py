@@ -169,7 +169,7 @@ class bss_attendance(osv.osv):
                     _logger.error(str(e))
                     cr.rollback()
                     
-                    log_obj.create(cr, uid, {
+                    log_obj.create(cr, 1, {
                         'website_id': data['id'],
                         'employee_id': data['openerp_id'],
                         'status': 'ERROR',
@@ -177,7 +177,7 @@ class bss_attendance(osv.osv):
                     })
                     cr.commit()
                 else:
-                    log_obj.create(cr, uid, {
+                    log_obj.create(cr, 1, {
                         'website_id': data['id'],
                         'employee_id': data['openerp_id'],
                         'status': 'OK',
