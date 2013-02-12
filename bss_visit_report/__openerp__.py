@@ -20,39 +20,30 @@
 ##############################################################################
 
 {
-    'name': 'Attendances Sheets',
+    'name': 'Visit Reports',
     'version': '1.0-1',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
-    'description': """A module for Bluestar Timesheet.""",
+    'description': """A module for visit reports.""",
     'author': 'bluestar solutions sàrl',
     'website': 'http://www.blues2.ch',
-    'depends': ['hr_attendance',
-                'hr_timesheet_sheet',
-                'hr_contract',
-                'hr_holidays',
-                'bss_utils',
-                'bss_webservice_handler'],
+    'depends': ['account','project'],
     'init_xml': [],
     'update_xml': ['security/ir_security.xml',
+                   
+                   'bss_visit_report_view.xml',
+                   'bss_visit_sequence.xml',
+                   
+                   'bss_visit_travel_zone_view.xml',
+                   'bss_visit_view.xml',
+                   
+                   'report/visit_report.xml',
+                   
                    'security/ir.model.access.csv',
-                   'security/ir_rule.xml',
-                   
-                   'wizard/attendance_wizard_view.xml',
-                               
-                   'bss_employee_view.xml',
-                   'bss_company_view.xml',
-                   'bss_holidays_view.xml',
-                   'bss_holidays_workflow.xml',
-                   'bss_contract_view.xml',
-                   'bss_attendance_view.xml',
-                   
-                   'bss_attendance_sheet_view.xml',
-                   
-                   'bss_attendance_sheet_generate_view.xml'],
-    'css': ['static/src/css/style.css'],
-    'js': ['static/src/js/resource.js'],
-    'qweb': ['static/src/xml/resource.xml'], 
+                   'security/visit_report_security.xml'],
+    'css': [],
+    'js': [],
+    'qweb': [], 
     'demo_xml': [],
     'test': [],
     'installable': True,

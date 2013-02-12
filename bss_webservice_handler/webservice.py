@@ -307,7 +307,7 @@ class webservice(osv.osv):
         try:
             with webservice_lock:
                 service = self.browse(service_cr, uid, service_id, context)
-                if service.is_running:
+                if service and service.is_running:
                     logger.error('Duplicate webservice %s call',service_id)
                     raise DuplicateCallException()
                 else:

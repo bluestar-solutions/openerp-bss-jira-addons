@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+
+		<report id="report_visit_webkit" model="bss_visit_report.visit" name="bss_visit_report.visit.report"
+			string="Visit Report" file="bss_visit_report/report/visit_report.mako"
+			report_type="webkit" />
+
+	</data>
+</openerp>
