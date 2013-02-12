@@ -197,7 +197,7 @@
 	    <dt>Contact client</dt>
 	    <dd>${visit.customer_contact_id.name or visit.signer}</dd>
 	    <dt>Déplacement</dt>
-	    <dd>${visit.travel_zone.name}</dd>
+	    <dd>${visit.travel_zone.name or ''}</dd>
 	  </dl>
 	
 	  <h3>Tâches demandées</h3>
@@ -210,7 +210,9 @@
 	  </ul>
 	
 	  <h3>Tâches effectuées</h3>
-	  <p class="task-comment">${visit.text.replace('\n', '<br>')}</p>
+	  % if visit.text:
+	    <p class="task-comment">${visit.text.replace('\n', '<br>')}</p>
+	  % endif
 	  <ul class="tasks">
 	    % for visit_task in visit.visit_task_ids:
 	      % if visit_task.state in ['done', 'cancelled']:

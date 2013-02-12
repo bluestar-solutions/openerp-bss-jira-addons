@@ -1,9 +1,9 @@
 <!--    Settings:
         Paper Size : A4
         Top margin : 40.00
-        Bottom margin : 0.00
-        Left margin : 0.00
-        Right margin : 0.00
+        Bottom margin : 20.00
+        Left margin : 10.00
+        Right margin : 10.00
 -->
 
 <!doctype html>
