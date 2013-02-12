@@ -29,13 +29,18 @@
     'website': 'http://www.blues2.ch',
     'depends': ['account','project'],
     'init_xml': [],
-    'update_xml': ['bss_visit_report_view.xml',
+    'update_xml': ['security/ir_security.xml',
+                   
+                   'bss_visit_report_view.xml',
                    'bss_visit_sequence.xml',
                    
                    'bss_visit_travel_zone_view.xml',
                    'bss_visit_view.xml',
                    
-                   'report/visit_report.xml'],
+                   'report/visit_report.xml',
+                   
+                   'security/ir.model.access.csv',
+                   'security/visit_report_security.xml'],
     'css': [],
     'js': [],
     'qweb': [], 

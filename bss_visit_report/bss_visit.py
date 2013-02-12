@@ -29,7 +29,7 @@ class bss_visit(osv.osv):
         for visit in self.browse(cr, uid, ids, context):
             res[visit.id] = []
             for vtask in visit.visit_task_ids:
-                if vtask.state != 'todo':
+                if vtask.state not in ['new', 'todo']:
                     res[visit.id].append(vtask.task_id.id)
         return res
 
@@ -43,6 +43,8 @@ class bss_visit(osv.osv):
                                       string="Customer",
                                       store=False,
                                       readonly=True),
+        'customer_contact_id' : fields.many2one('res.partner', string="Customer Contact", readonly=False, states={'terminated': [('readonly', True)]}),
+        'signer' : fields.char('Signer', size=128, readonly=False, states={'terminated': [('readonly', True)]}),
         'project_members': fields.related('project_id',
                                           'members',
                                           type="many2many",
@@ -51,6 +53,7 @@ class bss_visit(osv.osv):
                                           store=False,
                                           readonly=True),
         'user_id': fields.many2one('res.users', string="Visitor", readonly=False, states={'terminated': [('readonly', True)]}),
+        'text' : fields.text('Text', readonly=False, states={'terminated': [('readonly', True)]}),
         'linked_task_id': fields.many2one('project.task', string="Visit Task", readonly=True),
         'visit_task_ids': fields.one2many('bss_visit_report.visit_task', 'visit_id', string='Tasks',
                                      readonly=False, states={'terminated': [('readonly', True)]}),
@@ -58,9 +61,9 @@ class bss_visit(osv.osv):
         'closed_task_ids': fields.function(_closed_task_ids, type='many2many', obj="project.task"),
         'state': fields.selection(STATE, string="State"),
         'date': fields.date("Date", readonly=False, states={'terminated': [('readonly', True)]}),
-        'hour_from': fields.float("From", readonly=False, states={'terminated': [('readonly', True)]}),
-        'hour_to': fields.float("To", readonly=False, states={'terminated': [('readonly', True)]}),
-        'time': fields.float("Time", readonly=False, states={'terminated': [('readonly', True)]}),
+        'hour_from': fields.float("Arrival", readonly=False, states={'terminated': [('readonly', True)]}),
+        'hour_to': fields.float("Departure", readonly=False, states={'terminated': [('readonly', True)]}),
+        'time': fields.float("Visit Time", readonly=False, states={'terminated': [('readonly', True)]}),
         'travel_time': fields.float("Travel Time", readonly=False, states={'terminated': [('readonly', True)]}),
         'travel_zone': fields.many2one('bss_visit_report.travel_zone', string="Travel Zone",
                                        readonly=False, states={'terminated': [('readonly', True)]}),
@@ -119,7 +122,12 @@ class bss_visit(osv.osv):
             if not visit.time:
                 raise osv.except_osv(_('Error'), _('Visit time must be greater than 00:00 !'))
             if not visit.travel_zone:
-                raise osv.except_osv(_('Error'), _('Travel zone must be set !'))
+                raise osv.except_osv(_('Error'), _('Travel zone must be setted !'))
+            if not visit.signer and not visit.customer_contact_id:
+                raise osv.except_osv(_('Error'), _('Signer or customer contact must be setted !'))
+            if not all(vtask.state != 'new' for vtask in visit.visit_task_ids):
+                raise osv.except_osv(_('Error'), _('All tasks must be treated !'))
+            
             self.pool.get('project.task.work').create(cr, uid, {
                 'name': 'Intervention',
                 'date': '%s %s' % (visit.date, str(timedelta(hours=visit.hour_from))),

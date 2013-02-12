@@ -26,7 +26,8 @@
             name="Travel Zones" 
             id="menu_visit_travel_zone_management" 
             action="action_visit_travel_zone_management" 
-            parent="bss_visit_report.menu_visit_configuration" sequence="1" />
+            parent="bss_visit_report.menu_visit_configuration" sequence="1"
+            groups="base.group_sale_manager" />
 
 	</data>
 </openerp>
