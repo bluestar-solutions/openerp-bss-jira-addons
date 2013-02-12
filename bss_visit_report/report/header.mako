@@ -1,55 +1,56 @@
 <!--    Settings:
         Paper Size : A4
-        Top margin : 55.00
+        Top margin : 40.00
         Bottom margin : 0.00
         Left margin : 0.00
         Right margin : 0.00
 -->
 
+<!doctype html>
 <html>
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
-        <script>
-            function subst() {
-            var vars={};
-            var x=document.location.search.substring(1).split('&');
-            for(var i in x) {var z=x[i].split('=',2);vars[z[0]] = unescape(z[1]);}
-            var x=['frompage','topage','page','webpage','section','subsection','subsubsection'];
-            for(var i in x) {
-            var y = document.getElementsByClassName(x[i]);
-            for(var j=0; j<y.length; ++j) y[j].textContent = vars[x[i]];
-                }
-            }
-        </script>
-        <style type="text/css">
-            ${css}
+
+        <style>
+         
+          @page { 
+            size: auto;
+            margin: 0mm;
+          }
+          html, body {
+            font-family: "UniversLT", "Comic Sans MS", serif;
+            font-size: 9pt;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+          }
+          
+          #logo img {
+            width: 4cm;
+            position: absolute;
+            top: 1cm;
+            left: 0.36cm; /* 2-0.64 (visual margin) */
+          }
+          #address {
+            position: absolute;
+            top: 1.2cm;
+            left: 13.5cm;
+            font-size: 7.5pt;
+          }
+          body, html {
+            height: 40mm;
+          }
         </style>
     </head>
-    <body style="border:0; margin: 0;" onload="subst()">
-        <table class="header" style="border-bottom: 0px solid black; width: 100%">
-            <tr>
-                <td>${helper.embed_logo_by_name('camptocamp_logo')|n}</td>
-                <td style="text-align:right"> </td>
-            </tr>
-            <tr>
-                <td><br/></td>
-                <td style="text-align:right"> </td>
-            </tr>
-            <tr>
-                <td>${company.partner_id.name |entity}</td>
-                <td/>
-            </tr>
-            <tr>
-                <td >${company.partner_id.street or ''|entity}</td>
-                <td/>
-            </tr>
-            <tr>
-                <td>Phone: ${company.partner_id.phone or ''|entity} </td>
-                <td/>
-            </tr>
-            <tr>
-                <td>Mail: ${company.partner_id.email or ''|entity}<br/></td>
-            </tr>
-        </table> ${_debug or ''|n} </body>
+    <body>
+      <span id="logo">${helper.embed_logo_by_name('bss_header_logo')|n}</span>
+      <p id="address">
+        Bluestar Solutions Sàrl<br>
+        Av. J.-J. Rousseau 7<br>
+        2000 Neuchâtel<br>
+        +41 32 720 08 90<br>
+        info@blues2.ch
+      </p>
+    </body>
 </html>
 
