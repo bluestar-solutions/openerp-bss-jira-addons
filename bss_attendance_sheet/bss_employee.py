@@ -48,6 +48,11 @@ class bss_employee(osv.osv):
         'attendance_start': fields.float('Attendance Start', required=True),
     }
     
+    _defaults = {
+        'tz': pytz.UTC,
+        'attendance_start': 0
+    }
+    
     def _update_tags_holidays(self, cr, uid, ids):
         hol_obj = self.pool.get('hr.holidays')    
         leave_ids = []
