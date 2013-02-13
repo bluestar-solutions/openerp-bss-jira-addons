@@ -173,7 +173,7 @@ class bss_attendance_sheet(osv.osv):
                             
                 if midday_time < timedelta(hours=breaks['minimum_midday']) \
                         and attendance_time >= timedelta(hours=breaks['midday_break_from']):
-                    midday_time = timedelta(hours=breaks['minimum_midday'])            
+                    midday_time = timedelta(hours=breaks['minimum_midday']) 
                 
                 res[sheet.id]['total_attendance'] = attendance_time.seconds / 3600.0
                 res[sheet.id]['total_break'] = break_time.seconds / 3600.0
