@@ -63,16 +63,9 @@ class bss_attendance(osv.osv):
         res = {}
         for attendance in self.browse(cr, uid, ids, context=context):
             server_tz = pytz.UTC
-<<<<<<< HEAD
             employee_tz = server_tz
             if attendance.employee_id.tz:
                 employee_tz = timezone(attendance.employee_id.tz)
-=======
-            if attendance.employee_id.tz:
-                employee_tz = timezone(attendance.employee_id.tz)
-            else:
-                employee_tz = server_tz
->>>>>>> refs/remotes/origin/7.0.1.0
             
             res[attendance.id] = None
             attendance_time = server_tz.localize(datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S')).astimezone(employee_tz)
