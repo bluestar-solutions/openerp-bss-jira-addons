@@ -293,7 +293,7 @@ class webservice(osv.osv):
     def do_run(self, cr, uid, service_id, context=None):
         if not context:
             context={}
-        if isinstance(service_id,list):
+        if isinstance(service_id, list):
             service_id = service_id[0]
         logger = logging.getLogger('bss.webservice')
         
@@ -306,8 +306,9 @@ class webservice(osv.osv):
         
         try:
             with webservice_lock:
-                service = self.browse(service_cr, uid, service_id, context)
-                if service and service.is_running:
+                service = self.browse(service_cr, uid, [service_id], context)[0]
+                print str(service.name)
+                if service.is_running:
                     logger.error('Duplicate webservice %s call',service_id)
                     raise DuplicateCallException()
                 else:
