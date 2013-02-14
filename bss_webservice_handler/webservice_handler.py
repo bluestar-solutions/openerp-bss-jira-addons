@@ -97,7 +97,7 @@ class webservice_handler(osv.osv_memory):
             _logger.info('Service %s next run at %s',service.name, next_run.strftime("%Y-%m-%d %H:%M:%S"))
             if next_run < datetime.now():
                 _logger.debug('Context is %s', str(context))
-                service.do_run(service.id)
+                webservice_obj.do_run(cr, uid, service.id, context)
         if _logger.isEnabledFor(logging.DEBUG):
             _logger.debug('Webservices ended at %s', datetime.now())
         _logger.info('Ended webservice handler')

@@ -27,6 +27,7 @@ import json
 import httplib2
 from dateutil import parser as dateparser
 import threading
+from openerp import pooler
 
 WEBSERVICE_TYPE = [('GET','Get'),('PUSH', 'Push'),('PUSH_GET','Push Get Sync'),('GET_PUSH','Get Push Sync'),]
 HTTP_AUTH_TYPE = [('NONE', 'None'), ('BASIC', 'Basic')]
@@ -92,7 +93,7 @@ class webservice(osv.osv):
             if key in field_list:
                 if decoded[key]:
                     if field_list[key]['type'] in ('date','datetime','time'):
-                        data[key]=str2date(decoded[key],field_list[key]['type'],datetime_format)
+                        data[key]=webservice.str2date(decoded[key],field_list[key]['type'],datetime_format)
                     else:
                         data[key]=decoded[key]
                 else:
@@ -181,7 +182,7 @@ class webservice(osv.osv):
                         encode_dict[key]=None
                 elif field_list[key]['type'] in ('date','datetime','time'):
                     if encode[key]:
-                        encode_dict[key]=date2str(encode[key],field_list[key]['type'],datetime_format)
+                        encode_dict[key]=webservice.date2str(encode[key],field_list[key]['type'],datetime_format)
                     else:
                         encode_dict[key]=None                        
                 else:
@@ -223,7 +224,7 @@ class webservice(osv.osv):
                 if not oid:
                     oid = decoded['openerp_id']
  
-            data = purge_data(field_list, decoded, datetime_format)
+            data = webservice.purge_data(field_list, decoded, datetime_format)
             
             if oid:
                 logger.info('oid is %s, data is %s',oid,data)
@@ -297,8 +298,7 @@ class webservice(osv.osv):
             service_id = service_id[0]
         logger = logging.getLogger('bss.webservice')
         
-        db = self.pool.db
-        service_cr = db.cursor()
+        service_cr = self.pool.db.cursor()
 #        db_name = db.dbname
         call_obj = self.pool.get('bss.webservice_call')
         
@@ -307,7 +307,6 @@ class webservice(osv.osv):
         try:
             with webservice_lock:
                 service = self.browse(service_cr, uid, [service_id], context)[0]
-                print str(service.name)
                 if service.is_running:
                     logger.error('Duplicate webservice %s call',service_id)
                     raise DuplicateCallException()
