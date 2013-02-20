@@ -82,8 +82,8 @@ class bss_visit_task(osv.osv):
         return list(task_ids)
     
     _columns = {
-        'visit_id': fields.many2one('bss_visit_report.visit', string="Visit", ondelete='cascade'),        
-        'task_id': fields.many2one('project.task', string="Task"),
+        'visit_id': fields.many2one('bss_visit_report.visit', string="Visit", ondelete='cascade', required=True),        
+        'task_id': fields.many2one('project.task', string="Task", required=True),
         'state': fields.selection(STATE, 'State', readonly=True),
         'comment': fields.char('Comment', size=255),
         'priority': fields.related('task_id', 'priority', type="selection", string="Priority",

@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-	<data>
-	
+    <data>
+
         <record id="edit_visit_task_action" model="ir.ui.view">
             <field name="name">bss_visit_report.bss_visit_task_action</field>
             <field name="model">bss_visit_report.bss_visit_task_action</field>
             <field name="arch" type="xml">
                 <form string="Project" version="7.0">
                     <group>
-	                    <field name="visit_task_id" readonly="1"/>
-	                    <field name="state" readonly="1" invisible="1"/>
-	                    <field name="comment" />
+                        <field name="visit_task_id" readonly="1" />
+                        <field name="state" readonly="1"
+                            invisible="1" />
+                        <field name="comment" />
                     </group>
                     <footer>
-                        <button name="execute" string="Execute" type="object" class="oe_highlight"/>
-                        or
-                        <button string="Cancel" class="oe_link" special="cancel" />
+                        <button name="execute" string="Execute"
+                            type="object" class="oe_highlight" /> or
+                        <button string="Cancel" class="oe_link"
+                            special="cancel" />
                     </footer>
                 </form>
             </field>
         </record>
-	
+
         <record model="ir.actions.act_window" id="action_task_todo">
             <field name="name">Todo Task</field>
             <field name="type">ir.actions.act_window</field>
@@ -47,92 +49,127 @@
             <field name="context">{"visit_task_id": active_id, "state": 'done'}</field>
             <field name="target">new</field>
         </record>
-	
-		<!-- Visit -->
+
+        <!-- Visit -->
         <record id="edit_visit" model="ir.ui.view">
             <field name="name">bss_visit_report.visit.form</field>
             <field name="model">bss_visit_report.visit</field>
             <field name="arch" type="xml">
                 <form string="Project" version="7.0">
-                
-                <header>
-                	<button name="action_validate" string="Validate" type="object"
-                            states="draft" groups="bss_visit_report.group_visit_report_user" class="oe_highlight" />
-                	<button name="action_terminate" string="Terminate" type="object"
-                            states="pending" groups="bss_visit_report.group_visit_report_user" class="oe_highlight" />
-                	<!-- <button name="action_reopen" string="Re-open" type="object"
-                            states="terminated" groups="bss_visit_report.group_visit_report_user" /> -->
-                    <field name="state" widget="statusbar" statusbar_colors='{"draft":"blue"}' readonly="1" />
-                </header>
-                <sheet string="Visit">
-                    <div>
-                        <h1>
-                        	<label string="Visit Report" class="oe_inline" />
-                            <field name="ref" nolabel="True" class="oe_inline" />
-                        </h1>
-                        <h3>
-                        	<field name="customer_id" nolabel="True" />
-                        </h3>
-                    </div>
-                    <group>
-	                    <group>
-	                   		<field name="project_id" on_change="onchange_project_id(project_id)" />
-	                   		<field name="user_id" />
-	                   		<field name="customer_contact_id" />
-	                   		<field name="signer" />
-	                   		<field name="date" />
-	                   		<field name="linked_task_id" states="pending,terminated" />
-	                   	</group>
-	               		<group attrs="{'invisible': [('state', '=', 'draft')]}">
-	               			<field name="hour_from" widget="float_time" class="oe_inline" />
-		               		<field name="hour_to" widget="float_time" class="oe_inline" />
-	                		<field name="time" widget="float_time" />    
-	                     	<field name="travel_time" widget="float_time" />
-	                     	<field name="travel_zone" />
-	                    </group>
-                    </group>
-                    <group name="tasks" string="Tasks" attrs="{'invisible': [('state', '=', 'draft')]}">
-                        <field name="visit_task_ids" nolabel="1">
-                            <tree string="Tasks" version="7.0" editable="bottom">
-                                <field name="task_id" domain="[('available_for_visit', '!=', False)]" />
-                                <field name="priority" />
-                                <field name="task_state" />
-                                <field name="state" />
-                                <field name="comment" />
-                                <field name="visit_state" invisible="1" />                                
-                                <button type="action" name="%(action_task_todo)d" string="Todo" icon="gtk-go-forward"
+
+                    <header>
+                        <button name="action_validate" string="Validate"
+                            type="object" states="draft"
+                            groups="bss_visit_report.group_visit_report_user"
+                            class="oe_highlight" />
+                        <button name="action_terminate" string="Terminate"
+                            type="object" states="pending"
+                            groups="bss_visit_report.group_visit_report_user"
+                            class="oe_highlight" />
+                        <!-- <button name="action_reopen" string="Re-open" 
+                            type="object"
+                            states="terminated" groups="bss_visit_report.group_visit_report_user" 
+                            /> -->
+                        <field name="state" widget="statusbar"
+                            statusbar_colors='{"draft":"blue"}'
+                            readonly="1" />
+                    </header>
+                    <sheet string="Visit">
+                        <div>
+                            <h1>
+                                <label string="Visit Report"
+                                    class="oe_inline" />
+                                <field name="ref" nolabel="True"
+                                    class="oe_inline" />
+                            </h1>
+                            <h3>
+                                <field name="customer_id" nolabel="True" />
+                            </h3>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="project_id"
+                                    on_change="onchange_project_id(project_id)" />
+                                <field name="user_id" />
+                                <field name="customer_contact_id" />
+                                <field name="signer" />
+                                <field name="date" />
+                                <field name="customer_ref" />
+                            </group>
+                            <group
+                                attrs="{'invisible': [('state', '=', 'draft')]}">
+                                <field name="linked_task_id"
+                                    states="pending,terminated" />
+                                <field name="hour_from" widget="float_time"
+                                    class="oe_inline" />
+                                <field name="hour_to" widget="float_time"
+                                    class="oe_inline" />
+                                <field name="time" widget="float_time" />
+                                <field name="travel_time" widget="float_time" />
+                                <field name="travel_zone" />
+                            </group>
+                        </group>
+                        <group name="tasks" string="Tasks"
+                            attrs="{'invisible': [('state', '=', 'draft')]}">
+                            <field name="visit_task_ids" nolabel="1" context="{'default_project_id': project_id}">
+                                <tree string="Tasks" version="7.0"
+                                    editable="bottom" delete="0">
+                                    <field name="task_id"
+                                        domain="[('available_for_visit', '!=', False)]"
+                                        attrs="{'readonly': [('task_state', '!=', False)]}"
+                                        context="{'default_project_id': context['default_project_id']}" />
+                                    <field name="priority" />
+                                    <field name="task_state" />
+                                    <field name="state" />
+                                    <field name="comment" readonly="1" />
+                                    <field name="visit_state"
+                                        invisible="1" />
+                                    <button type="action"
+                                        name="%(action_task_todo)d"
+                                        string="Todo" icon="gtk-go-forward"
                                         attrs="{'invisible': ['|', ('state', 'in', ['todo']), ('visit_state', '=', 'terminated')]}" />
-                                <button type="action" name="%(action_task_cancel)d" string="Cancel" icon="gtk-cancel"
+                                    <button type="action"
+                                        name="%(action_task_cancel)d"
+                                        string="Cancel" icon="gtk-cancel"
                                         attrs="{'invisible': ['|', ('state', 'not in', ['new','todo']), ('visit_state', '=', 'terminated')]}" />
-                                <button type="action" name="%(action_task_done)d" string="Terminate" icon="gtk-apply"
+                                    <button type="action"
+                                        name="%(action_task_done)d"
+                                        string="Terminate" icon="gtk-apply"
                                         attrs="{'invisible': ['|', ('state', 'not in', ['new','todo']), ('visit_state', '=', 'terminated')]}" />
-                            </tree>
-                        </field>
-                    </group>
-                    <group name="todo_tasks" string="Todo Tasks" attrs="{'invisible': [('state', '=', 'draft')]}">
-                        <field name="text" nolabel="1" colspan="2"/>
-                        <field name="todo_task_ids" nolabel="1" colspan="2">
-                            <tree string="Todo Tasks" version="7.0">
-                                <field name="name" />
-                                <field name="priority" />
-                                <field name="user_id" />
-                                <field name="state" />
-                                <field name="progress" widget="progressbar" invisible="context.get('set_visible',False)"/>
-                            </tree>
-                        </field>
-                    </group>
-                    <group name="closed_tasks" string="Closed Tasks" attrs="{'invisible': [('state', '=', 'draft')]}">
-                        <field name="closed_task_ids" nolabel="1">
-                            <tree string="Closed Tasks" version="7.0">
-                                <field name="name" />
-                                <field name="priority" />
-                                <field name="user_id" />
-                                <field name="state" />
-                                <field name="progress" widget="progressbar" invisible="context.get('set_visible',False)"/>
-                            </tree>
-                        </field>
-                    </group>
-                </sheet>
+                                </tree>
+                            </field>
+                        </group>
+                        <group name="closed_tasks" string="Closed Tasks"
+                            attrs="{'invisible': [('state', '=', 'draft')]}">
+                            <field name="text" nolabel="1"
+                                colspan="2" />
+                            <field name="closed_task_ids" nolabel="1">
+                                <tree string="Closed Tasks"
+                                    version="7.0">
+                                    <field name="name" />
+                                    <field name="priority" />
+                                    <field name="user_id" />
+                                    <field name="state" />
+                                    <field name="progress" widget="progressbar"
+                                        invisible="context.get('set_visible',False)" />
+                                </tree>
+                            </field>
+                        </group>
+                        <group name="todo_tasks" string="Todo Tasks"
+                            attrs="{'invisible': [('state', '=', 'draft')]}">
+                            <field name="todo_task_ids" nolabel="1"
+                                colspan="2">
+                                <tree string="Todo Tasks" version="7.0">
+                                    <field name="name" />
+                                    <field name="priority" />
+                                    <field name="user_id" />
+                                    <field name="state" />
+                                    <field name="progress" widget="progressbar"
+                                        invisible="context.get('set_visible',False)" />
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -141,13 +178,13 @@
             <field name="name">bss_visit_report.visit</field>
             <field name="model">bss_visit_report.visit</field>
             <field name="arch" type="xml">
-				<tree string="Project" version="7.0">
-					<field name="ref" />
-					<field name="customer_id" />
-					<field name="project_id" />
-					<field name="user_id" />
-					<field name="date" />
-					<field name="state" />
+                <tree string="Project" version="7.0">
+                    <field name="ref" />
+                    <field name="customer_id" />
+                    <field name="project_id" />
+                    <field name="user_id" />
+                    <field name="date" />
+                    <field name="state" />
                 </tree>
             </field>
         </record>
@@ -161,12 +198,9 @@
             <field name="context">{}</field>
         </record>
 
-        <menuitem
-            name="Visits" 
-            id="menu_visit_management" 
-            action="action_visit_management" 
-            parent="bss_visit_report.menu_visit_report" sequence="1"
-            groups="group_visit_report_user" />
+        <menuitem name="Visits" id="menu_visit_management"
+            action="action_visit_management" parent="bss_visit_report.menu_visit_report"
+            sequence="1" groups="group_visit_report_user" />
 
-	</data>
+    </data>
 </openerp>
