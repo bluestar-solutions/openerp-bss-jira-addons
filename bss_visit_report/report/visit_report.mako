@@ -184,19 +184,21 @@
 	  <h1>Rapport d'intervention ${visit.ref}</h1>
 	  <h2>${visit.customer_id.name}</h2>
 	  <dl>
+	    <dt>Référence client</dt>
+	    <dd>${visit.customer_ref}</dd>
 	    <dt>Date</dt>
 	    <dd>${visit.date}</dd>
-	    <dt>Temps d'intervention</dt>
-	    <dd>${str(datetime.timedelta(hours=visit.time))[:-3]}</dd>
+	    <dt>Intervenant</dt>
+        <dd>${visit.user_id.name}</dd>
+        <dt>Contact client</dt>
+        <dd>${visit.customer_contact_id.name or visit.signer}</dd>
 	    <dt>Arrivée</dt>
 	    <dd>${str(datetime.timedelta(hours=visit.hour_from))[:-3]}</dd>
 	    <dt>Départ</dt>
 	    <dd>${str(datetime.timedelta(hours=visit.hour_to))[:-3]}</dd>
-	    <dt>Intervenant</dt>
-	    <dd>${visit.user_id.name}</dd>
-	    <dt>Contact client</dt>
-	    <dd>${visit.customer_contact_id.name or visit.signer}</dd>
-	    <dt>Déplacement</dt>
+	    <dt>Temps d'intervention</dt>
+        <dd>${str(datetime.timedelta(hours=visit.time))[:-3]}</dd>
+	    <dt>Zone de déplacement</dt>
 	    <dd>${visit.travel_zone.name or ''}</dd>
 	  </dl>
 	
@@ -209,7 +211,7 @@
 	    % endfor
 	  </ul>
 	
-	  <h3>Tâches effectuées</h3>
+	  <h3>Tâches fermées</h3>
 	  % if visit.text:
 	    <p class="task-comment">${visit.text.replace('\n', '<br>')}</p>
 	  % endif
@@ -217,7 +219,7 @@
 	    % for visit_task in visit.visit_task_ids:
 	      % if visit_task.state in ['done', 'cancelled']:
 		    <li class="clearfix">
-		      <span class="status success">${'terminé' if visit_task.state == 'done' else 'annulé'}</span>
+		      <span class="status success">${u'terminé' if visit_task.state == 'done' else u'annulé'}</span>
 		      <div class="task-content">
 		        <h4>${visit_task.task_id.name}</h4>
 		        <p class="comm">${visit_task.comment}</p>
@@ -233,7 +235,7 @@
 	    % for visit_task in visit.visit_task_ids:
 	      % if visit_task.state == 'todo':
 		    <li class="clearfix">
-		      <span class="status todo">${'terminé' if visit_task.state == 'done' else 'annulé'}</span>
+		      <span class="status todo">À faire</span>
 		      <div class="task-content">
 		        <h4>${visit_task.task_id.name}</h4>
 		        <p class="comm">${visit_task.comment}</p>
