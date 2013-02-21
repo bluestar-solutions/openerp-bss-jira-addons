@@ -46,7 +46,7 @@ class bss_attendance_import_log(osv.osv):
         'website_id': fields.integer('Website ID', required=True),
         'employee_id': fields.many2one('hr.employee', 'Employee', readonly=True),
         'status': fields.selection([('OK', 'Success'), ('ERROR', 'Error')], 'Status', required=True),
-        'cause': fields.char('Cause', Size=255)
+        'cause': fields.char('Cause', size=255)
     }    
     
 bss_attendance_import_log()
