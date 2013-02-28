@@ -54,6 +54,7 @@ class bss_visit(osv.osv):
                                           readonly=True),
         'user_id': fields.many2one('res.users', string="Visitor", readonly=False, required=True, states={'terminated': [('readonly', True)]}),
         'text' : fields.text('Text', readonly=False, states={'terminated': [('readonly', True)]}),
+        'remarks' : fields.text('Remarks', readonly=False, states={'terminated': [('readonly', True)]}),
         'linked_task_id': fields.many2one('project.task', string="Visit Task", readonly=True),
         'visit_task_ids': fields.one2many('bss_visit_report.visit_task', 'visit_id', string='Tasks',
                                      readonly=False, states={'terminated': [('readonly', True)]}),

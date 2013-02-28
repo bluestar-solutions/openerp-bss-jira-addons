@@ -150,8 +150,6 @@
                                     <field name="priority" />
                                     <field name="user_id" />
                                     <field name="state" />
-                                    <field name="progress" widget="progressbar"
-                                        invisible="context.get('set_visible',False)" />
                                 </tree>
                             </field>
                         </group>
@@ -164,10 +162,13 @@
                                     <field name="priority" />
                                     <field name="user_id" />
                                     <field name="state" />
-                                    <field name="progress" widget="progressbar"
-                                        invisible="context.get('set_visible',False)" />
                                 </tree>
                             </field>
+                        </group>
+                        <group name="remarks" string="Remarks"
+                            attrs="{'invisible': [('state', '=', 'draft')]}">
+                            <field name="remarks" nolabel="1"
+                                colspan="2" />
                         </group>
                     </sheet>
                 </form>

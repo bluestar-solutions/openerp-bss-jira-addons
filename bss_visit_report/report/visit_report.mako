@@ -212,19 +212,33 @@
 	  </ul>
 	
 	  <h3>Tâches fermées</h3>
-	  % if visit.text:
-	    <p class="task-comment">${visit.text.replace('\n', '<br>')}</p>
-	  % endif
 	  <ul class="tasks">
+        % if visit.text:
+            <li class="clearfix">
+              <span class="status success">réalisé</span>
+              <div class="task-content">
+                <h4>Tâches demandées en cours de visite</h4>
+              </div>
+              % if visit_task.task_id.description:
+                  <p class="desc">${visit.text.replace('\n', '<br>')}</p>
+              % endif
+            </li>
+        % endif
 	    % for visit_task in visit.visit_task_ids:
 	      % if visit_task.state in ['done', 'cancelled']:
 		    <li class="clearfix">
-		      <span class="status success">${u'terminé' if visit_task.state == 'done' else u'annulé'}</span>
+		      % if visit_task.state == 'done':
+		        <span class="status success">réalisé</span>
+		      % else:
+		        <span class="status failed">annulé</span>
+		      % endif
 		      <div class="task-content">
 		        <h4>${visit_task.task_id.name}</h4>
 		        <p class="comm">${visit_task.comment}</p>
 		      </div>
-		      <p class="desc">${visit_task.task_id.description}</p>
+		      % if visit_task.task_id.description:
+                  <p class="desc">${visit_task.task_id.description.replace('\n', '<br>')}</p>
+              % endif
 		    </li>
 	      % endif
 	    % endfor
@@ -235,16 +249,23 @@
 	    % for visit_task in visit.visit_task_ids:
 	      % if visit_task.state == 'todo':
 		    <li class="clearfix">
-		      <span class="status todo">À faire</span>
+		      <span class="status todo">à faire</span>
 		      <div class="task-content">
 		        <h4>${visit_task.task_id.name}</h4>
 		        <p class="comm">${visit_task.comment}</p>
 		      </div>
-		      <p class="desc">${visit_task.task_id.description}</p>
+		      % if visit_task.task_id.description:
+		          <p class="desc">${visit_task.task_id.description.replace('\n', '<br>')}</p>
+		      % endif
 		    </li>
 	      % endif
 	    % endfor
 	  </ul>
+	  
+	  % if visit.remarks:
+		  <h3>Remarques</h3>
+		  <p class="task-comment">${visit.remarks.replace('\n', '<br>')}</p>
+	  % endif
 	  
 	  <div id="signatures">
 	    <table>
