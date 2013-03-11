@@ -380,8 +380,12 @@ class bss_attendance_sheet(osv.osv):
 
     def _check_today(self, cr, uid, context=None):
         emp_obj = self.pool.get('hr.employee')
-        for employee_id in emp_obj.search(cr, uid, [], context=context):
-            self._check_sheet(cr, uid, employee_id, datetime.today().isoformat()[:10], context)
+        tss_obj = self.pool.get('hr_timesheet_sheet.sheet')
+        for employee in emp_obj.browse(cr, uid, emp_obj.search(cr, uid, [], context=context), context):
+            self._check_sheet(cr, uid, employee.id, datetime.today().isoformat()[:10], context)
+            action = self.pool.get('hr.timesheet.current.open').open_timesheet(cr, employee.user_id.id, None, context)
+            if not action.get('res_id', False):
+                tss_obj.create(cr, employee.user_id.id, {}, context)
             
 bss_attendance_sheet()
 
