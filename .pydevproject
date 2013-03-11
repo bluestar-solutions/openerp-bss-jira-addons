@@ -5,12 +5,11 @@
 	<pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
 	<pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.7</pydev_property>
 
-	<pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
-		<path>/openerp-bss-addons</path>
-	</pydev_pathproperty>
+    <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
+        <path>/openerp-bss-addons/openerp/server</path>
+        <path>/openerp-bss-addons/src</path>
+    </pydev_pathproperty>
 
 	<pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
-		<path>${workspace}/openerp-7.0/server</path>
-		<path>${workspace}/openerp-7.0</path>
 	</pydev_pathproperty>
 </pydev_project>
