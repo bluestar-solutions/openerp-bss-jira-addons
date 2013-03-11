@@ -46,7 +46,7 @@ class bss_attendance_import_log(osv.osv):
         'website_id': fields.integer('Website ID', required=True),
         'employee_id': fields.many2one('hr.employee', 'Employee', readonly=True),
         'status': fields.selection([('OK', 'Success'), ('ERROR', 'Error')], 'Status', required=True),
-        'cause': fields.char('Cause', Size=255)
+        'cause': fields.char('Cause', size=255)
     }    
     
 bss_attendance_import_log()
@@ -63,10 +63,9 @@ class bss_attendance(osv.osv):
         res = {}
         for attendance in self.browse(cr, uid, ids, context=context):
             server_tz = pytz.UTC
+            employee_tz = server_tz
             if attendance.employee_id.tz:
                 employee_tz = timezone(attendance.employee_id.tz)
-            else:
-                employee_tz = server_tz
             
             res[attendance.id] = None
             attendance_time = server_tz.localize(datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S')).astimezone(employee_tz)
@@ -140,11 +139,9 @@ class bss_attendance(osv.osv):
                     return False
         return True
 
-    def _is_locked(self, cr, uid, ids, context=None):
-        
-        
+    def _is_locked(self, cr, uid, ids, context=None): 
         for att in self.browse(cr, uid, ids, context=context):
-            if (datetime.today() -  orm_datetime(att.name)).days > 3:
+            if uid not in [1, 9] and (datetime.today() -  orm_datetime(att.name)).days > 3:
                 return False
         return True
 
@@ -172,7 +169,7 @@ class bss_attendance(osv.osv):
                     _logger.error(str(e))
                     cr.rollback()
                     
-                    log_obj.create(cr, uid, {
+                    log_obj.create(cr, 1, {
                         'website_id': data['id'],
                         'employee_id': data['openerp_id'],
                         'status': 'ERROR',
@@ -180,7 +177,7 @@ class bss_attendance(osv.osv):
                     })
                     cr.commit()
                 else:
-                    log_obj.create(cr, uid, {
+                    log_obj.create(cr, 1, {
                         'website_id': data['id'],
                         'employee_id': data['openerp_id'],
                         'status': 'OK',

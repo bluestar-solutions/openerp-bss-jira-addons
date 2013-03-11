@@ -1,0 +1,5 @@
+"id","name","model_id/id","group_id/id","perm_read","perm_write","perm_create","perm_unlink"
+"access_bss_visit_report_travel_zone_user","bss_visit_report_travel_zone.user","model_bss_visit_report_travel_zone","base.group_user",1,0,0,0
+"access_bss_visit_report_travel_zone_sale_manager","bss_visit_report_travel_zone.sale_manager","model_bss_visit_report_travel_zone","base.group_sale_manager",1,1,1,1
+"access_bss_visit_report_visit_task_visit_report_user","bss_visit_report_visit_task.visit_report_user","model_bss_visit_report_visit_task","group_visit_report_user",1,1,1,0
+"access_bss_visit_report_visit_visit_report_user","bss_visit_report_visit.visit_report_user","model_bss_visit_report_visit","group_visit_report_user",1,1,1,1

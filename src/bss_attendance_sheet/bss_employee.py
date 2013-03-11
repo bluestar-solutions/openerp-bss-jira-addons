@@ -23,6 +23,7 @@ from openerp.osv import fields, osv
 import json
 import pytz
 from openerp import netsvc
+from datetime import datetime
 
 WS_ACTIONS = {'sign_in': 'IN',
               'sign_out': 'OUT'}
@@ -45,6 +46,11 @@ class bss_employee(osv.osv):
         'tz': fields.selection(_tz_get,  'Timezone', size=64, required=True,
             help="The employee Timezone. Used to decide the time to switch day for consolidate attendance."),
         'attendance_start': fields.float('Attendance Start', required=True),
+    }
+    
+    _defaults = {
+        'tz': pytz.UTC,
+        'attendance_start': 0
     }
     
     def _update_tags_holidays(self, cr, uid, ids):
@@ -96,6 +102,8 @@ class bss_employee(osv.osv):
         
         employee_list = []
         for employee in self.browse(cr, uid, self.search(cr, uid, [])):
+            sheet_obj._check_sheet(cr, uid, employee.id, datetime.today().isoformat()[:10])
+            
             sheet = {'create_date': '1900-01-01 00:00:00',
                      'write_date': None,
                      'expected_time': 0.0,

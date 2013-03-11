@@ -1,5 +1,4 @@
 [options]
-addons_path = server/openerp/addons,addons,../openerp-bss-addons,web/addons
 admin_passwd = admin
 csv_internal_sep = ,
 db_host = False
@@ -20,7 +19,7 @@ limit_request = 8192
 limit_time_cpu = 60
 limit_time_real = 60
 list_db = True
-log_handler = :DEBUG
+log_handler = :DEBUG 
 log_level = debug
 logfile = None
 login_message = False
