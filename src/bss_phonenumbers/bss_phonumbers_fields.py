@@ -29,12 +29,11 @@ class bss_phonenumbers_converter(osv.TransientModel):
 
     @staticmethod
     def _parse(vals):
-        if 'xxx' in vals:
-            return vals
-        
         if isinstance(vals, dict):
             number = [vals['e164'], None]
         elif vals:
+            if 'xxx' in vals:
+                return vals
             number = vals.split(',')
             if len(number) == 1:
                 number = [number[0], None]
@@ -54,7 +53,7 @@ class bss_phonenumbers_converter(osv.TransientModel):
 
     @staticmethod
     def _format(vals):
-        if 'xxx' in vals:
+        if isinstance(vals, str) and 'xxx' in vals:
             return {
                 'e164': vals,
                 'international': vals,
