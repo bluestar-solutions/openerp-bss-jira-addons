@@ -169,8 +169,9 @@ class bss_holidays(osv.osv):
     
     def holidays_validate(self, cr, uid, ids, context=None):
         for hol in self.browse(cr, uid, ids, context):
-            if hol.employee_id.user_id.id == uid and uid != 5:
-                raise osv.except_osv(_('Warning!'),_('You cannot validate your request. Contact a human resource manager.'))
+            if hol.employee_id:
+                if hol.employee_id.user_id.id == uid and uid != 9:
+                    raise osv.except_osv(_('Warning!'),_('You cannot validate your request. Contact a human resource manager.'))
         return super(bss_holidays, self).holidays_validate(cr, uid, ids, context)
 
 bss_holidays()
