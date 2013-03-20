@@ -53,7 +53,7 @@ class bss_phonenumbers_converter(osv.TransientModel):
 
     @staticmethod
     def _format(vals):
-        if isinstance(vals, str) and 'xxx' in vals:
+        if isinstance(vals, unicode) and vals.startswith('xxx'):
             return {
                 'e164': vals,
                 'international': vals,
