@@ -11,6 +11,22 @@
             name="Visits" 
             id="menu_visit_configuration" 
             parent="base.menu_definitions" sequence="1" />
+            
+        <record id="view_task_search_form" model="ir.ui.view">
+            <field name="name">project.task.search.form</field>
+            <field name="model">project.task</field>
+            <field name="arch" type="xml">
+               <search string="Tasks">
+               		<filter name="default_filter" domain="['|',('state','=','open'),'&amp;',('state','=','done'),('date_end','>=',(context_today()-datetime.timedelta(days=(7))).strftime('%%Y-%%m-%%d'))]" string="Open and recently closed" />
+                </search>
+            </field>
+        </record>
+        
+        <record id="action_view_task" model="ir.actions.act_window">
+            <field name="name">Tasks</field>
+            <field name="res_model">project.task</field>
+            <field name="context">{'search_default_default_filter': 1}</field>
+        </record>
 
 	</data>
 </openerp>
