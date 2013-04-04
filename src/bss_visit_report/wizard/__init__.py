@@ -22,15 +22,7 @@
 # From openerp addons
 
 # From this project
-import bss_project
-import bss_task
-import bss_visit_travel_zone
-import bss_visit_task
-import bss_visit
-#import bss_visit_account_invoice
+import bss_visit_task_continue
 
-#import report
-import wizard
-#import report
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
