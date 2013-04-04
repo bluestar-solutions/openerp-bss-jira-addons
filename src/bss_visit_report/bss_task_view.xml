@@ -9,7 +9,7 @@
 			<field name="inherit_id" ref="project.view_task_form2" />
 			<field name="arch" type="xml">
 					<notebook position="inside">
-						<page string="Visit_tasks"  >
+						<page string="Visit tasks" >
 							<field name="available_for_visit" invisible="1" />
  							<field name="bss_visit_task_ids" >
 								<tree>
