@@ -54,8 +54,10 @@ class bss_task(osv.osv):
 
     _columns = {
         'available_for_visit' : fields.function(_available_for_visit, type='boolean', store={
-            'bss_visit_report.visit' : (_get_visit_task_ids, ['visit_task_ids', 'state'], 10),   
+            'bss_visit_report.visit' : (_get_visit_task_ids, ['visit_task_ids', 'state'], 10),  
+ 
         }),
+        'bss_visit_task_ids': fields.one2many('bss_visit_report.visit_task', 'task_id', string='Visit tasks'), 
     }
     
 bss_task()

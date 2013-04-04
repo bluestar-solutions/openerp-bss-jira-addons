@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+
+		<record model="ir.ui.view" id="view_bss_task_form">
+			<field name="name">project.task.form.bss_task</field>
+			<field name="model">project.task</field>
+			<field name="type">form</field>
+			<field name="inherit_id" ref="project.view_task_form2" />
+			<field name="arch" type="xml">
+					<notebook position="inside">
+						<page string="Visit tasks" >
+							<field name="available_for_visit" invisible="1" />
+ 							<field name="bss_visit_task_ids" >
+								<tree>
+									<field name="visit_id" widget="many2one" />
+									<field name="state" />
+									<field name="visit_state" />
+									<button name="action_view_visit" type="object" string="View visit" icon="gtk-index" context="{'active_id':visit_id}"/>
+								</tree>
+							</field>
+	 					</page>
+					</notebook>
+
+			</field>
+		</record>
+	</data>
+</openerp>		
+		

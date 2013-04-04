@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 from openerp.osv import osv, fields
+from openerp.netsvc import logging
 
 STATE = (('new', 'New'),
          ('todo', 'Todo'),
@@ -73,6 +74,7 @@ class bss_visit_task(osv.osv):
     
     _name = 'bss_visit_report.visit_task'
     _rec_name = 'task_name'
+    _logger = logging.getLogger(_name)
     
     def _get_visit_visit_task_ids(self, cr, uid, ids, context=None):
         task_ids = set()
@@ -126,5 +128,19 @@ class bss_visit_task(osv.osv):
         self.write(cr, uid, ids, {'state': 'done'})
         return True
             
-    
+    def action_view_visit(self, cr, uid, ids, context=None):
+        self._logger.debug('ids = %s, context = %s', str(ids), str(context))
+        return {
+            'name': 'Visit report view',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': False,
+            'res_model': 'bss_visit_report.visit',
+            'context': "{}",
+            'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'self',
+            'res_id': context['active_id']  or False,
+        }
+
 bss_visit_task()   

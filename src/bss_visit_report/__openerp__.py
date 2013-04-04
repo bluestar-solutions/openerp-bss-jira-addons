@@ -30,7 +30,7 @@
     'depends': ['account','project'],
     'init_xml': [],
     'update_xml': ['security/ir_security.xml',
-                   
+                   'bss_task_view.xml',
                    'bss_visit_report_view.xml',
                    'bss_visit_sequence.xml',
                    
