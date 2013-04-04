@@ -4,6 +4,7 @@ from openerp.osv import osv, fields
 from openerp.tools.translate import _
 from datetime import timedelta
 from bss_utils.dateutils import orm_date
+from openerp.netsvc import logging
 
 STATE = (('draft', 'Draft'),
          ('pending', 'Pending'),
@@ -14,6 +15,7 @@ class bss_visit(osv.osv):
     _name = 'bss_visit_report.visit'
     _description = "Visit"
     _rec_name = 'ref'
+    _logger = logging.getLogger(_name)
     
     def _todo_task_ids(self, cr, uid, ids, name, args, context=None):
         res = {}
@@ -166,5 +168,5 @@ class bss_visit(osv.osv):
             v['customer_id'] = project.partner_id.id
 
         return {'value': v} 
-
+    
 bss_visit()

@@ -199,6 +199,15 @@
             <field name="context">{}</field>
         </record>
 
+        <record model="ir.actions.act_window" id="action_visit_view_edit">
+            <field name="name">Visits</field>
+            <field name="res_model">bss_visit_report.visit</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="domain">[]</field>
+            <field name="context">{'active_id': context['active_id']}</field>            
+        </record>
+
         <menuitem name="Visits" id="menu_visit_management"
             action="action_visit_management" parent="bss_visit_report.menu_visit_report"
             sequence="1" groups="group_visit_report_user" />
