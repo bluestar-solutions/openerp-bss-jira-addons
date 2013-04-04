@@ -98,9 +98,20 @@ class bss_visit(osv.osv):
         return res
 
     def unlink(self, cr, uid, ids, context=None):
+        vtask_pool = self.pool.get('bss_visit_report.visit_task')
+        work_pool = self.pool.get('project.task.work')
+        
         for visit in self.browse(cr, uid, ids, context):
-            if visit.linked_task_id:
-                self.pool.get('project.task').unlink(cr, uid, [visit.linked_task_id.id], context=context)
+            if visit.state == 'terminated':
+                work_pool.unlink(cr, uid, [work.id for work in work_pool.browse(cr, uid, work_pool.search(cr, uid, [('task_id','=',visit.linked_task_id.id)]))])
+
+            if visit.state in ['pending', 'terminated']:
+                for vtask in vtask_pool.browse(cr, uid, vtask_pool.search(cr, uid, [('visit_id','=',visit.id)])):
+                    self.pool.get('project.task').do_reopen(cr, uid, [vtask.task_id.id], context)
+                    vtask_pool.unlink(cr, uid, [vtask.id], context=context)
+                if visit.linked_task_id:
+                    self.pool.get('project.task').unlink(cr, uid, [visit.linked_task_id.id], context=context)
+
         return super(bss_visit, self).unlink(cr, uid, ids, context=context)
     
     def action_validate(self, cr, uid, ids, context=None):
