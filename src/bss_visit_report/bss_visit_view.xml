@@ -114,10 +114,11 @@
                             <field name="visit_task_ids" nolabel="1" context="{'default_project_id': project_id}">
                                 <tree string="Tasks" version="7.0"
                                     editable="bottom" delete="0">
-                                    <field name="task_id"
-                                        domain="[('available_for_visit', '!=', False)]"
-                                        attrs="{'readonly': [('task_state', '!=', False)]}"
-                                        context="{'default_project_id': context['default_project_id']}" />
+<!--                                     <field name="task_id" -->
+<!--                                         domain="[('available_for_visit', '!=', False)]" -->
+<!--                                         attrs="{'readonly': [('task_state', '!=', False)]}" -->
+<!--                                         context="{'default_project_id': context['default_project_id']}" /> -->
+                                    <field name="description_name" />
                                     <field name="priority" />
                                     <field name="task_state" />
                                     <field name="state" />
@@ -141,15 +142,13 @@
                         </group>
                         <group name="closed_tasks" string="Closed Tasks"
                             attrs="{'invisible': [('state', '=', 'draft')]}">
-                            <field name="text" nolabel="1"
-                                colspan="2" />
                             <field name="closed_task_ids" nolabel="1">
                                 <tree string="Closed Tasks"
                                     version="7.0">
-                                    <field name="name" />
+                                    <field name="description_name" />
                                     <field name="priority" />
                                     <field name="user_id" />
-                                    <field name="state" />
+                                    <field name="task_state" />
                                 </tree>
                             </field>
                         </group>
@@ -158,15 +157,15 @@
                             <field name="todo_task_ids" nolabel="1"
                                 colspan="2">
                                 <tree string="Todo Tasks" version="7.0">
-                                    <field name="name" />
+                                	<field name="description_name" />
                                     <field name="priority" />
                                     <field name="user_id" />
-                                    <field name="state" />
+                                    <field name="task_state" />
                                 </tree>
                             </field>
                         </group>
                         <group name="remarks" string="Remarks"
-                            attrs="{'invisible': [('state', '=', 'draft')]}">
+                            attrs="{'invisible': ['|',('state', '=', 'draft'),('remarks','=',False)]}">
                             <field name="remarks" nolabel="1"
                                 colspan="2" />
                         </group>
