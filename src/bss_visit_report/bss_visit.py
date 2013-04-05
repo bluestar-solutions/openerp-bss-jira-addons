@@ -23,7 +23,7 @@ class bss_visit(osv.osv):
             res[visit.id] = []
             for vtask in visit.visit_task_ids:
                 if vtask.state == 'todo':
-                    res[visit.id].append(vtask.task_id.id)
+                    res[visit.id].append(vtask.id)
         return res
 
     def _closed_task_ids(self, cr, uid, ids, name, args, context=None):
@@ -32,7 +32,7 @@ class bss_visit(osv.osv):
             res[visit.id] = []
             for vtask in visit.visit_task_ids:
                 if vtask.state not in ['new', 'todo']:
-                    res[visit.id].append(vtask.task_id.id)
+                    res[visit.id].append(vtask.id)
         return res
 
     _columns = {
@@ -60,8 +60,8 @@ class bss_visit(osv.osv):
         'linked_task_id': fields.many2one('project.task', string="Visit Task", readonly=True),
         'visit_task_ids': fields.one2many('bss_visit_report.visit_task', 'visit_id', string='Tasks',
                                      readonly=False, states={'terminated': [('readonly', True)]}),
-        'todo_task_ids': fields.function(_todo_task_ids, type='many2many', obj="project.task"),
-        'closed_task_ids': fields.function(_closed_task_ids, type='many2many', obj="project.task"),
+        'todo_task_ids': fields.function(_todo_task_ids, type='many2many', obj="bss_visit_report.visit_task"),
+        'closed_task_ids': fields.function(_closed_task_ids, type='many2many', obj="bss_visit_report.visit_task"),
         'state': fields.selection(STATE, string="State"),
         'date': fields.date("Date", readonly=False, required=True, states={'terminated': [('readonly', True)]}),
         'hour_from': fields.float("Arrival", readonly=False, states={'terminated': [('readonly', True)]}),

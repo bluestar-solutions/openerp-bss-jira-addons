@@ -83,6 +83,21 @@ class bss_visit_task(osv.osv):
             
         return list(task_ids)
     
+    def _description_trunc(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for bvt in self.browse(cr, uid, ids, context):
+            if len(bvt.description) >= 50:
+                res[bvt.id] = "%s..." % bvt.description[0:50]
+            else:
+                res[bvt.id] = bvt.description
+        return res
+    
+    def _description_name(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for bvt in self.browse(cr, uid, ids, context):
+            res[bvt.id] = "%s\r\n\r\n%s" % (bvt.task_name, bvt.description)
+        return res
+    
     _columns = {
         'visit_id': fields.many2one('bss_visit_report.visit', string="Visit", ondelete='cascade', required=True),        
         'task_id': fields.many2one('project.task', string="Task", required=True),
@@ -102,8 +117,11 @@ class bss_visit_task(osv.osv):
         'visit_state': fields.related('visit_id', 'state', type="selection", string="Visit State",
                                       selection=VISIT_STATE,
                                       store={
-            'bss_visit_report.visit' : (_get_visit_visit_task_ids, ['state'], 10), 
-        }, readonly=True),        
+            'bss_visit_report.visit' : (_get_visit_visit_task_ids, ['state'], 10),
+        }, readonly=True),
+        'description_name' : fields.function(_description_name, store=False, method=True, type="text", string="Task description"),
+        'description' : fields.related('task_id', 'description', store=False, type="text", string="Description"),
+        'description_trunc' : fields.function(_description_trunc, store=False, method=True, type="text", string="Description"),
     }
     
     _defaults = {
