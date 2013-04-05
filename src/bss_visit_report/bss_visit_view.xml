@@ -137,6 +137,8 @@
                                         name="%(action_task_done)d"
                                         string="Terminate" icon="gtk-apply"
                                         attrs="{'invisible': ['|', ('state', 'not in', ['new','todo']), ('visit_state', '=', 'terminated')]}" />
+									<button name="%(action_visit_task_continue)d" type="action" string="Split task" 
+										icon="gtk-copy" attrs="{'invisible': ['|', ('state', 'not in', ['new','todo']), ('visit_state', '=', 'terminated')]}" context="{'visit_task_id':id}"/>
                                 </tree>
                             </field>
                         </group>

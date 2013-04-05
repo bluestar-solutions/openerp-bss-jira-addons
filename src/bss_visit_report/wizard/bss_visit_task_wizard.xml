@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="bss_visit_task_continue_form" model="ir.ui.view">
+            <field name="name">visit.report.task.continue.form</field>
+            <field name="model">visit.report.task.continue</field>
+            <field name="arch" type="xml">
+                <form string="" version="7.0">
+                    <group>
+						<field name="visit_task_id" readonly="1" />
+                    	<separator string="Old task" colspan="2" />
+                        <field name="old_description"/>
+                        <field name="comment"/>
+                        <separator string="New task" colspan="2" />
+                        <field name="new_name"/>
+	                    <field name="new_description"/>
+                    </group>
+                    <footer>
+                        <button name="execute" string="Save" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="action_visit_task_continue" model="ir.actions.act_window">
+            <field name="name">Continue task</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">visit.report.task.continue</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="bss_visit_task_continue_form"/>
+            <field name="target">new</field>
+        </record>
+        
+    </data>
+</openerp>
