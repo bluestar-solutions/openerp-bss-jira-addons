@@ -34,12 +34,12 @@
                    'bss_visit_report_view.xml',
                    'bss_visit_sequence.xml',
                    
+                   'wizard/bss_visit_task_wizard.xml',
                    'bss_visit_travel_zone_view.xml',
                    'bss_visit_view.xml',
                    
                    'report/visit_report.xml',
                    
-                   'wizard/bss_visit_task_wizard.xml',
                    'security/ir.model.access.csv',
                    'security/visit_report_security.xml'],
     'css': [],
