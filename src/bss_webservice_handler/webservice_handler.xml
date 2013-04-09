@@ -15,7 +15,7 @@
                     <field name="ws_path" />
                     <field name="http_auth_type" />
                     <field name="http_auth_login" />
-                    <field name="http_auth_password" />
+                    <field name="http_auth_password" widget="password" />
                     <field name="model_name" />
                     <field name="before_method_name" />
                     <field name="after_method_name" />
@@ -48,7 +48,7 @@
                     <field name="ws_path" />
                     <field name="http_auth_type" />
                     <field name="http_auth_login" />
-                    <field name="http_auth_password" />
+                    <field name="http_auth_password" widget="password" />
                     <field name="model_name" />
                     <field name="before_method_name" />
                     <field name="after_method_name" />
