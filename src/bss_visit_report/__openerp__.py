@@ -37,6 +37,7 @@
                    'wizard/bss_visit_task_wizard.xml',
                    'bss_visit_travel_zone_view.xml',
                    'bss_visit_view.xml',
+                   'bss_prepaid_hours_view.xml',
                    
                    'report/visit_report.xml',
                    

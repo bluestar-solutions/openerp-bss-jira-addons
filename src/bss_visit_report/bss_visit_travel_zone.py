@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 from openerp.osv import osv, fields
-from openerp.addons import decimal_precision as dp
 
 class bss_visit_travel_zone(osv.osv):
 
@@ -10,7 +9,7 @@ class bss_visit_travel_zone(osv.osv):
 
     _columns = {
         'name': fields.char('Name', size=64),    
-        'amount': fields.float('Travel Amount', digits_compute=dp.get_precision('Account')),
+        'amount': fields.integer('Time amount (minutes)'),
     }
 
 bss_visit_travel_zone()
