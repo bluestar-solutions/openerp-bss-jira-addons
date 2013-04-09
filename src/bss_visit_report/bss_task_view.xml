@@ -16,7 +16,7 @@
 									<field name="visit_id" widget="many2one" />
 									<field name="state" />
 									<field name="visit_state" />
-									<button name="action_view_visit" type="object" string="View visit" icon="gtk-index" context="{'active_id':visit_id}"/>
+									<button name="action_view_visit" type="object" string="View visit" icon="../../../../../bss_visit_report/static/src/img/icons/edit_report" context="{'active_id':visit_id}"/>
 								</tree>
 							</field>
 	 					</page>
