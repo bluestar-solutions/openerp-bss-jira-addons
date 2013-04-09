@@ -19,30 +19,6 @@
 #
 ##############################################################################
 
-#    def message_post(self, cr, uid, thread_id, body='', subject=None, type='notification',
-#                        subtype=None, parent_id=False, attachments=None, context=None,
-#                        content_subtype='html', **kwargs):
-#        """ Post a new message in an existing thread, returning the new
-#            mail.message ID.
-#
-#            :param int thread_id: thread ID to post into, or list with one ID;
-#                if False/0, mail.message model will also be set as False
-#            :param str body: body of the message, usually raw HTML that will
-#                be sanitized
-#            :param str type: see mail_message.type field
-#            :param str content_subtype:: if plaintext: convert body into html
-#            :param int parent_id: handle reply to a previous message by adding the
-#                parent partners to the message in case of private discussion
-#            :param tuple(str,str) attachments or list id: list of attachment tuples in the form
-#                ``(name,content)``, where content is NOT base64 encoded
-#
-#            Extra keyword arguments will be used as default column values for the
-#            new mail.message record. Special cases:
-#                - attachment_ids: supposed not attached to any document; attach them
-#                    to the related document. Should only be set by Chatter.
-#            :return int: ID of newly created mail.message
-#        """
-
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 from openerp.netsvc import logging
