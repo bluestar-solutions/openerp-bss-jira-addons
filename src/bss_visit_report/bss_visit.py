@@ -154,12 +154,24 @@ class bss_visit(osv.osv):
                 'user_id': visit.user_id.id,
             }, context)
             self.pool.get('project.task.work').create(cr, uid, {
-                'name': 'Déplacement',
+                'name': u'Déplacement',
                 'date': '%s %s' % (visit.date, str(timedelta(hours=visit.hour_from))),
                 'task_id': visit.linked_task_id.id,
                 'hours': visit.travel_time,
                 'user_id': visit.user_id.id,
             }, context)
+            forfait_id = self.pool.get('project.task.work').create(cr, uid, {
+                'name': u'Forfait %s' % (visit.travel_zone.name),
+                'date': '%s %s' % (visit.date, str(timedelta(hours=visit.hour_from))),
+                'task_id': visit.linked_task_id.id,
+                'hours': visit.travel_zone.amount / 60.0,
+                'user_id': self.pool.get('res.users').search(cr, uid, [('login','=','traveler')])[0] or False,
+            }, context)
+            
+            line_id = self.pool.get('project.task.work').browse(cr, uid, forfait_id).hr_analytic_timesheet_id.line_id
+            invoice_id = self.pool.get('hr_timesheet_invoice.factor').search(cr, uid, [('customer_name','=','100%')])[0]
+            self.pool.get('account.analytic.line').write(cr, uid, line_id.id, {'to_invoice' : invoice_id})
+            
             self.pool.get('project.task').do_close(cr, uid, [visit.linked_task_id.id], context)
         self.write(cr, uid, ids, {'state': 'terminated'}, context)
 

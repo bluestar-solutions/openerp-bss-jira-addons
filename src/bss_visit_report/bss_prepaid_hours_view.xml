@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
 	<data>
+		<record id="hr_timesheet_sheet.act_done" model="workflow.activity">
+            <field name="wkf_id" ref="hr_timesheet_sheet.wkf_timesheet"/>
+            <field name="name">done</field>
+            <field name="kind">function</field>
+            <field name="action">prepaid_validate()</field>
+            <field name="flow_stop">True</field>
+        </record>
+        <record id="hr_timesheet_sheet.act_draft" model="workflow.activity">
+            <field name="wkf_id" ref="hr_timesheet_sheet.wkf_timesheet"/>
+            <field name="name">draft</field>
+            <field name="kind">function</field>
+            <field name="action">prepaid_draft()</field>
+        </record>
+        
+        
+	
 		<record id="view_prepaid_hours_add_hours" model="ir.ui.view">
 			<field name="name">bss_visit_report.prepaid_hours.add_hours</field>
 			<field name="model">bss_visit_report.prepaid_hours.add_hours</field>
@@ -8,7 +24,8 @@
 				<form string="Add prepaid hours">
 					<group>
 <!-- 						<field name="pph_name" readonly="True" /> -->
-						<field name="amount" />
+						<field name="processed_date" />
+						<field name="amount" default_focus="1" />
 					</group>
 					<group col="4" colspan="4">
 						<button special="cancel" string="Annuler" />
@@ -44,23 +61,26 @@
 			<field name="name">bss_visit_report.prepaid_hours.form</field>
 			<field name="model">bss_visit_report.prepaid_hours</field>
 			<field name="arch" type="xml">
-				<form string="" version="7.0">
+				<form string="Prepaid hours" version="7.0">
 					<header>
 						<button type="action" name="%(action_add_hours)d" string="Add hours"
-							class="oe_highlight" attrs="{'invisible' : [('id','=',False)]}" />
+							class="oe_highlight" attrs="{'invisible' : [('id','=',False)]}" groups="base.group_sale_manager" />
 					</header>
 					<h1 attrs="{'invisible' : [('id','!=',False)]}"><field name="contract_id" /></h1>
 					<h1 attrs="{'invisible' : [('id','=',False)]}"><field name="pph_name" /></h1>
 					<group attrs="{'invisible' : [('id','=',False)]}">
+						<field name="total_added_hours" />
+						<field name="total_validated_hours" />
 						<field name="av_amount" />
 					</group>
 					<group string="Activity summary" attrs="{'invisible' : [('id','=',False)]}">
-						<group string="Validated hours">
-							<field name="validated_hours" nolabel="1" readonly="True">
-								<tree string="">
+						<group string="Billable hours">
+							<field name="billable_hours" nolabel="1" readonly="True">
+								<tree string="" colors="green:type=='validated';darkred:type=='pending'">
 									<field name="processed_date" />
-									<field name="related_visit" />
+									<field name="description" />
 									<field name="amount" />
+									<field name="type" invisible="1" />
 								</tree>
 							</field>
 						</group>
@@ -77,7 +97,8 @@
 						<field name="related_hours" nolabel="1">
 							<tree string="">
 									<field name="processed_date" />
-									<field name="related_visit" />
+									<field name="type" />
+									<field name="description" />
 									<field name="amount" />
 								</tree>
 						</field>
@@ -93,6 +114,24 @@
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form</field>
 		</record>
+		
+		<record id="account_analytic_account_prepaid_hours_form" model="ir.ui.view">
+            <field name="name">account.analytic.account.invoice.form</field>
+            <field name="model">account.analytic.account</field>
+            <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+            <field name="arch" type="xml">
+                <xpath expr='//div[@name="project"]' position='inside'>
+                    <field name="use_prepaid_hours"/>
+                    <label for="use_prepaid_hours"/>
+                </xpath>
+                <xpath expr='//div[@name="buttons"]' position='inside'>
+                    <button string="Prepaid hours managment"
+                        name="act_show_prepaid_hours_for_contract"
+                        type="object"
+                        attrs="{'invisible' : [('use_prepaid_hours','=',False)]}" />
+                </xpath>
+            </field>
+        </record>
 		
 		<!-- Menu item -->
 		<menuitem

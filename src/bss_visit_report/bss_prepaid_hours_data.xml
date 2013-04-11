@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record id="user_for_travel_package" model="res.users">
+            <field name="name">Déplacements facturés</field>
+            <field name="login">traveler</field>
+            <field name="sel_group_10">10</field>
+            <field name="in_group_28" eval="True" />
+            <field name="in_group_38" eval="True" />
+            <field name="in_group_36" eval="True" />
+            <field name="in_group_41" eval="True" />
+            <field name="in_group_7" eval="True" />
+            <field name="in_group_9" eval="True" />
+        </record>
+        <record id="traveler_employee" model="hr.employee">
+        	<field name="name">Déplacements facturés</field>
+        	<field name="tz">Europe/Zurich</field>
+        	<field name="user_id" ref="bss_visit_report.user_for_travel_package" />
+        </record>
+    </data>
+</openerp>
