@@ -87,6 +87,7 @@ bss_prepaid_time()
 class bss_prepaid_hours(osv.osv):
     _name = 'bss_visit_report.prepaid_hours'
     _description = 'Prepaid hours'
+    _rec_name = 'pph_name'
         
     def _get_billable_hours(self, cr, uid, ids, name, args, context=None):
         res = {}

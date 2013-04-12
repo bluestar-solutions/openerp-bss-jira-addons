@@ -137,6 +137,7 @@
 		<menuitem
 			id="menu_prepaid_hours"
 			parent="project_timesheet.menu_project_billing"
-			action="action_prepaid_hours" />
+			action="action_prepaid_hours"
+			groups="project.group_project_user" />
 	</data>
 </openerp>
