@@ -21,9 +21,51 @@
 
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
+from openerp.netsvc import logging
 
 class bss_holidays(osv.osv):
     _inherit = "hr.holidays"
+    _logger = logging.getLogger('hr.holidays')
+    
+    def __init__(self, cr, uid):
+        super(bss_holidays, self)._track.clear()
+        super(bss_holidays, self)._columns['state'].track_visibility = None
+        super(bss_holidays, self).__init__(cr, uid)
+        
+    def _parse_message(self, new_value, message_description=None, old_value=None):
+        message = ''
+        if message_description:
+            message = '<span>%s</span>' % message_description
+
+        message += '<div> &nbsp; &nbsp; &bull; <b>Status</b>: '
+        if old_value:
+            message += '%s &rarr; ' % old_value
+        message += '%s</div>' % new_value
+        
+        return message
+        
+    def create(self, cr, uid, values, context=None):
+        res = super(bss_holidays, self).create(cr, uid, values, context)
+        
+        subtp = self.pool.get('mail.message.subtype').browse(cr, uid, self.pool.get('mail.message.subtype').search(cr, uid, [('name','=','To Approve'),('res_model','=','hr.holidays')]))
+        message_body = self._parse_message('To Approve', subtp[0].description, 'To Submit')
+        self.message_post(cr, uid, res, body=message_body, type='holidays', subtype='hr_holidays.mt_holidays_confirmed')
+        
+        return res
+        
+    def write(self, cr, uid, ids, vals, context=None):
+        send_mess = False
+        if 'state' in vals.keys() and vals['state'] != 'confirm':
+            subtp = self.pool.get('mail.message.subtype').browse(cr, uid, self.pool.get('mail.message.subtype').search(cr, uid, [('name','=','Refused' if vals['state'] == 'refuse' else 'Approved'),('res_model','=','hr.holidays')]))
+            message_body = self._parse_message('Refused' if vals['state'] == 'refuse' else 'Approved', subtp[0].description, 'To approve')
+            send_mess = True
+            
+        res = super(bss_holidays, self).write(cr, uid, ids, vals, context)
+        
+        if send_mess:
+            self.message_post(cr, uid, ids[0], body=message_body, type='holidays', subtype='hr_holidays.mt_holidays_%s' % ('refused' if vals['state'] == 'refuse' else 'approved'))
+            
+        return res
     
     def _label(self, cr, uid, ids, field_name, args, context=None):
         res={}
@@ -175,5 +217,45 @@ class bss_holidays(osv.osv):
         return super(bss_holidays, self).holidays_validate(cr, uid, ids, context)
 
 bss_holidays()
+
+class bss_res_partner_mail(osv.Model):
+    _name = "res.partner"
+    _inherit = ['res.partner', 'mail.thread']
+    
+    def __init__(self, cr, uid):
+        super(bss_res_partner_mail, self)._columns['notification_email_send'].selection.append(('holidays','Holidays notifications only'))
+        
+class bss_mail_message(osv.Model):
+    _name = "mail.message"
+    _inherit = 'mail.message'
+    
+    def __init__(self, cr, uid):
+        super(bss_mail_message, self)._columns['type'].selection.append(('holidays','Holidays notifications'))
+        
+class bss_mail_notification(osv.Model):
+    _name = "mail.notification"
+    _inherit = 'mail.notification'
+    
+    def get_partners_to_notify(self, cr, uid, message, partners_to_notify=None, context=None):
+        notify_pids = []
+        
+        for notification in message.notification_ids:
+            if notification.read:
+                continue
+            
+            partner = notification.partner_id
+            
+            if partners_to_notify and partner.id not in partners_to_notify:
+                continue
+            
+            if partner.notification_email_send == 'holidays' and message.type != 'holidays':
+                continue
+            
+            notify_pids.append(partner.id)
+        
+        ids = super(bss_mail_notification, self).get_partners_to_notify(cr, uid, message, partners_to_notify, context)
+        notify_pids += ids
+        
+        return notify_pids
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
