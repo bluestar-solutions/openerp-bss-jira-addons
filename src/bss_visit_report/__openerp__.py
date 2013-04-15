@@ -27,7 +27,9 @@
     'description': """A module for visit reports.""",
     'author': 'bluestar solutions sàrl',
     'website': 'http://www.blues2.ch',
-    'depends': ['account','project','hr_timesheet_sheet'],
+    'depends': ['account',
+                'project',
+                'project_timesheet'],
     'data': [
         'bss_prepaid_hours_data.xml',
     ],
