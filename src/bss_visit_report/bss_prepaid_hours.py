@@ -160,7 +160,7 @@ class bss_prepaid_hours(osv.osv):
     
 bss_prepaid_hours()
 
-class account_analytic_account(osv.Model):
+class bss_aaa(osv.osv):
     _inherit = 'account.analytic.account'
     
     _columns = {
@@ -169,7 +169,7 @@ class account_analytic_account(osv.Model):
     }
     
     def create(self, cr, uid, vals, context=None):
-        res = super(account_analytic_account, self).create(cr, uid, vals, context)
+        res = super(bss_aaa, self).create(cr, uid, vals, context)
         
         pph_pool = self.pool.get('bss_visit_report.prepaid_hours')
         pph_id = pph_pool.create(cr, uid, {'contract_id' : res}, context)
@@ -182,10 +182,10 @@ class account_analytic_account(osv.Model):
         for cc in self.browse(cr, uid, ids, context):
             if cc.use_prepaid_hours and cc.prepaid_hours_id:
                 self.pool.get('bss_visit_report.prepaid_hours').unlink(cr, uid, cc.prepaid_hours_id.id, context)
-        return super(account_analytic_account, self).unlink(cr, uid, ids, context)
+        return super(bss_aaa, self).unlink(cr, uid, ids, context)
         
     def on_change_template(self, cr, uid, ids, template_id, context=None):
-        res = super(account_analytic_account, self).on_change_template(cr, uid, ids, template_id, context=context)
+        res = super(bss_aaa, self).on_change_template(cr, uid, ids, template_id, context=context)
         if template_id and 'value' in res:
             template = self.browse(cr, uid, template_id, context=context)
             res['value']['use_prepaid_hours'] = template.use_prepaid_hours
@@ -204,7 +204,9 @@ class account_analytic_account(osv.Model):
             'res_id' : prepaid_id,
         }
         
-class bss_prepaid_hours_hr_timesheet(osv.Model):
+bss_aaa()
+        
+class bss_prepaid_hours_hr_timesheet(osv.osv):
     _name = 'hr_timesheet_sheet.sheet'
     _inherit = 'hr_timesheet_sheet.sheet'
     _logger = logging.getLogger(_name)
@@ -250,5 +252,7 @@ class bss_prepaid_hours_hr_timesheet(osv.Model):
                                 })
         
         return res
+    
+bss_prepaid_hours_hr_timesheet()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

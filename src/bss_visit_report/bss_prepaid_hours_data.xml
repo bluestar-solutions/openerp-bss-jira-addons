@@ -4,7 +4,7 @@
         <record id="user_for_travel_package" model="res.users">
             <field name="name">Déplacements facturés</field>
             <field name="login">traveler</field>
-            <field name="sel_group_10">10</field>
+<!--             <field name="sel_group_10" eval="10" /> -->
             <field name="in_group_28" eval="True" />
             <field name="in_group_38" eval="True" />
             <field name="in_group_36" eval="True" />
