@@ -49,7 +49,7 @@ class bss_employee(osv.osv):
     }
     
     _defaults = {
-        'tz': pytz.UTC,
+        'tz': pytz.UTC.zone,
         'attendance_start': 0
     }
     
