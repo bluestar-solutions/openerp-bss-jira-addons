@@ -27,9 +27,12 @@
     'description': """A module for visit reports.""",
     'author': 'bluestar solutions sàrl',
     'website': 'http://www.blues2.ch',
-    'depends': ['account',
+    'depends': ['base',
+                'account',
+                'procurement',
                 'project',
-                'project_timesheet'],
+                'project_timesheet'
+                ],
     'data': [
         'bss_prepaid_hours_data.xml',
     ],
@@ -52,7 +55,7 @@
     'js': [],
     'qweb': [], 
     'demo_xml': [],
-    'test': [],
+    'test': ['test/test_bss_prepaid_hours.yml'],
     'installable': True,
     'application': False,
     'auto_install': False,
