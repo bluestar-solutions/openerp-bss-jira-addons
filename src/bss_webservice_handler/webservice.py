@@ -52,7 +52,7 @@ class webservice(osv.osv):
         'ws_path': fields.char('Webservice Path', size=256, required=True),
         'http_auth_type': fields.selection(HTTP_AUTH_TYPE, 'HTTP Authentication', required=True),
         'http_auth_login': fields.char('HTTP Login', size=64),
-        'http_auth_password': fields.char('HTTP Password', size=64, invisible=True),
+        'http_auth_password': fields.char('HTTP Password', size=64),
         'model_name': fields.char('Model Name', size=128, required=True),
         'field_ids': fields.one2many('bss.webservice_field','service_id','Service Fields Translations'),
         'before_method_name': fields.char('Before Method Name', size=128),

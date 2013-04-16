@@ -21,7 +21,7 @@
 
 {
     'name': 'Partner Phone Numbers',
-    'version': '1.0-1',
+    'version': '1.1-1',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """A module to format phone numbers in Partner.""",
