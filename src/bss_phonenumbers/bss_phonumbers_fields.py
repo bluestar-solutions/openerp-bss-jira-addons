@@ -30,22 +30,20 @@ class bss_phonenumbers_converter(osv.TransientModel):
     @staticmethod
     def _parse(vals, region=''):
         if isinstance(vals, dict):
-            number = [vals['e164'], None]
+            number = [vals['e164'], region]
         elif vals:
             if 'xxx' in vals:
                 return vals
             number = vals.split(',')
             if len(number) == 1:
-                number = [number[0], None]
+                number = [number[0], region]
         else :
             return None
         
         if not number[0] or number[0] == '':
             return None
         
-        if region == '':
-            region = 'ZZ'
-        return phonenumbers.parse(*number, Region=region)  
+        return phonenumbers.parse(*number)  
     
     def parse(self, cr, uid, vals, context=None):
         try:
