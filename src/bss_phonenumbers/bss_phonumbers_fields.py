@@ -28,7 +28,7 @@ class bss_phonenumbers_converter(osv.TransientModel):
     _name = 'bss.phonenumbers.converter'
 
     @staticmethod
-    def _parse(vals):
+    def _parse(vals, region=''):
         if isinstance(vals, dict):
             number = [vals['e164'], None]
         elif vals:
@@ -43,7 +43,9 @@ class bss_phonenumbers_converter(osv.TransientModel):
         if not number[0] or number[0] == '':
             return None
         
-        return phonenumbers.parse(*number)  
+        if region == '':
+            region = 'ZZ'
+        return phonenumbers.parse(*number, Region=region)  
     
     def parse(self, cr, uid, vals, context=None):
         try:
