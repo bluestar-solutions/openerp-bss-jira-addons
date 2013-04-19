@@ -9,7 +9,7 @@ openerp.bss_partner_phonenumbers = function(instance) {
             this.setupFocus($button);
         },
         render_value: function() {
-        	var field = this
+        	var field = this;
         	if (!field.get("effective_readonly")) {
         		field.$el.find('input').val(this.get('value') || '');
         	} else {
@@ -22,11 +22,12 @@ openerp.bss_partner_phonenumbers = function(instance) {
         	}
         },
         get_value: function() {
-        	val = this.get('value')
+        	val = this.get('value');
         	if (!val) {
-        		val = ''
+        		return '';
         	}
-            return val + ',' + this.session.user_context.lang.substring(3,5);
+        	
+		return val + ',' + this.session.user_context.lang.substring(3,5);
         },
         on_button_clicked: function() {
             location.href = 'tel:' + this.get('value');
