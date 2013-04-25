@@ -103,7 +103,8 @@ class account_analytic_line(osv.osv):
                             """, (account.id, tuple(ids), journal_type))
                 
                 for invoice_details in cr.dictfetchall():
-                    #TODO: Prepaid hours
+                    if data.get('product'):
+                        invoice_details['product_id'] = data['product'][0]
                     factor = invoice_factor_obj.browse(cr, uid, invoice_details['to_invoice'], context=context2)
                     invoice = invoice_obj.browse(cr, uid, last_invoice, context)
                     details = []
