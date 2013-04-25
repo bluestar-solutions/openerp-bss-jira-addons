@@ -13,8 +13,7 @@
             <field name="name">draft</field>
             <field name="kind">function</field>
             <field name="action">prepaid_draft()</field>
-        </record>
-        
+        </record>        
         
 	
 		<record id="view_prepaid_hours_add_hours" model="ir.ui.view">
@@ -160,6 +159,17 @@
                         attrs="{'invisible' : [('use_prepaid_hours','=',False)]}" />
                 </xpath>
             </field>
+        </record>
+        
+        <record id="view_hr_employee_initials" model="ir.ui.view">
+        	<field name="name">hr.employee.form</field>
+        	<field name="model">hr.employee</field>
+        	<field name="inherit_id" ref="hr.view_employee_form" />
+        	<field name="arch" type="xml">
+        		<field name="work_location" position="after">
+        			<field name="initials" />
+        		</field>
+        	</field>
         </record>
 		
 		<!-- Menu item -->

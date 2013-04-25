@@ -250,6 +250,15 @@ class bss_aaa(osv.osv):
         }
         
 bss_aaa()
+
+class bss_prepaid_hours_hr_employee(osv.osv):
+    _inherit = 'hr.employee'
+    
+    _columns = {
+        'initials' : fields.char('Initiales', size=3),
+    }
+    
+bss_prepaid_hours_hr_employee()
         
 class bss_prepaid_hours_hr_timesheet(osv.osv):
     _name = 'hr_timesheet_sheet.sheet'

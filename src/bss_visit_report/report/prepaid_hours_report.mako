@@ -83,6 +83,9 @@
 			#solde_before td, #solde_after td {
 			  text-align: right;
 			}
+			#report_content {
+			  table-layout: fixed;
+			}
 			#report_content tbody tr:nth-child(even) {
 			  background-color: #DDD;
 			}
@@ -147,14 +150,15 @@
 				<table id="report_content">
 					<thead>
 						<tr>
-							<th>Date</th>
-							<th>Description</th>
-							<th>Débit</th>
-							<th>Crédit</th>
-							<th>Solde</th>
+							<th width="10%">Date</th>
+							<th width="7%">Code</th>
+							<th width="53%">Description</th>
+							<th width="10%">Débit</th>
+							<th width="10%">Crédit</th>
+							<th width="10%">Solde</th>
 						</tr>
 						<tr id="solde_before">
-							<td colspan="2">&nbsp;</td>
+							<td colspan="3">&nbsp;</td>
 							<td colspan="2">Solde au ${date_from.strftime('%d.%m.%Y')}</td>
 							<td>${"%.2f" % tot_bef}</td>
 						</tr>
@@ -165,6 +169,13 @@
 						% if ppt.type != 'pending' and ppt_pd >= date_from and ppt_pd <= date_to:
 						<tr>
 							<td>${ppt.processed_date}</td>
+							<td>
+								% if ppt.type == 'validated':
+								${ppt.related_timesheet.user_id.employee_ids[0].initials}
+								% else:
+								&nbsp;
+								% endif
+							</td>
 							<td>
 								% if ppt.type == 'add':
 								Achat de ${"%.2f" % (ppt.amount / 60.0)} heure(s)
@@ -195,7 +206,7 @@
 					</tbody>
 					<tfooter>
 						<tr id="solde_after">
-							<td colspan="2">&nbsp;</td>
+							<td colspan="3">&nbsp;</td>
 							<td colspan="2">Solde au ${date_to.strftime('%d.%m.%Y')}</td>
 							<td>${"%.2f" % (tot_bef + tot_add - tot_val)}</td>
 						</tr>
