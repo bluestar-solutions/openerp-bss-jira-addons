@@ -223,6 +223,21 @@ class bss_aaa(osv.osv):
         
         return res
     
+    def write(self, cr, uid, ids, vals, context=None):
+        res = super(bss_aaa, self).write(cr, uid, ids, vals, context)
+        
+        if 'use_prepaid_hours' in vals.keys():
+            pph_pool = self.pool.get('bss_visit_report.prepaid_hours')
+            if vals['use_prepaid_hours']:
+                pph_id = pph_pool.create(cr, uid, {'contract_id' : ids[0]}, context)
+                self.write(cr, uid, ids, {'prepaid_hours_id' : pph_id}, context)
+            else:
+                for contract in self.browse(cr, uid, ids, context):
+                    pph_pool.unlink(cr, uid, [contract.prepaid_hours_id.id], context)
+                    super(bss_aaa, self).write(cr, uid, [contract.id], {'prepaid_hours_id': False}, context)
+                
+        return res
+    
     def unlink(self, cr, uid, ids, context=None):
         for cc in self.browse(cr, uid, ids, context):
             if cc.use_prepaid_hours and cc.prepaid_hours_id:
