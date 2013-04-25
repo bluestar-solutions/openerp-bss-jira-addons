@@ -133,6 +133,10 @@
 						</tr>
 					</thead>
 					<tbody>
+						<tr>
+							<td>Contrat :</td>
+							<td>${prepaid_hours.contract_id.name}</td>
+						</tr>
 						<tr class="date">
 							<td>Date :</td>
 							<td>${date.today().strftime('%d.%m.%Y')}</td>
