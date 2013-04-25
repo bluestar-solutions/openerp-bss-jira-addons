@@ -35,6 +35,7 @@
                 ],
     'data': [
         'bss_prepaid_hours_data.xml',
+        'bss_visit_account_invoice_data.xml',
     ],
     'init_xml': [],
     'update_xml': ['security/ir_security.xml',
