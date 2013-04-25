@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<record id="bss_visit_account_invoice_view" model="ir.ui.view">
+			<field name="name">account.invoice.form</field>
+			<field name="model">account.invoice</field>
+			<field name="inherit_id" ref="account.invoice_form" />
+			<field name="arch" type="xml">
+				<field name="partner_id" position="after">
+					<field name="nref" />
+					<field name="vref" />
+					<field name="print_details" />
+				</field>
+				<xpath expr="//page[@string='Invoice Lines']" position="after">
+					<page string="Détails">
+						<field name="related_lines" nolabel="1">
+							<tree string="" version="7.0">
+								<field name="date" />
+								<field name="unit_amount" />
+								<field name="to_invoice" />
+								<field name="name" />
+							</tree>
+						</field>
+					</page>
+				</xpath>
+			</field>
+		</record>
+
+	</data>
+</openerp>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+
+		<report id="report_invoice_webkit" model="account.invoice" name="bss_visit_report.invoice.report"
+			string="Facture BSS" file="bss_visit_report/report/invoice_report.mako" header="False"
+			report_type="webkit" />
+
+	</data>
+</openerp>
