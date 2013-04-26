@@ -8,7 +8,7 @@ msgstr ""
 #: model:bluestar.marital_status,name:bss_marital_status.bluestar_marital_status_married
 #. module: bss-marital-status
 msgid "Married"
-msgstr "Marrié"
+msgstr "Marié"
 
 #: model:bluestar.marital_status,name:bss_marital_status.bluestar_marital_status_divorced
 #. module: bss-marital-status
