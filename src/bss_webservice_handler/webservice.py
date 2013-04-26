@@ -28,6 +28,7 @@ import httplib2
 from dateutil import parser as dateparser
 import threading
 from openerp import pooler
+import base64
 
 WEBSERVICE_TYPE = [('GET','Get'),('PUSH', 'Push'),('PUSH_GET','Push Get Sync'),('GET_PUSH','Get Push Sync'),]
 HTTP_AUTH_TYPE = [('NONE', 'None'), ('BASIC', 'Basic')]
@@ -140,6 +141,7 @@ class webservice(osv.osv):
                 return int(mktime(strptime(string,"%H:%M:S")))
         elif format == 'ISO8601':
             if type=='datetime':
+       
                 return datetime.strftime(datetime.strptime(string,"%Y-%m-%d %H:%M:%S.%f"),'%Y-%m-%dT%H:%M:S')
             elif type in ('date','time'):
                 return string
@@ -242,6 +244,8 @@ class webservice(osv.osv):
         headers = {"Content-type": "application/json",
                    "Accept": "application/json",
                    }  
+        if service.http_auth_type == 'BASIC':
+            headers["Authorization"] = "Basic {0}".format(base64.b64encode("{0}:{1}".format(service.http_auth_login, service.http_auth_password)))
         if service.last_success:
             headers['Last-Success'] = webservice.date2str(service.last_success, 'datetime', 'ISO8601')
         logger.debug('Url : %s \\n', url)
