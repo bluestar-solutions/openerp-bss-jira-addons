@@ -1,0 +1,2 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_bss_jira_connector_jira_project_user,bss_jira_connector_jira_project.user,model_bss_jira_connector_jira_project,base.group_user,1,0,0,0

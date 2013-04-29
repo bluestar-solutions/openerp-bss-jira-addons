@@ -3,4 +3,5 @@
 /openerp
 /deps
 openerp-pid
-openerp-bss-addons.launch
+iopenerp-bss-addons.launch
+.cache

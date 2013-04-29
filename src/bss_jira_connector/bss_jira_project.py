@@ -1,0 +1,98 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#    
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2012 Bluestar Solutions Sàrl (<http://www.blues2.ch>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+##############################################################################
+
+from openerp.osv import fields, osv
+from openerp.netsvc import logging
+import json
+from bss_webservice_handler.webservice import webservice
+
+class bss_jira_project(osv.osv):
+    _name = 'bss_jira_connector.jira_project'
+    _logger = logging.getLogger(_name)
+    
+    _columns = {
+        'jira_id': fields.integer('JIRA id', required=True),
+        'key': fields.char('JIRA key', size=256, required=True),
+        'name': fields.char('JIRA project name', size=256, required=True),
+        'project_id': fields.many2one('project.project', string="Project"),
+    }
+
+    _sql_constraints = [
+        ('jira_id_uniq', 'unique (jira_id)', 'The JIRA id must be unique !'),
+        ('key_uniq', 'unique (key)', 'The JIRA key must be unique !'),
+    ]
+
+    def ws_decode_write(self, cr, uid, model, content, datetime_format):
+        decoded_list = json.loads(content)
+        field_list = model.fields_get(cr,uid)
+        self._logger.debug("List is : %s, length is %d",str(decoded_list),len(decoded_list))
+        self._logger.debug("Field list is : %s, length is %d",str(field_list),len(field_list))
+        if not decoded_list:
+            return True
+        elif len(decoded_list)==0:
+            self._logger.debug("List is empty")
+            return True
+
+        for decoded in decoded_list:
+            oid = model.search(cr, uid, [('jira_id', '=', decoded['id'])])
+            if oid:
+                jira_project = self.browse(cr, uid, oid)[0]
+                if jira_project.name!=decoded['name']:
+                    self._logger.debug('Update name for project %s from %s to %s',decoded['key'],jira_project.name,decoded['name'])
+                    self.write(cr, uid, jira_project.id, {'name': decoded['name']})
+            else:   
+                data = {'jira_id': decoded['id'],
+                        'key': decoded['key'],
+                        'name': decoded['name']
+                        }
+                self._logger.debug('Create project %s',str(data))
+                oid = model.create(cr, uid, data)
+        return True   
+    
+    def ws_decode_write_worklog(self, cr, uid, model, content, datetime_format):
+        decoded_list = json.loads(content)
+        field_list = model.fields_get(cr,uid)
+        self._logger.debug("List is : %s, length is %d",str(decoded_list),len(decoded_list))
+        self._logger.debug("Field list is : %s, length is %d",str(field_list),len(field_list))
+        if not decoded_list:
+            return True
+        elif len(decoded_list)==0:
+            self._logger.debug("List is empty")
+            return True
+
+#        for decoded in decoded_list:
+#            oid = model.search(cr, uid, [('jira_id', '=', decoded['id'])])
+#            if oid:
+#                jira_project = self.browse(cr, uid, oid)[0]
+#                if jira_project.name!=decoded['name']:
+#                    self._logger.debug('Update name for project %s from %s to %s',decoded['key'],jira_project.name,decoded['name'])
+#                    self.write(cr, uid, jira_project.id, {'name': decoded['name']})
+#            else:   
+#                data = {'jira_id': decoded['id'],
+#                        'key': decoded['key'],
+#                        'name': decoded['name']
+#                        }
+#                self._logger.debug('Create project %s',str(data))
+#                oid = model.create(cr, uid, data)
+        return True    
+ 
+bss_jira_project()
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
