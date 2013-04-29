@@ -11,6 +11,7 @@
     use_prepaid_hours: True
     use_timesheets: True
     invoice_on_timesheets: True
+    to_invoice: False
 
 -
   I check the state of the contract

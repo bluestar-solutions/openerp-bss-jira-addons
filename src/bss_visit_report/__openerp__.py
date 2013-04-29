@@ -29,14 +29,15 @@
     'website': 'http://www.blues2.ch',
     'depends': ['base',
                 'account',
-                'procurement',
+#                'procurement',
                 'project',
-                'project_timesheet'
+                'project_timesheet',
+                'report_webkit',
                 ],
-    'data': [
-        'bss_prepaid_hours_data.xml',
-    ],
-    'init_xml': [],
+    'data': ['bss_visit_account_invoice_data.xml',
+             'bss_prepaid_hours_data.xml'],
+    'init_xml': ['bss_visit_account_invoice_data.xml',
+                 'bss_prepaid_hours_data.xml'],
     'update_xml': ['security/ir_security.xml',
                    'bss_task_view.xml',
                    'bss_visit_report_view.xml',
@@ -46,8 +47,11 @@
                    'bss_visit_travel_zone_view.xml',
                    'bss_visit_view.xml',
                    'bss_prepaid_hours_view.xml',
+                   'bss_visit_account_invoice_view.xml',
                    
                    'report/visit_report.xml',
+                   'report/invoice_report.xml',
+                   'report/prepaid_hours_report.xml',
                    
                    'security/ir.model.access.csv',
                    'security/visit_report_security.xml'],

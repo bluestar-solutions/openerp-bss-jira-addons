@@ -13,8 +13,7 @@
             <field name="name">draft</field>
             <field name="kind">function</field>
             <field name="action">prepaid_draft()</field>
-        </record>
-        
+        </record>        
         
 	
 		<record id="view_prepaid_hours_add_hours" model="ir.ui.view">
@@ -23,7 +22,6 @@
 			<field name="arch" type="xml">
 				<form string="Add prepaid hours">
 					<group>
-<!-- 						<field name="pph_name" readonly="True" /> -->
 						<field name="processed_date" />
 						<field name="amount" default_focus="1" />
 					</group>
@@ -36,11 +34,39 @@
 			</field>
 		</record>
 		
+		<record id="view_prepaid_hours_print_report" model="ir.ui.view">
+			<field name="name">bss_visit_report.prepaid_hours.print_report</field>
+			<field name="model">bss_visit_report.prepaid_hours.print_report</field>
+			<field name="arch" type="xml">
+				<form string="Print report">
+					<group>
+						<field name="date_from" />
+						<field name="date_to" />
+					</group>
+					<group col="4" colspan="4">
+						<button special="cancel" string="Annuler" />
+						<button name="execute" string="Imprimer"
+							type="object" />
+					</group>
+				</form>
+			</field>
+		</record>
+		
 		<record id="action_add_hours" model="ir.actions.act_window">
 			<field name="name">Add prepaid hours</field>
 			<field name="res_model">bss_visit_report.prepaid_hours.add_hours</field>
 			<field name="view_type">form</field>
 			<field name="view_id" ref="view_prepaid_hours_add_hours" />
+			<field name="context">{'prepaid_hours_id' : active_id}</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+		</record>
+		
+		<record id="action_print_report" model="ir.actions.act_window">
+			<field name="name">Print report</field>
+			<field name="res_model">bss_visit_report.prepaid_hours.print_report</field>
+			<field name="view_type">form</field>
+			<field name="view_id" ref="view_prepaid_hours_print_report" />
 			<field name="context">{'prepaid_hours_id' : active_id}</field>
 			<field name="view_mode">form</field>
 			<field name="target">new</field>
@@ -65,6 +91,8 @@
 					<header>
 						<button type="action" name="%(action_add_hours)d" string="Add hours"
 							class="oe_highlight" attrs="{'invisible' : [('id','=',False)]}" groups="base.group_sale_manager" />
+						<button type="action" name="%(action_print_report)d" string="Print report"
+							attrs="{'invisible' : [('id','=',False)]}" />
 					</header>
 					<h1 attrs="{'invisible' : [('id','!=',False)]}"><field name="contract_id" /></h1>
 					<h1 attrs="{'invisible' : [('id','=',False)]}"><field name="pph_name" /></h1>
@@ -131,6 +159,17 @@
                         attrs="{'invisible' : [('use_prepaid_hours','=',False)]}" />
                 </xpath>
             </field>
+        </record>
+        
+        <record id="view_hr_employee_initials" model="ir.ui.view">
+        	<field name="name">hr.employee.form</field>
+        	<field name="model">hr.employee</field>
+        	<field name="inherit_id" ref="hr.view_employee_form" />
+        	<field name="arch" type="xml">
+        		<field name="work_location" position="after">
+        			<field name="initials" />
+        		</field>
+        	</field>
         </record>
 		
 		<!-- Menu item -->
