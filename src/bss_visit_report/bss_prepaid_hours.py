@@ -20,11 +20,55 @@
 ##############################################################################
 
 from openerp.osv import fields, osv
-import time
-from datetime import timedelta
+import time, calendar
+from datetime import timedelta, date
 from openerp.netsvc import logging
 
 HOUR_TYPE = [('add','Add'),('pending','Pending'),('validated','Validated')]
+
+class bss_prepaid_print_report(osv.osv_memory):
+    _name = 'bss_visit_report.prepaid_hours.print_report'
+    _description = 'Print report'
+    
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None:
+            context = {}
+            
+        res = dict()
+        for field in self._columns.keys():
+            if field in context:
+                res[field] = context[field]
+                
+        res['date_from'] = date.today().replace(day=1).isoformat()
+        res['date_to'] = date.today().replace(day=calendar.monthrange(date.today().year, date.today().month)[1]).isoformat()
+        return res
+    
+    def _check_dates(self, cr, uid, ids, context=None):
+        return True
+    
+    _columns = {
+        'prepaid_hours_id' : fields.many2one('bss_visit_report.prepaid_hours', select=True),
+        'date_from' : fields.date('Du', required=True),
+        'date_to' : fields.date('Au', required=True),
+    }
+    
+    _constraints = [(_check_dates,'Error : invalid dates !',['date_from','date_to'])]
+    
+    def execute(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+            
+        form = self.browse(cr, uid, ids)[0]
+        context['date_from'] = form.date_from
+        context['date_to'] = form.date_to
+        
+        datas = {'ids': [form.prepaid_hours_id.id]}
+        
+        return {'type' : 'ir.actions.report.xml',
+                'report_name' : 'bss_visit_report.prepaid_hours.report',
+                'datas' : datas,
+                'context': context,
+                }
 
 class bss_prepaid_add_hours(osv.osv_memory):
     _name = 'bss_visit_report.prepaid_hours.add_hours'
@@ -59,6 +103,7 @@ class bss_prepaid_add_hours(osv.osv_memory):
             'amount' : form.amount,
             'prepaid_hours_id' : form.prepaid_hours_id.id,
             'processed_date' : form.processed_date,
+            'description' : "Achat de %.2f heure(s)" % (form.amount / 60.0),
             'type' : 'add',
             }, context=None)
         
@@ -178,6 +223,21 @@ class bss_aaa(osv.osv):
         
         return res
     
+    def write(self, cr, uid, ids, vals, context=None):
+        res = super(bss_aaa, self).write(cr, uid, ids, vals, context)
+        
+        if 'use_prepaid_hours' in vals.keys():
+            pph_pool = self.pool.get('bss_visit_report.prepaid_hours')
+            if vals['use_prepaid_hours']:
+                pph_id = pph_pool.create(cr, uid, {'contract_id' : ids[0]}, context)
+                self.write(cr, uid, ids, {'prepaid_hours_id' : pph_id}, context)
+            else:
+                for contract in self.browse(cr, uid, ids, context):
+                    pph_pool.unlink(cr, uid, [contract.prepaid_hours_id.id], context)
+                    super(bss_aaa, self).write(cr, uid, [contract.id], {'prepaid_hours_id': False}, context)
+                
+        return res
+    
     def unlink(self, cr, uid, ids, context=None):
         for cc in self.browse(cr, uid, ids, context):
             if cc.use_prepaid_hours and cc.prepaid_hours_id:
@@ -205,6 +265,15 @@ class bss_aaa(osv.osv):
         }
         
 bss_aaa()
+
+class bss_prepaid_hours_hr_employee(osv.osv):
+    _inherit = 'hr.employee'
+    
+    _columns = {
+        'initials' : fields.char('Initiales', size=3),
+    }
+    
+bss_prepaid_hours_hr_employee()
         
 class bss_prepaid_hours_hr_timesheet(osv.osv):
     _name = 'hr_timesheet_sheet.sheet'
