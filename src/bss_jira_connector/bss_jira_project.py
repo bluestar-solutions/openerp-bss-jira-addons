@@ -29,9 +29,9 @@ class bss_jira_project(osv.osv):
     _logger = logging.getLogger(_name)
     
     _columns = {
-        'jira_id': fields.integer('JIRA id', required=True),
-        'key': fields.char('JIRA key', size=256, required=True),
-        'name': fields.char('JIRA project name', size=256, required=True),
+        'jira_id': fields.integer('JIRA id', readonly=True),
+        'key': fields.char('JIRA key', size=256, readonly=True),
+        'name': fields.char('JIRA project name', size=256, readonly=True),
         'project_id': fields.many2one('project.project', string="Project"),
     }
 
@@ -69,15 +69,24 @@ class bss_jira_project(osv.osv):
     
     def ws_decode_write_worklog(self, cr, uid, model, content, datetime_format):
         decoded_list = json.loads(content)
-        field_list = model.fields_get(cr,uid)
-        self._logger.debug("List is : %s, length is %d",str(decoded_list),len(decoded_list))
-        self._logger.debug("Field list is : %s, length is %d",str(field_list),len(field_list))
+#        field_list = model.fields_get(cr,uid)
+#        self._logger.debug("List is : %s, length is %d",str(decoded_list),len(decoded_list))
+#        self._logger.debug("Field list is : %s, length is %d",str(field_list),len(field_list))
         if not decoded_list:
             return True
         elif len(decoded_list)==0:
             self._logger.debug("List is empty")
             return True
-
+        issue_list = decoded_list['issues']
+        self._logger.debug('Issue list contains %d issues (len = %d)',decoded_list['total'],len(issue_list))
+        found_projects = []
+        active_projects = []
+        for issue in issue_list:
+            self._logger.debug('Processing issue %s',issue['key'])
+            issue_jira_id = issue['id']
+            issue_key = issue['key']
+            project = issue['project']
+            
 #        for decoded in decoded_list:
 #            oid = model.search(cr, uid, [('jira_id', '=', decoded['id'])])
 #            if oid:

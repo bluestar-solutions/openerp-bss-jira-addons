@@ -39,6 +39,8 @@
     'update_xml': ['security/ir_security.xml',
                    
                    'security/ir.model.access.csv',
+                   'bss_jira_project_view.xml',
+                   
                    ],
     'css': [],
     'js': [],
