@@ -50,7 +50,7 @@ class webservice(osv.osv):
         'ws_protocol': fields.char('Webservice Protocol', size=256, required=True),
         'ws_host': fields.char('Webservice Host', size=256, required=True),
         'ws_port': fields.char('Webservice Port', size=256, required=True),
-        'ws_path': fields.char('Webservice Path', size=256, required=True),
+        'ws_path': fields.char('Webservice Path', size=1024, required=True),
         'http_auth_type': fields.selection(HTTP_AUTH_TYPE, 'HTTP Authentication', required=True),
         'http_auth_login': fields.char('HTTP Login', size=64),
         'http_auth_password': fields.char('HTTP Password', size=64),
@@ -250,7 +250,8 @@ class webservice(osv.osv):
             headers['Last-Success'] = webservice.date2str(service.last_success, 'datetime', 'ISO8601')
         logger.debug('Url : %s \\n', url)
         response, content = http.request(url, "GET", headers=headers)
-        logger.debug('Response: %s \n%s', response, content)
+#        logger.debug('Response: %s \n%s', response, content)
+        logger.debug('Response: %s ', response)
         success = False
         if response.status == 200:
             if model and service.decode_method_name and hasattr(model, service.decode_method_name):
