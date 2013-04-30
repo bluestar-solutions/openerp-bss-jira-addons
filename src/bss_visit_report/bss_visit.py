@@ -10,6 +10,39 @@ STATE = (('draft', 'Draft'),
          ('pending', 'Pending'),
          ('terminated', 'Terminated'))
 
+class bss_visit_add_task(osv.osv_memory):
+    _name = 'bss_visit_report.bss_visit_add_task'
+    
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None:
+            context = {}
+            
+        res = dict()
+        for field in self._columns.keys():
+            if field in context:
+                res[field] = context[field]
+                
+        res['related_project'] = self.pool.get('bss_visit_report.visit').browse(cr, uid, res['visit_id']).project_id.id
+                
+        return res
+    
+    _columns = {
+        'visit_id': fields.many2one('bss_visit_report.visit', string="Visit", ondelete='cascade', required=True, readonly=True),
+        'related_project': fields.related('visit_id', 'project_id', type="many2one", string="Project", store=False, relation="project.project", readonly=True),
+        'tasks': fields.many2one('project.task', string="Task", domain="[('project_id','=',related_project)]"),
+    }
+    
+    def execute(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+            
+        form = self.browse(cr, uid, ids)[0]
+        self.pool.get('bss_visit_task').create(cr, uid, {'task_id': form.tasks.id, 'visit_id': form.visit_id}, context)
+        
+        return {'type': 'ir.actions.act_window_close'}
+
+bss_visit_add_task()
+
 class bss_visit(osv.osv):
 
     _name = 'bss_visit_report.visit'
@@ -190,6 +223,6 @@ class bss_visit(osv.osv):
             project = self.pool.get('project.project').browse(cr, uid, project_id)
             v['customer_id'] = project.partner_id.id
 
-        return {'value': v} 
+        return {'value': v}
     
 bss_visit()

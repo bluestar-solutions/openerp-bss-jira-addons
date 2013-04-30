@@ -11,7 +11,7 @@
     use_prepaid_hours: True
     use_timesheets: True
     invoice_on_timesheets: True
-    to_invoice: False
+    to_invoice: hr_timesheet_invoice.timesheet_invoice_factor1
 
 -
   I check the state of the contract
@@ -145,8 +145,8 @@
   !record {model: hr_timesheet_sheet.sheet, id: sheet_0}:
     employee_id: hr.employee_qdp
     state: new
-    date_from: !eval ('%s-%s' % (time.strftime('%Y-%m'), time.strptime(time.strftime('%Y %W 1'), '%Y %W %w').tm_mday))
-    date_to: !eval ('%s-%s' % (time.strftime('%Y-%m'), time.strptime(time.strftime('%Y %W 0'), '%Y %W %w').tm_mday))
+    date_from: !eval time.strftime('%Y-%m-%d', time.strptime(time.strftime('%Y %W 1'), '%Y %W %w'))
+    date_to: !eval time.strftime('%Y-%m-%d', time.strptime(time.strftime('%Y %W 0'), '%Y %W %w'))
     
 -
   I check if timesheet contains correct projects
