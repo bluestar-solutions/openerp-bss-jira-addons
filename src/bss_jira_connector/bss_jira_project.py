@@ -23,6 +23,7 @@ from openerp.osv import fields, osv
 from openerp.netsvc import logging
 import json
 from bss_webservice_handler.webservice import webservice
+from datetime import datetime, date
 
 class bss_jira_project(osv.osv):
     _name = 'bss_jira_connector.jira_project'
@@ -69,6 +70,7 @@ class bss_jira_project(osv.osv):
     
     def ws_decode_write_worklog(self, cr, uid, model, content, datetime_format):
         decoded_list = json.loads(content)
+#/jira/rest/api/2/search?jql=timeSpent%20%3E%200%20and%20updated%20%3E%20startOfDay(-1)%20ORDER%20BY%20updated%20DESC&startAt=0&maxResults=500&fields=assignee,description,summary,created,updated,duedate,priority,status,worklog,key,id,project,timeestimate,timeoriginalestimate
 #        field_list = model.fields_get(cr,uid)
 #        self._logger.debug("List is : %s, length is %d",str(decoded_list),len(decoded_list))
 #        self._logger.debug("Field list is : %s, length is %d",str(field_list),len(field_list))
@@ -83,6 +85,7 @@ class bss_jira_project(osv.osv):
         active_projects = {}
         issue_obj = self.pool.get('project.task')
         worklog_obj = self.pool.get('project.task.work')
+        user_obj = self.pool.get('res.users')
         for issue_fields in issue_list:
             issue = issue_fields['fields']
             self._logger.debug('Processing issue %s',issue_fields['key'])
@@ -99,6 +102,7 @@ class bss_jira_project(osv.osv):
                         active_projects[project['key']] = oid
                     else:
                         self._logger.debug('Project %s is not active',project['key'])
+                        continue
                 else:   
                     data = {'jira_id': project['id'],
                         'key': project['key'],
@@ -109,19 +113,100 @@ class bss_jira_project(osv.osv):
             elif project['key'] in active_projects:
                 jira_project = self.browse(cr, uid, active_projects[project['key']])[0]        
             else:
-                self._logger.debug('Project %s is not active',project['key'])    
-        if jira_project:
-            issue_jira_id = issue_fields['id']
-            ioid = issue_obj.search(cr, uid, [('jira_id', '=', issue_jira_id)])
-            issue_key = issue_fields['key']
-            if ioid:
-                jira_issue = issue_obj.browse(cr, uid, ioid)[0]
-                
-            else:
-                data = {
-                        
-                        }
-                
+                self._logger.debug('Project %s is not active',project['key'])
+                continue    
+
+            if jira_project and jira_project.project_id:
+                issue_jira_id = issue_fields['id']
+                ioid = issue_obj.search(cr, uid, [('jira_id', '=', issue_jira_id)])
+                issue_key = issue_fields['key']
+                last_update = datetime.strptime(issue['updated'].split('.')[0],'%Y-%m-%dT%H:%M:%S')
+                if ioid:
+                    jira_issue = issue_obj.browse(cr, uid, ioid)[0]
+                    data = {}
+                    if jira_issue.key != issue_key:
+                        data['key'] = issue_key
+                    if jira_issue.name != issue['summary']:
+                        data['name'] = issue['summary']
+                    prio = str(int(issue['priority']['id']) - 1)
+                    if jira_issue.priority != prio:
+                        data['priority'] = prio
+                    if jira_issue.project_id.id != jira_project.project_id.id:
+                        data['project_id'] = jira_project.project_id.id
+                    oe_assignee = jira_issue.user_id.login if jira_issue.user_id else None
+                    if issue['assignee'] and issue['assignee']['name'] != oe_assignee:
+                        assignee_id = user_obj.search(cr, uid, [('login','=',issue['assignee']['name'])])
+                        if assignee_id and len(assignee_id):
+                            data['user_id'] = assignee_id[0]                        
+                    elif oe_assignee:
+                        data['user_id']=None
+                    if issue['description'] != jira_issue.description: 
+                        data['description'] = issue['description']
+                    if issue['timeoriginalestimate']:
+                        toe = float(issue['timeoriginalestimate']) / 3600.0
+                        if toe != jira_issue.planned_hours:
+                            data['planned_hours'] = toe
+                    if issue['timeestimate']:
+                        te = float(issue['timeestimate']) / 3600.0
+                        if te != jira_issue.planned_hours:
+                            data['remaining_hours'] = te
+                    if issue['duedate']:
+                        duedate = datetime.strptime(issue['duedate'],'%Y-%m-%d')
+                        if duedate != jira_issue.date_deadline:
+                            data['date_deadline'] = duedate
+                    if issue['status']['id'] != jira_issue.jira_status:
+                        if issue['status']['id'] in ['1','4','10000']:
+                            state = 'pending'
+                        elif issue['status']['id'] in ['3','10001']:
+                            state = 'open'
+                        elif issue['status']['id'] in ['5','6']:
+                            state = 'done'
+                        if state:
+                            data['stage_id'] = issue_obj.stage_find(cr, uid, [], jira_project.project_id.id, [('state', '=', state)])
+                            data['jira_status'] = issue['status']['id']
+                    
+                    if jira_issue.last_update_datetime != last_update:
+                        data['last_update_datetime'] = last_update
+                    if data:
+                        self._logger.debug('Update issue %s with %s',issue_key,str(data))
+                        issue_obj.write(cr, uid, jira_issue.id, data)                             
+                else:
+                    data = {
+                        'jira_id':issue_jira_id,
+                        'key': issue_key,
+                        'name': issue['summary'],
+                        'priority': str(int(issue['priority']['id']) - 1),
+                        'project_id': jira_project.project_id.id,
+                            }
+                    if issue['assignee']:
+                        assignee_id = user_obj.search(cr, uid, [('login','=',issue['assignee']['name'])])
+                        if assignee_id and len(assignee_id):
+                            data['user_id'] = assignee_id[0]
+                    if issue['description']: 
+                        data['description'] = issue['description']
+                    if issue['timeoriginalestimate']:
+                        data['planned_hours'] = float(issue['timeoriginalestimate']) / 3600.0
+                    if issue['timeestimate']:
+                        data['remaining_hours'] = float(issue['timeestimate']) / 3600.0 
+                    if issue['duedate']:
+                        data['date_deadline'] = datetime.strptime(issue['duedate'],'%Y-%m-%d')
+                    
+                    data['jira_status'] = issue['status']['id']
+                    if issue['status']['id'] in ['1','4','10000']:
+                        state = 'pending'
+                    elif issue['status']['id'] in ['3','10001']:
+                        state = 'open'
+                    elif issue['status']['id'] in ['5','6']:
+                        state = 'done'
+                    if state:
+                        data['stage_id'] = issue_obj.stage_find(cr, uid, [], jira_project.project_id.id, [('state', '=', state)])
+                    data['last_update_datetime'] = last_update
+                    self._logger.debug('Create issue %s',str(data))
+                    ioid = issue_obj.create(cr, uid, data)
+                    jira_issue = issue_obj.browse(cr, uid, ioid)[0]
+                if issue['worklog']:
+                    if issue['worklogs']:
+                        pass
 #        for decoded in decoded_list:
 #            oid = model.search(cr, uid, [('jira_id', '=', decoded['id'])])
 #            if oid:

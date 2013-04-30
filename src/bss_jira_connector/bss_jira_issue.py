@@ -27,8 +27,10 @@ class bss_jira_issue(osv.osv):
     _logger = logging.getLogger('bss_jira_connector.jira_issue')
     
     _columns = {
-        'jira_id': fields.integer('JIRA id', required=True),
-        'key': fields.char('JIRA key', size=256, required=True),
+        'jira_id': fields.integer('JIRA id', readonly=True),
+        'key': fields.char('JIRA key', size=256, readonly=True),
+        'last_update_datetime': fields.datetime('Last update', readonly=True),
+        'jira_status': fields.selection([('1','Open'),('3','In progress'),('4','Reopened'),('5','Resolved'),('6','Closed'),('10000','In test'),('10001','Need info')],'JIRA status', readonly=True),
     }
 
     _sql_constraints = [

@@ -29,13 +29,11 @@ class bss_jira_worklog(osv.osv):
     _logger = logging.getLogger('bss_jira_connector.jira_worklog')
     
     _columns = {
-        'jira_id': fields.integer('JIRA id', required=True),
-        'key': fields.char('JIRA key', size=256, required=True),
+        'jira_id': fields.integer('JIRA id', readonly=True),
     }
 
     _sql_constraints = [
         ('jira_id_uniq', 'unique (jira_id)', 'The JIRA id must be unique !'),
-        ('key_uniq', 'unique (key)', 'The JIRA key must be unique !'),
     ]
 
 bss_jira_worklog()
