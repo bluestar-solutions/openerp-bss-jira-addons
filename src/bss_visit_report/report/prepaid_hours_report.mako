@@ -155,7 +155,7 @@
 					<thead>
 						<tr>
 							<th width="10%">Date</th>
-							<th width="7%">Code</th>
+							<th width="7%">Int.</th>
 							<th width="53%">Description</th>
 							<th width="10%">Débit</th>
 							<th width="10%">Crédit</th>
@@ -175,7 +175,7 @@
 							<td>${ppt.processed_date}</td>
 							<td>
 								% if ppt.type == 'validated':
-								${ppt.related_timesheet.user_id.employee_ids[0].initials}
+								${ppt.related_timesheet.user_id.employee_ids[0].initials or ''}
 								% else:
 								&nbsp;
 								% endif
