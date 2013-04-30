@@ -23,6 +23,8 @@
 			  padding: 0;
 			  width: 200mm;
 			  height: 282mm;
+			  padding-bottom: 15mm;
+			  position: relative;
 			  page-break-after: always;
 			  page-break-inside: avoid;
 			}
@@ -35,8 +37,8 @@
 			}
 			#footer {
 			  width: 100%;
-			  position: relative;
-			  top: 0;
+			  position: absolute;
+			  bottom: 5mm;
 			  left: 0;
 			  font-size: 0.8em;
 			}
@@ -116,13 +118,6 @@
 			#decompte tr:nth-child(even) {
 			  background-color: #DDD;
 			}
-			.landscape {
-			  -webkit-transform: rotate(-90deg);
-			  position: relative;
-			  width: 280mm;
-			  top: 85mm;
-			  left: -80mm;
-     			}
 		</style>
 	</head>
 
@@ -161,11 +156,11 @@
 					<tbody>
 						<tr>
 							<td>N / Référence : </td>
-							<td width="90%">${invoice.nref}</td>
+							<td width="90%">${invoice.nref or 'n/a'}</td>
 						</tr>
 						<tr>
 							<td>V / Référence : </td>
-							<td>${invoice.vref}</td>
+							<td>${invoice.vref or 'n/a'}</td>
 						</tr>
 						<tr>
 							<td>Date : </td>
@@ -225,7 +220,7 @@
 									</tr>
 								</table>
 							
-								<div style="clear:both;">${invoice.payment_term.name}</div>
+								<div style="clear:both;">${invoice.payment_term.name or ''}</div>
 								<br/><br/>
 								<div>
 									<p>
@@ -265,56 +260,60 @@
 		</div>
 		% if invoice.print_details:
 		<div class="page">
-			<table class="landscape">
-				<thead>
-					<tr>
-						<th>Client :</th>
-						<td colspan="4">${invoice.partner_id.name}</td>
-					</tr>
-					<tr>
-						<td colspan="5">&nbsp;</td>
-					</tr>
-					<tr>
-						<th>Date</th>
-						<th>Temps</th>
-						<th>%</th>
-						<th width="100%">Travail effectué</th>
-						<th>Réalisé par</th>
-					</tr>
-				</thead>
-				<tbody id="decompte">
-					<%
-						related_lines_ids = invoice._get_related_lines()
-						htot = 0
-					%>
-					% for rel_line in related_lines_ids:
-					<% htot += (1.0-rel_line.to_invoice.factor)*rel_line.unit_amount %>
-					<tr>
-						<td>${datetime.strptime(rel_line.date,'%Y-%m-%d').strftime('%d.%m.%Y')}</td>
-						<td class="number">${"%.2f" % rel_line.unit_amount}</td>
-						<td>${rel_line.to_invoice.customer_name}</td>
-						<td style="white-space:normal;">${rel_line.name}</td>
-						<td>${rel_line.user_id.name}</td>
-					</tr>
-					% endfor
-				</tbody>
-				<tfoot>
-					<tr>
-						<td colspan="5">&nbsp;</td>
-					</tr>
-					<tr>
-						<td colspan="2">
-							<table width="100%">
-								<tr class="total_decompte">
-									<td>Total</td>
-									<td class="number">${htot}</td>
-								</tr>
-							</table>
-						</td>
-						<td colspan="3">&nbsp;</td>
-					</tr>
-				</tfoot>
-			</table>
+			<div id="header"></div>
+			<div id="content">
+				<table>
+					<thead>
+						<tr>
+							<th>Client :</th>
+							<td colspan="4">${invoice.partner_id.name}</td>
+						</tr>
+						<tr>
+							<td colspan="5">&nbsp;</td>
+						</tr>
+						<tr>
+							<th>Date</th>
+							<th>Int.</th>
+							<th width="100%">Travail effectué</th>
+							<th>%</th>
+							<th>Temps</th>
+						</tr>
+					</thead>
+					<tbody id="decompte">
+						<%
+							related_lines_ids = invoice._get_related_lines()
+							htot = 0
+						%>
+						% for rel_line in related_lines_ids:
+						<% htot += (1.0-rel_line.to_invoice.factor)*rel_line.unit_amount %>
+						<tr>
+							<td>${datetime.strptime(rel_line.date,'%Y-%m-%d').strftime('%d.%m.%Y')}</td>
+							<td>${rel_line._get_employee_for_user().initials or ''}</td>
+							<td style="white-space:normal;">${rel_line.name}</td>
+							<td>${rel_line.to_invoice.customer_name}</td>
+							<td class="number">${"%.2f" % rel_line.unit_amount}</td>
+						</tr>
+						% endfor
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="5">&nbsp;</td>
+						</tr>
+						<tr>
+							<td colspan="3">&nbsp;</td>
+							<td colspan="2">
+								<table width="100%">
+									<tr class="total_decompte">
+										<td>Total</td>
+										<td class="number">${"%.2f" % htot}</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+			<div id="footer"></div>
 		</div>
 		% endif
 		% endfor
