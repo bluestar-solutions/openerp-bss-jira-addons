@@ -29,7 +29,7 @@
     'website': 'http://www.blues2.ch',
     'depends': ['base',
                 'account',
-#                'procurement',
+                'procurement',
                 'project',
                 'project_timesheet',
                 'report_webkit',

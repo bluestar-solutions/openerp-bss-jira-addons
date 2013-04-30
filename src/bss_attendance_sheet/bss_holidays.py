@@ -237,25 +237,17 @@ class bss_mail_notification(osv.Model):
     _inherit = 'mail.notification'
     
     def get_partners_to_notify(self, cr, uid, message, partners_to_notify=None, context=None):
-        notify_pids = []
-        
-        for notification in message.notification_ids:
-            if notification.read:
-                continue
-            
-            partner = notification.partner_id
-            
-            if partners_to_notify and partner.id not in partners_to_notify:
-                continue
-            
-            if partner.notification_email_send == 'holidays' and message.type != 'holidays':
-                continue
-            
-            notify_pids.append(partner.id)
-        
-        ids = super(bss_mail_notification, self).get_partners_to_notify(cr, uid, message, partners_to_notify, context)
-        notify_pids += ids
-        
-        return notify_pids
+        if message.type == 'holidays':
+            notify_pids = []
+            for notification in message.notification_ids:
+                if notification.read:
+                    continue
+                partner = notification.partner_id
+                if partners_to_notify and partner.id not in partners_to_notify:
+                    continue
+                if partner.notification_email_send == 'holidays' or partner.notification_email_send == 'all':
+                    notify_pids.append(partner.id)
+            return notify_pids
+        return super(bss_mail_notification, self).get_partners_to_notify(cr, uid, message, partners_to_notify, context)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
