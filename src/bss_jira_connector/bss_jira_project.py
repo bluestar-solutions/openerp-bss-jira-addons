@@ -80,13 +80,48 @@ class bss_jira_project(osv.osv):
         issue_list = decoded_list['issues']
         self._logger.debug('Issue list contains %d issues (len = %d)',decoded_list['total'],len(issue_list))
         found_projects = []
-        active_projects = []
-        for issue in issue_list:
-            self._logger.debug('Processing issue %s',issue['key'])
-            issue_jira_id = issue['id']
-            issue_key = issue['key']
+        active_projects = {}
+        issue_obj = self.pool.get('project.task')
+        worklog_obj = self.pool.get('project.task.work')
+        for issue_fields in issue_list:
+            issue = issue_fields['fields']
+            self._logger.debug('Processing issue %s',issue_fields['key'])
             project = issue['project']
-            
+            if project['key'] not in found_projects:
+                oid = model.search(cr, uid, [('jira_id', '=', project['id'])])
+                if oid:
+                    jira_project = self.browse(cr, uid, oid)[0]
+                    if jira_project.name!=project['name']:
+                        self._logger.debug('Update name for project %s from %s to %s',project['key'],jira_project.name,project['name'])
+                    self.write(cr, uid, jira_project.id, {'name': project['name']})
+                    found_projects.append(project['key'])
+                    if jira_project.project_id:
+                        active_projects[project['key']] = oid
+                    else:
+                        self._logger.debug('Project %s is not active',project['key'])
+                else:   
+                    data = {'jira_id': project['id'],
+                        'key': project['key'],
+                        'name': project['name']
+                        }
+                    self._logger.debug('Create project %s',str(data))
+                    oid = model.create(cr, uid, data)
+            elif project['key'] in active_projects:
+                jira_project = self.browse(cr, uid, active_projects[project['key']])[0]        
+            else:
+                self._logger.debug('Project %s is not active',project['key'])    
+        if jira_project:
+            issue_jira_id = issue_fields['id']
+            ioid = issue_obj.search(cr, uid, [('jira_id', '=', issue_jira_id)])
+            issue_key = issue_fields['key']
+            if ioid:
+                jira_issue = issue_obj.browse(cr, uid, ioid)[0]
+                
+            else:
+                data = {
+                        
+                        }
+                
 #        for decoded in decoded_list:
 #            oid = model.search(cr, uid, [('jira_id', '=', decoded['id'])])
 #            if oid:
