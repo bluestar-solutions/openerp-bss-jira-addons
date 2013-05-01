@@ -86,11 +86,14 @@ class bss_jira_project(osv.osv):
         issue_obj = self.pool.get('project.task')
         worklog_obj = self.pool.get('project.task.work')
         user_obj = self.pool.get('res.users')
+        moved_worklogs = {}
+        issue_worklogs = {}
         for issue_fields in issue_list:
             issue = issue_fields['fields']
             self._logger.debug('Processing issue %s',issue_fields['key'])
             project = issue['project']
             if project['key'] not in found_projects:
+                self._logger.debug('Processing project %s',project['key'])
                 oid = model.search(cr, uid, [('jira_id', '=', project['id'])])
                 if oid:
                     jira_project = self.browse(cr, uid, oid)[0]
@@ -121,21 +124,34 @@ class bss_jira_project(osv.osv):
                 ioid = issue_obj.search(cr, uid, [('jira_id', '=', issue_jira_id)])
                 issue_key = issue_fields['key']
                 last_update = datetime.strptime(issue['updated'].split('.')[0],'%Y-%m-%dT%H:%M:%S')
+                previous_update = None
                 if ioid:
                     jira_issue = issue_obj.browse(cr, uid, ioid)[0]
+                    previous_update = datetime.strptime(jira_issue.last_update_datetime,'%Y-%m-%d %H:%M:%S')
+#                    if last_update < previous_update:
+                        #update already done --> do nothing
+#                        continue
                     data = {}
                     if jira_issue.key != issue_key:
                         data['key'] = issue_key
-                    if jira_issue.name != issue['summary']:
-                        data['name'] = issue['summary']
+                    summary =  issue['summary']
+                    summary = summary.replace('"','_').replace('\'','_')
+                    if len(summary)>127:
+                        summary = '%s...' % summary[:120]
+                    if jira_issue.name != summary:
+                        data['name'] = summary
                     prio = str(int(issue['priority']['id']) - 1)
                     if jira_issue.priority != prio:
                         data['priority'] = prio
                     if jira_issue.project_id.id != jira_project.project_id.id:
                         data['project_id'] = jira_project.project_id.id
-                    oe_assignee = jira_issue.user_id.login if jira_issue.user_id else None
+                    oe_assignee = None
+                    if jira_issue.user_id:
+                        oe_assignee = jira_issue.user_id.login 
                     if issue['assignee'] and issue['assignee']['name'] != oe_assignee:
+                        self._logger.debug('assignee = %s user = %s',issue['assignee']['name'],oe_assignee)
                         assignee_id = user_obj.search(cr, uid, [('login','=',issue['assignee']['name'])])
+                        self._logger.debug('assignee_id = %s ',str(assignee_id))
                         if assignee_id and len(assignee_id):
                             data['user_id'] = assignee_id[0]                        
                     elif oe_assignee:
@@ -144,11 +160,13 @@ class bss_jira_project(osv.osv):
                         data['description'] = issue['description']
                     if issue['timeoriginalestimate']:
                         toe = float(issue['timeoriginalestimate']) / 3600.0
-                        if toe != jira_issue.planned_hours:
+                        if abs(toe - jira_issue.planned_hours) > 0.01:
+                            self._logger.debug('timeoriginalestimate %s jira_issue.planned_hours %s',str(toe),str(jira_issue.planned_hours))
                             data['planned_hours'] = toe
                     if issue['timeestimate']:
                         te = float(issue['timeestimate']) / 3600.0
-                        if te != jira_issue.planned_hours:
+                        if abs(te - jira_issue.remaining_hours) > 0.01:
+                            self._logger.debug('timeestimate %s jira_issue.remaining_hours %s',str(te),str(jira_issue.remaining_hours))
                             data['remaining_hours'] = te
                     if issue['duedate']:
                         duedate = datetime.strptime(issue['duedate'],'%Y-%m-%d')
@@ -165,16 +183,21 @@ class bss_jira_project(osv.osv):
                             data['stage_id'] = issue_obj.stage_find(cr, uid, [], jira_project.project_id.id, [('state', '=', state)])
                             data['jira_status'] = issue['status']['id']
                     
-                    if jira_issue.last_update_datetime != last_update:
-                        data['last_update_datetime'] = last_update
+                    if jira_issue.last_update_datetime != str(last_update):
+                        self._logger.debug('jira_issue.last_update_datetime %s last_update %s',str(jira_issue.last_update_datetime),str(last_update))
+                        data['last_update_datetime'] = str(last_update)
                     if data:
                         self._logger.debug('Update issue %s with %s',issue_key,str(data))
-                        issue_obj.write(cr, uid, jira_issue.id, data)                             
+                        issue_obj.write(cr, uid, ioid, data)                             
                 else:
+                    summary =  issue['summary']
+                    summary = summary.replace('"','_').replace('\'','_')
+                    if len(summary)>127:
+                        summary = '%s...' % summary[:120]
                     data = {
                         'jira_id':issue_jira_id,
                         'key': issue_key,
-                        'name': issue['summary'],
+                        'name': summary,
                         'priority': str(int(issue['priority']['id']) - 1),
                         'project_id': jira_project.project_id.id,
                             }
@@ -200,13 +223,67 @@ class bss_jira_project(osv.osv):
                         state = 'done'
                     if state:
                         data['stage_id'] = issue_obj.stage_find(cr, uid, [], jira_project.project_id.id, [('state', '=', state)])
-                    data['last_update_datetime'] = last_update
+                    data['last_update_datetime'] = str(last_update)
                     self._logger.debug('Create issue %s',str(data))
                     ioid = issue_obj.create(cr, uid, data)
-                    jira_issue = issue_obj.browse(cr, uid, ioid)[0]
+                    jira_issue = issue_obj.browse(cr, uid, ioid)
+                issue_worklogs[jira_issue.id] = []
                 if issue['worklog']:
-                    if issue['worklogs']:
-                        pass
+                    if issue['worklog']['worklogs']:
+                        for worklog in issue['worklog']['worklogs']:
+                            author_id = user_obj.search(cr, uid, [('login','=',worklog['author']['name'])])
+                            if not author_id:
+                                #author not in openerp --> do nothing
+                                continue
+                            worklog_jira_id = worklog['id']
+                            woid = worklog_obj.search(cr, uid, [('jira_id', '=', worklog_jira_id)])
+                            started_date = datetime.strptime(worklog['started'].split('.')[0],'%Y-%m-%dT%H:%M:%S')
+                            if woid:
+                                work_last_update = datetime.strptime(worklog['updated'].split('.')[0],'%Y-%m-%dT%H:%M:%S')
+                                jira_worklog = worklog_obj.browse(cr, uid, woid)[0]
+                                issue_worklogs[jira_issue.id].append(jira_worklog.id)
+#                                if previous_update and work_last_update < previous_update:
+                                    #update already done --> do nothing
+#                                    continue
+                                data = {}
+                                if jira_worklog.jira_issue_id != jira_issue.jira_id:
+                                    data['jira_issue_id'] = jira_issue.jira_id
+                                    data['task_id'] = jira_issue.id
+                                    moved_worklogs[jira_worklog.id] = jira_issue.id
+                                comment = worklog['comment'] or '/'
+                                comment = comment.replace('"','_').replace('\'','_')
+                                if len(comment)>127:
+                                    comment = "%s..." % comment[:120]
+                                if comment != jira_worklog.name:
+                                    data['name'] = comment
+                                if jira_worklog.date != str(started_date):
+                                    data['date'] = str(started_date)
+                                hours = float(worklog['timeSpentSeconds']) / 3600.0    
+                                if abs(jira_worklog.hours - hours) > 0.01:
+                                    self._logger.debug('hours %s jira_worklog.hours %s',str(hours),str(jira_worklog.hours))
+                                    data['hours'] = hours            
+                                if data:
+                                    self._logger.debug('Update worklog %s with %s',jira_worklog.id,str(data))
+                                    worklog_obj.write(cr, uid, woid, data)                             
+                            else:
+                                if started_date < datetime.strptime(jira_project.project_id.date_start,'%Y-%m-%d'):
+                                    #Do not log work before start of project
+                                    continue
+                                data = {}
+                                data['jira_id'] = worklog_jira_id
+                                data['jira_issue_id'] = jira_issue.jira_id
+                                comment = worklog['comment'] or '/'
+                                comment = comment.replace('"','_').replace('\'','_')
+                                if len(comment)>127:
+                                    comment = "%s..." % comment[:120]
+                                data['name'] = comment
+                                data['user_id'] = author_id[0]
+                                data['task_id'] = jira_issue.id
+                                data['date'] = str(started_date)
+                                data['hours'] = float(worklog['timeSpentSeconds']) / 3600.0
+                                self._logger.debug('Create worklog %s',str(data))
+                                woid = worklog_obj.create(cr, uid, data)
+                                issue_worklogs[jira_issue.id].append(woid)
 #        for decoded in decoded_list:
 #            oid = model.search(cr, uid, [('jira_id', '=', decoded['id'])])
 #            if oid:
@@ -221,6 +298,7 @@ class bss_jira_project(osv.osv):
 #                        }
 #                self._logger.debug('Create project %s',str(data))
 #                oid = model.create(cr, uid, data)
+        self._logger.debug('Synchronization finished')
         return True    
  
 bss_jira_project()

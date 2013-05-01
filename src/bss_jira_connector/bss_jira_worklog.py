@@ -30,6 +30,7 @@ class bss_jira_worklog(osv.osv):
     
     _columns = {
         'jira_id': fields.integer('JIRA id', readonly=True),
+        'jira_issue_id': fields.integer('JIRA issue id', readonly=True),
     }
 
     _sql_constraints = [
