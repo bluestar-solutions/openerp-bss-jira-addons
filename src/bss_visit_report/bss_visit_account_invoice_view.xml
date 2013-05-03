@@ -10,7 +10,6 @@
 				<field name="partner_id" position="after">
 					<field name="nref" />
 					<field name="vref" />
-					<field name="print_details" />
 				</field>
 				<xpath expr="//page[@string='Invoice Lines']" position="after">
 					<page string="Détails">

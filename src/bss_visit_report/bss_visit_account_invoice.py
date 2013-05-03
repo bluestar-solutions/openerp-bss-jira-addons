@@ -21,7 +21,6 @@ class account_invoice(osv.osv):
     _columns = {
         'nref' : fields.char(u'N / Référence', size=64),
         'vref' : fields.char(u'V / Référence', size=64),
-        'print_details' : fields.boolean(u'Imprimer le détail'),
         'related_lines' : fields.function(_get_related_lines_ids, u'Détails', obj="account.analytic.line", type="one2many", method=True, store=False)
     }
     
@@ -35,6 +34,12 @@ account_invoice()
 
 class account_analytic_line(osv.osv):
     _inherit = 'account.analytic.line'
+    
+    def _get_employee_for_user(self, cr, uid, ids, context=None):
+        hre_pool = self.pool.get('hr.employee')
+        user_id = self.browse(cr, uid, ids)[0].user_id
+        employee_id = hre_pool.search(cr, uid, [('user_id','=',user_id.id)], context)
+        return hre_pool.browse(cr, uid, employee_id)[0]
     
     def invoice_cost_create(self, cr, uid, ids, data=None, context=None):
         analytic_account_obj = self.pool.get('account.analytic.account')

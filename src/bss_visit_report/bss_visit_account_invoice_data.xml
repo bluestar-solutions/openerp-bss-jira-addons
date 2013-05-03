@@ -14,10 +14,129 @@
         	<field name="company_id" eval="1" />
         	<field name="orientation">Portrait</field>
         	<field name="format">A4</field>
-        	<field name="margin_top" eval="10.0" />
+        	<field name="margin_top" eval="50.0" />
         	<field name="margin_left" eval="5.0" />
         	<field name="margin_right" eval="5.0" />
-        	<field name="margin_bottom" eval="5.0" />
+        	<field name="margin_bottom" eval="30.0" />
+        	<field name="html"><![CDATA[
+        		<!doctype html>
+				<html>
+					<head>
+						<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+						<style type="text/css">
+							@page { 
+							  size: auto;
+							  margin: 0mm;
+							}
+							html, body {
+							  font-family: Arial, DejaVu, serif;
+							  font-size: 8pt;
+							  margin: 0;
+							  margin-left: 6mm;
+							  padding: 0;
+							}
+							body, html {
+							  height: 40mm;
+							}
+							
+							.header {
+							  position: relative;
+							  margin-left: 0mm;
+							  font-size: 8pt;
+							}
+							.header img {
+							  width: 60mm;
+							  margin-left: -10mm;
+							}
+						</style>
+					</head>
+					<body>
+						<div class="header">
+							${helper.embed_logo_by_name('bss_header_logo')|n}
+							<div class="corporate_text">
+								${company.name}<br/>
+								${company.street}<br/>
+								${company.zip} ${company.city}<br/>
+								Tél. ${company.phone}<br/>
+								N° TVA ${company.vat}
+							</div>
+						</div>
+					</body>
+				</html>]]>
+        	</field>
+        	<field name="footer_html"><![CDATA[
+        		<!doctype html>
+				<html>
+					<head>
+						<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+						<style type="text/css">
+						@page { 
+						  size: auto;
+						  margin: 0mm;
+						}
+						html, body {
+						  font-family: Arial, DejaVu, serif;
+						  line-height: 1.4;
+						  font-size: 8pt;
+						  position: relative;
+						  margin: 0;
+						  margin-left: 6mm;
+						  padding: 0;
+						}
+						body, html {
+						  height: 40mm;
+						}
+						.footer {
+						  position: relative;
+						  width: 100%;
+						  font-size: 0.9em;
+						}
+						td {
+						  vertical-align: top;
+						  white-space: nowrap;
+						}
+						.footer table {
+						  table-layout: fixed;
+						}
+						</style>
+					</head>
+					<body>
+		        		<div class="footer">
+							<table>
+								<tr>
+									<td width="15%"></td><td width="20%"></td>
+									<td width="8%"></td><td width="27%"></td>
+									<td width="15%"></td><td width="15%"></td>
+								</tr>
+								<tr>
+									<td>Numéro de compte :</td><td>${company.bank_ids[0].acc_number}</td>
+									<td>Clearing :</td><td>766</td>
+									<td>Bénéficiaire :</td><td rowspan="3">${company.name}<br/>${company.street}<br/>${company.zip} ${company.city}<br/>${company.phone}</td>
+								</tr>
+								<tr>
+									<td rowspan="2">Banques :</td><td rowspan="2" style="white-space:normal;">${company.bank_ids[0].bank_name}<br/>${company.bank_ids[0].bank.zip} ${company.bank_ids[0].bank.city}</td>
+									<%
+										swift = company.bank_ids[0].bank_bic
+										swift_p = "%s %s %s %s" % (swift[:4],swift[4:6],swift[6:8],swift[8:])
+									%>
+									<td>SWIFT :</td><td>${swift_p}</td>
+								</tr>
+								<tr>
+									<td>IBAN :</td>
+									<td>
+									% for bank in company.bank_ids:
+									% if bank.state == 'iban':
+									${bank.acc_number.replace(' ','')}
+									<% break %>
+									% endif
+									% endfor
+									</td>
+								</tr>
+							</table>
+						</div>
+					</body>
+				</html>]]>
+        	</field>
         </record>
     </data>
 </openerp>
