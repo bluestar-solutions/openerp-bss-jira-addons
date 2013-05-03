@@ -21,7 +21,6 @@ class account_invoice(osv.osv):
     _columns = {
         'nref' : fields.char(u'N / Référence', size=64),
         'vref' : fields.char(u'V / Référence', size=64),
-        'print_details' : fields.boolean(u'Imprimer le détail'),
         'related_lines' : fields.function(_get_related_lines_ids, u'Détails', obj="account.analytic.line", type="one2many", method=True, store=False)
     }
     
