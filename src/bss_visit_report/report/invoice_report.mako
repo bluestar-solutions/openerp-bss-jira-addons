@@ -171,7 +171,7 @@
 								</tr>
 							</table>
 						
-							<div style="clear:both;">${invoice.payment_term.name or ''}</div>
+							<div style="clear:both;">Conditions de paiement : ${invoice.payment_term.name or ''}</div>
 							<br/><br/>
 							<div>
 								<p>
