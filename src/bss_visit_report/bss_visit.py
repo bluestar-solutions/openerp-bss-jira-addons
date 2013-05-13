@@ -91,6 +91,13 @@ class bss_visit(osv.osv):
         'text' : fields.text('Text', readonly=False, states={'terminated': [('readonly', True)]}),
         'remarks' : fields.text('Remarks', readonly=False, states={'terminated': [('readonly', True)]}),
         'linked_task_id': fields.many2one('project.task', string="Visit Task", readonly=True),
+        'linked_sale_order_id': fields.many2one('sale.order', string="Material", readonly=True),
+        'ref_partner_id': fields.related('linked_sale_order_id', 'partner_id', relation="res.partner", type="many2one", store=False),
+        'ref_pricelist_id': fields.related('linked_sale_order_id', 'pricelist_id', relation="product.pricelist", type="many2one", store=False),
+        'ref_date_order': fields.related('linked_sale_order_id', 'date_order', type="date", store=False),
+        'ref_fiscal_position': fields.related('linked_sale_order_id', 'fiscal_position', relation="account.fiscal.position", type="many2one", store=False),
+        'ref_shop_id': fields.related('linked_sale_order_id', 'shop_id', relation="sale.shop", type="many2one", store=False),
+        'material_lines': fields.related('linked_sale_order_id', 'order_line', relation="sale.order.line", type="one2many", store=False),
         'visit_task_ids': fields.one2many('bss_visit_report.visit_task', 'visit_id', string='Tasks',
                                      readonly=False, states={'terminated': [('readonly', True)]}),
         'todo_task_ids': fields.function(_todo_task_ids, type='many2many', obj="bss_visit_report.visit_task"),
@@ -144,6 +151,8 @@ class bss_visit(osv.osv):
                     vtask_pool.unlink(cr, uid, [vtask.id], context=context)
                 if visit.linked_task_id:
                     self.pool.get('project.task').unlink(cr, uid, [visit.linked_task_id.id], context=context)
+                if visit.linked_sale_order_id:
+                    self.pool.get('sale.order').unlink(cr, uid, [visit.linked_sale_order_id.id], context=context)
 
         return super(bss_visit, self).unlink(cr, uid, ids, context=context)
     
@@ -163,8 +172,17 @@ class bss_visit(osv.osv):
                 'user_id': visit.user_id.id,
                 'partner_id': visit.customer_id.id,
             }, context)
+            sale_order_id = self.pool.get('sale.order').create(cr, uid, {
+                 'origin': visit.ref,
+                 'project_id': visit.project_id.id,
+                 'user_id': visit.user_id.id,
+                 'partner_id': visit.customer_id.id,
+                 'partner_invoice_id': visit.customer_id.id,
+                 'partner_shipping_id': visit.customer_id.id,
+                 'pricelist_id': visit.customer_id.property_product_pricelist.id,
+            }, context)
             self.pool.get('project.task').do_open(cr, uid, [task_id], context)
-            self.write(cr, uid, visit.id, {'state': 'pending', 'linked_task_id': task_id}, context)
+            self.write(cr, uid, visit.id, {'state': 'pending', 'linked_task_id': task_id, 'linked_sale_order_id': sale_order_id}, context)
 
     def action_terminate(self, cr, uid, ids, context=None):
         for visit in self.browse(cr, uid, ids, context):
@@ -206,6 +224,8 @@ class bss_visit(osv.osv):
             self.pool.get('account.analytic.line').write(cr, uid, line_id.id, {'to_invoice' : invoice_id})
             
             self.pool.get('project.task').do_close(cr, uid, [visit.linked_task_id.id], context)
+            self.pool.get('sale.order').action_button_confirm(cr, uid, [visit.linked_sale_order_id.id], context)
+            self.pool.get('sale.order').action_invoice_create(cr, uid, [visit.linked_sale_order_id.id], context=context)
         self.write(cr, uid, ids, {'state': 'terminated'}, context)
 
     def action_reopen(self, cr, uid, ids, context=None):

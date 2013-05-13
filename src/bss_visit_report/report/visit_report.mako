@@ -262,6 +262,15 @@
 	    % endfor
 	  </ul>
 	  
+	  <h3>Matériel</h3>
+	  <table>
+	  	% for line in visit.material_lines:
+	  		<tr>
+	  			${"<td>%s</td><td>%.0f %s</td>" % (line.product_id.name, line.product_uom_qty, line.product_uom.name)}
+	  		</tr>
+	  	% endfor
+	  </table>
+	  
 	  % if visit.remarks:
 		  <h3>Remarques</h3>
 		  <p class="task-comment">${visit.remarks.replace('\n', '<br>')}</p>
