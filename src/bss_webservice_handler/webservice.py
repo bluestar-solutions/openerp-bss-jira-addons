@@ -71,6 +71,7 @@ class webservice(osv.osv):
         'call_ids': fields.one2many('bss.webservice_call','service_id','Service Calls'),
         'next_service': fields.many2one('bss.webservice', 'Next Service'),
         'is_running': fields.boolean('Is Running'),
+        'call_limit': fields.integer('Log limit', required=True),
     }
     
     _default= {
@@ -81,6 +82,7 @@ class webservice(osv.osv):
         'last_run': datetime(1970,1,1),        
         'last_success': datetime(1970,1,1),
         'datetime_format': 'TIMESTAMP',
+        'call_limit': 20,
     }
     _order = "priority, last_success"
     
@@ -387,6 +389,7 @@ class webservice(osv.osv):
             service_cr.close()  
         if success and service and service.next_service:
             success = success and self._run_service(cr, uid, [service.next_service.id], context)
+        self.clear_call(cr, uid, [service_id], context, True)
         return success
 
     def _run_service(self, cr, uid, ids, context=None):
@@ -411,6 +414,27 @@ class webservice(osv.osv):
     
     def run_service(self, cr, uid, ids, context=None):
         return self._run_service(cr, uid, ids, context)
+    
+    def clear_call(self, cr, uid, ids, context=None, keep_useful=False):
+        call_pool = self.pool.get('bss.webservice_call')
+        if not context:
+            context = {}
+        
+        for ws in self.browse(cr, uid, ids, context):
+            call_to_keep = list()
+            count = 0
+            call_ids = list(ws_call.id.id for ws_call in call_pool.browse(cr, uid, ws.call_ids, context))
+            if keep_useful:
+                for ws_call in call_pool.browse(cr, uid, call_ids, context):
+                    if not ws_call.success:
+                        call_to_keep.append(ws_call.id)
+                    elif count < ws.call_limit:
+                        call_to_keep.append(ws_call.id)
+                        count += 1
+            else:
+                call_to_keep.append(call_pool.browse(cr, uid, call_ids, context)[0].id)
+
+            call_pool.unlink(cr, uid, filter(lambda x: x not in call_to_keep, call_ids), context)
         
 webservice()
 

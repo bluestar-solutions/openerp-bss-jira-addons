@@ -42,6 +42,6 @@ class webservice_call(osv.osv):
     _defaults = {
         'call_moment': lambda *x: datetime.now(),
     }
-    _order = "call_moment"
+    _order = "call_moment desc"
     
 webservice_call()
