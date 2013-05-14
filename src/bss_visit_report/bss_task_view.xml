@@ -24,6 +24,21 @@
 
 			</field>
 		</record>
-	</data>
-</openerp>		
 		
+		<record model="ir.ui.view" id="view_bss_task_tree">
+			<field name="name">project.task.tree.bss_task</field>
+			<field name="model">project.task</field>
+			<field name="type">form</field>
+			<field name="inherit_id" ref="project.view_task_tree2" />
+			<field name="arch" type="xml">
+				<field name="progress" position="replace" />
+				<field name="date_end" position="replace">
+					<field name="date_end"/>
+				</field>
+				<field name="date_deadline" position="replace">
+					<field name="date_deadline"/>
+				</field>
+			</field>
+		</record>
+	</data>
+</openerp>

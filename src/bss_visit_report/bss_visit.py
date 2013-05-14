@@ -67,6 +67,31 @@ class bss_visit(osv.osv):
                 if vtask.state not in ['new', 'todo']:
                     res[visit.id].append(vtask.id)
         return res
+    
+    def _get_prepaid_hours_balance(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for visit in self.browse(cr, uid, ids, context):
+            balance = cr.execute("""
+                                        SELECT sum(
+                                            CASE
+                                                WHEN ppt.type = 'validated' THEN -amount
+                                                WHEN ppt.type = 'add' THEN amount
+                                                WHEN ppt.type = 'pending' THEN 0
+                                            END) as balance
+                                        FROM bss_visit_report_prepaid_time ppt
+                                        INNER JOIN bss_visit_report_prepaid_hours pph ON (ppt.prepaid_hours_id = pph.id)
+                                        INNER JOIN account_analytic_account aaa ON (pph.contract_id = aaa.id)
+                                        WHERE aaa.partner_id = %s
+                                            AND processed_date <= to_date('%s','yyyy-mm-dd')
+                                        GROUP BY ppt.prepaid_hours_id
+                                       """ % (visit.customer_id.id, visit.date))
+
+            if not balance:
+                res[visit.id] = 0
+            else:
+                res[visit.id] = balance.fetchall()[0][0]
+                
+        return res
 
     _columns = {
         'ref': fields.char('Reference', size=64, select=1, readonly=True),    
@@ -98,6 +123,7 @@ class bss_visit(osv.osv):
         'ref_fiscal_position': fields.related('linked_sale_order_id', 'fiscal_position', relation="account.fiscal.position", type="many2one", store=False),
         'ref_shop_id': fields.related('linked_sale_order_id', 'shop_id', relation="sale.shop", type="many2one", store=False),
         'material_lines': fields.related('linked_sale_order_id', 'order_line', relation="sale.order.line", type="one2many", store=False),
+        'pph_balance': fields.function(_get_prepaid_hours_balance, method=True, store=False, string="Solde du carnet d'heures", type="integer"),
         'visit_task_ids': fields.one2many('bss_visit_report.visit_task', 'visit_id', string='Tasks',
                                      readonly=False, states={'terminated': [('readonly', True)]}),
         'todo_task_ids': fields.function(_todo_task_ids, type='many2many', obj="bss_visit_report.visit_task"),
