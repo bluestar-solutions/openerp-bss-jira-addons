@@ -43,7 +43,7 @@
                 <form string="Webservices" version="7.0">
                 	<header>
                 		<button name="run_service_multithread" string="Run Service" type="object" />
-                		<button name="clear_call" string="Force log clean" type="object" />
+                		<button name="clear_call" string="Force log clean" type="object" context="{'force':1}"/>
                 	</header>
                 	<div class="oe_right oe_button_box">
                 		<button name="%(bss_ws_act_show_call)d" string="Call details" type="action" />
@@ -60,6 +60,7 @@
                     		<field name="get_db_key" />
                     		<field name="datetime_format" />
                     		<field name="call_limit" />
+                    		<field name="call_limit_in_error" />
 	                	</group>
 	                	<group string="State">
 	                		<field name="active" />
@@ -92,10 +93,11 @@
             <field name="name">bss.webservice_call.tree</field>
             <field name="model">bss.webservice_call</field>
             <field name="arch" type="xml">
-                <tree string="" create="0">
+                <tree string="" create="0" colors="darkred:call_result=='error';orange:call_result=='warn';green:call_result=='ok';">
 				    <field name="service_id" />
 				    <field name="call_moment" />
 				    <field name="success" />
+				    <field name="call_result" />
 				    <field name="get_status" />
 				    <field name="get_reason" />                          
 				    <field name="push_status" />
@@ -114,6 +116,7 @@
 					    	<field name="service_id" />
 					    	<field name="call_moment" />
 					    	<field name="success" />
+					    	<field name="call_result" />
 					    </group>
 					    <group></group>
 					    <group string="Get">
