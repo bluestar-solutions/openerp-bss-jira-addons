@@ -10,6 +10,39 @@ STATE = (('draft', 'Draft'),
          ('pending', 'Pending'),
          ('terminated', 'Terminated'))
 
+class bss_visit_add_task(osv.osv_memory):
+    _name = 'bss_visit_report.bss_visit_add_task'
+    
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None:
+            context = {}
+            
+        res = dict()
+        for field in self._columns.keys():
+            if field in context:
+                res[field] = context[field]
+                
+        res['related_project'] = self.pool.get('bss_visit_report.visit').browse(cr, uid, res['visit_id']).project_id.id
+                
+        return res
+    
+    _columns = {
+        'visit_id': fields.many2one('bss_visit_report.visit', string="Visit", ondelete='cascade', required=True, readonly=True),
+        'related_project': fields.related('visit_id', 'project_id', type="many2one", string="Project", store=False, relation="project.project", readonly=True),
+        'tasks': fields.many2one('project.task', string="Task", domain="[('project_id','=',related_project)]"),
+    }
+    
+    def execute(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+            
+        form = self.browse(cr, uid, ids)[0]
+        self.pool.get('bss_visit_task').create(cr, uid, {'task_id': form.tasks.id, 'visit_id': form.visit_id}, context)
+        
+        return {'type': 'ir.actions.act_window_close'}
+
+bss_visit_add_task()
+
 class bss_visit(osv.osv):
 
     _name = 'bss_visit_report.visit'
@@ -33,6 +66,31 @@ class bss_visit(osv.osv):
             for vtask in visit.visit_task_ids:
                 if vtask.state not in ['new', 'todo']:
                     res[visit.id].append(vtask.id)
+        return res
+    
+    def _get_prepaid_hours_balance(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for visit in self.browse(cr, uid, ids, context):
+            balance = cr.execute("""
+                                        SELECT sum(
+                                            CASE
+                                                WHEN ppt.type = 'validated' THEN -amount
+                                                WHEN ppt.type = 'add' THEN amount
+                                                WHEN ppt.type = 'pending' THEN 0
+                                            END) as balance
+                                        FROM bss_visit_report_prepaid_time ppt
+                                        INNER JOIN bss_visit_report_prepaid_hours pph ON (ppt.prepaid_hours_id = pph.id)
+                                        INNER JOIN account_analytic_account aaa ON (pph.contract_id = aaa.id)
+                                        WHERE aaa.partner_id = %s
+                                            AND processed_date <= to_date('%s','yyyy-mm-dd')
+                                        GROUP BY ppt.prepaid_hours_id
+                                       """ % (visit.customer_id.id, visit.date))
+
+            if not balance:
+                res[visit.id] = 0
+            else:
+                res[visit.id] = balance.fetchall()[0][0]
+                
         return res
 
     _columns = {
@@ -58,6 +116,14 @@ class bss_visit(osv.osv):
         'text' : fields.text('Text', readonly=False, states={'terminated': [('readonly', True)]}),
         'remarks' : fields.text('Remarks', readonly=False, states={'terminated': [('readonly', True)]}),
         'linked_task_id': fields.many2one('project.task', string="Visit Task", readonly=True),
+        'linked_sale_order_id': fields.many2one('sale.order', string="Material", readonly=True),
+        'ref_partner_id': fields.related('linked_sale_order_id', 'partner_id', relation="res.partner", type="many2one", store=False),
+        'ref_pricelist_id': fields.related('linked_sale_order_id', 'pricelist_id', relation="product.pricelist", type="many2one", store=False),
+        'ref_date_order': fields.related('linked_sale_order_id', 'date_order', type="date", store=False),
+        'ref_fiscal_position': fields.related('linked_sale_order_id', 'fiscal_position', relation="account.fiscal.position", type="many2one", store=False),
+        'ref_shop_id': fields.related('linked_sale_order_id', 'shop_id', relation="sale.shop", type="many2one", store=False),
+        'material_lines': fields.related('linked_sale_order_id', 'order_line', relation="sale.order.line", type="one2many", store=False),
+        'pph_balance': fields.function(_get_prepaid_hours_balance, method=True, store=False, string="Solde du carnet d'heures", type="integer"),
         'visit_task_ids': fields.one2many('bss_visit_report.visit_task', 'visit_id', string='Tasks',
                                      readonly=False, states={'terminated': [('readonly', True)]}),
         'todo_task_ids': fields.function(_todo_task_ids, type='many2many', obj="bss_visit_report.visit_task"),
@@ -111,6 +177,8 @@ class bss_visit(osv.osv):
                     vtask_pool.unlink(cr, uid, [vtask.id], context=context)
                 if visit.linked_task_id:
                     self.pool.get('project.task').unlink(cr, uid, [visit.linked_task_id.id], context=context)
+                if visit.linked_sale_order_id:
+                    self.pool.get('sale.order').unlink(cr, uid, [visit.linked_sale_order_id.id], context=context)
 
         return super(bss_visit, self).unlink(cr, uid, ids, context=context)
     
@@ -130,8 +198,17 @@ class bss_visit(osv.osv):
                 'user_id': visit.user_id.id,
                 'partner_id': visit.customer_id.id,
             }, context)
+            sale_order_id = self.pool.get('sale.order').create(cr, uid, {
+                 'origin': visit.ref,
+                 'project_id': visit.project_id.id,
+                 'user_id': visit.user_id.id,
+                 'partner_id': visit.customer_id.id,
+                 'partner_invoice_id': visit.customer_id.id,
+                 'partner_shipping_id': visit.customer_id.id,
+                 'pricelist_id': visit.customer_id.property_product_pricelist.id,
+            }, context)
             self.pool.get('project.task').do_open(cr, uid, [task_id], context)
-            self.write(cr, uid, visit.id, {'state': 'pending', 'linked_task_id': task_id}, context)
+            self.write(cr, uid, visit.id, {'state': 'pending', 'linked_task_id': task_id, 'linked_sale_order_id': sale_order_id}, context)
 
     def action_terminate(self, cr, uid, ids, context=None):
         for visit in self.browse(cr, uid, ids, context):
@@ -173,6 +250,8 @@ class bss_visit(osv.osv):
             self.pool.get('account.analytic.line').write(cr, uid, line_id.id, {'to_invoice' : invoice_id})
             
             self.pool.get('project.task').do_close(cr, uid, [visit.linked_task_id.id], context)
+            self.pool.get('sale.order').action_button_confirm(cr, uid, [visit.linked_sale_order_id.id], context)
+            self.pool.get('sale.order').action_invoice_create(cr, uid, [visit.linked_sale_order_id.id], context=context)
         self.write(cr, uid, ids, {'state': 'terminated'}, context)
 
     def action_reopen(self, cr, uid, ids, context=None):
@@ -190,6 +269,6 @@ class bss_visit(osv.osv):
             project = self.pool.get('project.project').browse(cr, uid, project_id)
             v['customer_id'] = project.partner_id.id
 
-        return {'value': v} 
+        return {'value': v}
     
 bss_visit()

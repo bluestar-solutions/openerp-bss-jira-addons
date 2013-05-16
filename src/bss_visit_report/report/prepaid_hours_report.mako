@@ -18,25 +18,9 @@
 			  height: 100%;
 			  width: 100%;
 			}
-			.page {
-			  margin: 0;
-			  padding: 0;
-			  width: 200mm;
-			  height: 282mm;
-			  page-break-after: always;
-			  page-break-inside: avoid;
-			}
 			
 			#content {
 			  width: 100%;
-			}
-			#header {
-			  margin-left: 3mm;
-			  font-size: 7pt;
-			}
-			#header img {
-			  width: 55mm;
-			  margin-left: -8.5mm;
 			}
 			#customer_address {
 			  float: right;
@@ -107,116 +91,104 @@
 					elif ppt.type == 'add':
 						tot_bef += ppt.amount / 60.0
 		%>
-		<div class="page">
-			<div id="header">
-				${helper.embed_logo_by_name('bss_header_logo')|n}
-				<div class="corporate_text">
-					${prepaid_hours.contract_id.company_id.name}<br/>
-					${prepaid_hours.contract_id.company_id.street}<br/>
-					${prepaid_hours.contract_id.company_id.zip} ${prepaid_hours.contract_id.company_id.city}<br/>
-					${prepaid_hours.contract_id.company_id.phone}<br/>
-					N° TVA ${prepaid_hours.contract_id.company_id.vat}
-				</div>
+		<div id="content">
+			<div id="customer_address">
+				${prepaid_hours.contract_id.partner_id.name}<br/>
+				${prepaid_hours.contract_id.partner_id.street}<br/>
+				${prepaid_hours.contract_id.partner_id.country_id.code} - ${prepaid_hours.contract_id.partner_id.zip} ${prepaid_hours.contract_id.partner_id.city}
 			</div>
-			<div id="content">
-				<div id="customer_address">
-					${prepaid_hours.contract_id.partner_id.name}<br/>
-					${prepaid_hours.contract_id.partner_id.street}<br/>
-					${prepaid_hours.contract_id.partner_id.country_id.code} - ${prepaid_hours.contract_id.partner_id.zip} ${prepaid_hours.contract_id.partner_id.city}
-				</div>
-				<div style="clear:both;">&nbsp;</div>
-				
-				<table id="report_head">
-					<thead>
-						<tr>
-							<th colspan="2">État du carnet d'heures</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Contrat :</td>
-							<td>${prepaid_hours.contract_id.name}</td>
-						</tr>
-						<tr class="date">
-							<td>Date :</td>
-							<td>${date.today().strftime('%d.%m.%Y')}</td>
-						</tr>
-						<tr>
-							<td>Du :</td>
-							<td>${date_from.strftime('%d.%m.%Y')}</td>
-						</tr>
-						<tr>
-							<td>Au :</td>
-							<td>${date_to.strftime('%d.%m.%Y')}</td>
-						</tr>
-					</tbody>
-				</table>
-				<table id="report_content">
-					<thead>
-						<tr>
-							<th width="10%">Date</th>
-							<th width="7%">Code</th>
-							<th width="53%">Description</th>
-							<th width="10%">Débit</th>
-							<th width="10%">Crédit</th>
-							<th width="10%">Solde</th>
-						</tr>
-						<tr id="solde_before">
-							<td colspan="3">&nbsp;</td>
-							<td colspan="2">Solde au ${date_from.strftime('%d.%m.%Y')}</td>
-							<td>${"%.2f" % tot_bef}</td>
-						</tr>
-					</thead>
-					<tbody>
-						% for ppt in reversed(prepaid_hours.related_hours):
-						<% ppt_pd = datetime.strptime(ppt.processed_date, '%Y-%m-%d') %>
-						% if ppt.type != 'pending' and ppt_pd >= date_from and ppt_pd <= date_to:
-						<tr>
-							<td>${ppt.processed_date}</td>
-							<td>
-								% if ppt.type == 'validated':
-								${ppt.related_timesheet.user_id.employee_ids[0].initials}
-								% else:
-								&nbsp;
-								% endif
-							</td>
-							<td>
-								% if ppt.type == 'add':
-								Achat de ${"%.2f" % (ppt.amount / 60.0)} heure(s)
-								% else:
-								${ppt.description}
-								% endif
-							</td>
-							<td class="number">
-								% if ppt.type == 'validated':
-								<% tot_val += ppt.amount/60.0 %>
-								${"%.2f" % (ppt.amount / 60.0)}
-								% else:
-								&nbsp;
-								% endif
-							</td>
-							<td class="number">
-								% if ppt.type == 'add':
-								<% tot_add += ppt.amount/60.0 %>
-								${"%.2f" % (ppt.amount / 60.0)}
-								% else:
-								&nbsp;
-								% endif
-							</td>
-							<td class="number">${"%.2f" % (tot_bef + tot_add - tot_val)}</td>
-						</tr>
-						% endif
-						% endfor
-					</tbody>
-					<tfooter>
-						<tr id="solde_after">
-							<td colspan="3">&nbsp;</td>
-							<td colspan="2">Solde au ${date_to.strftime('%d.%m.%Y')}</td>
-							<td>${"%.2f" % (tot_bef + tot_add - tot_val)}</td>
-						</tr>
-					</tfooter>
-				</table>
-			</div>
+			<div style="clear:both;">&nbsp;</div>
+			
+			<table id="report_head">
+				<thead>
+					<tr>
+						<th colspan="2">État du carnet d'heures</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Contrat :</td>
+						<td>${prepaid_hours.contract_id.name}</td>
+					</tr>
+					<tr class="date">
+						<td>Date :</td>
+						<td>${date.today().strftime('%d.%m.%Y')}</td>
+					</tr>
+					<tr>
+						<td>Du :</td>
+						<td>${date_from.strftime('%d.%m.%Y')}</td>
+					</tr>
+					<tr>
+						<td>Au :</td>
+						<td>${date_to.strftime('%d.%m.%Y')}</td>
+					</tr>
+				</tbody>
+			</table>
+			<table id="report_content">
+				<thead>
+					<tr>
+						<th width="10%">Date</th>
+						<th width="7%">Int.</th>
+						<th width="53%">Description</th>
+						<th width="10%">Débit</th>
+						<th width="10%">Crédit</th>
+						<th width="10%">Solde</th>
+					</tr>
+					<tr id="solde_before">
+						<td colspan="3">&nbsp;</td>
+						<td colspan="2">Solde au ${date_from.strftime('%d.%m.%Y')}</td>
+						<td>${"%.2f" % tot_bef}</td>
+					</tr>
+				</thead>
+				<tbody>
+					% for ppt in reversed(prepaid_hours.related_hours):
+					<% ppt_pd = datetime.strptime(ppt.processed_date, '%Y-%m-%d') %>
+					% if ppt.type != 'pending' and ppt_pd >= date_from and ppt_pd <= date_to:
+					<tr>
+						<td>${ppt.processed_date}</td>
+						<td>
+							% if ppt.type == 'validated':
+							${ppt.related_timesheet.user_id.employee_ids[0].initials or ''}
+							% else:
+							&nbsp;
+							% endif
+						</td>
+						<td>
+							% if ppt.type == 'add':
+							Achat de ${"%.2f" % (ppt.amount / 60.0)} heure(s)
+							% else:
+							${ppt.description}
+							% endif
+						</td>
+						<td class="number">
+							% if ppt.type == 'validated':
+							<% tot_val += ppt.amount/60.0 %>
+							${"%.2f" % (ppt.amount / 60.0)}
+							% else:
+							&nbsp;
+							% endif
+						</td>
+						<td class="number">
+							% if ppt.type == 'add':
+							<% tot_add += ppt.amount/60.0 %>
+							${"%.2f" % (ppt.amount / 60.0)}
+							% else:
+							&nbsp;
+							% endif
+						</td>
+						<td class="number">${"%.2f" % (tot_bef + tot_add - tot_val)}</td>
+					</tr>
+					% endif
+					% endfor
+				</tbody>
+				<tfooter>
+					<tr id="solde_after">
+						<td colspan="3">&nbsp;</td>
+						<td colspan="2">Solde au ${date_to.strftime('%d.%m.%Y')}</td>
+						<td>${"%.2f" % (tot_bef + tot_add - tot_val)}</td>
+					</tr>
+				</tfooter>
+			</table>
 		</div>
 		% endfor
 	</body>

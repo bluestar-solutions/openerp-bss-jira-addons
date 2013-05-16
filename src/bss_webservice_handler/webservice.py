@@ -21,7 +21,7 @@
 
 from openerp.osv import osv, fields
 from openerp.netsvc import logging
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from time import mktime, strptime
 import json
 import httplib2
@@ -72,6 +72,8 @@ class webservice(osv.osv):
         'call_ids': fields.one2many('bss.webservice_call','service_id','Service Calls'),
         'next_service': fields.many2one('bss.webservice', 'Next Service'),
         'is_running': fields.boolean('Is Running'),
+        'call_limit': fields.integer('Soft log limit', required=True, help="Defines how many log entries to keep when no errors are detected."),
+        'call_limit_in_error': fields.float('Error log limit', required=True, help="Defines how many hours the log entries with errors must be kept."),
     }
     
     _default= {
@@ -82,6 +84,8 @@ class webservice(osv.osv):
         'last_run': datetime(1970,1,1),        
         'last_success': datetime(1970,1,1),
         'datetime_format': 'TIMESTAMP',
+        'call_limit': 0,
+        'call_limit_in_error': 1.0,
     }
     _order = "priority, last_success"
     
@@ -376,6 +380,7 @@ class webservice(osv.osv):
                 call_param['push_body']= push_resp_content
                 
             call_obj.create(service_cr, uid, call_param)
+            self.clear_call(service_cr, uid, [service_id], context)
             service_cr.commit()
         except DuplicateCallException, e:
             logger.exception("DuplicateCallException occured during webservice: %s", e)
@@ -388,7 +393,7 @@ class webservice(osv.osv):
             with webservice_lock:
                 self.write(service_cr, uid, service_id, {'last_run':now, 'is_running': False})
                 service_cr.commit()
-        finally:    
+        finally:
             service_cr.close()  
         if success and service and service.next_service:
             success = success and self._run_service(cr, uid, [service.next_service.id], context)
@@ -416,6 +421,48 @@ class webservice(osv.osv):
     
     def run_service(self, cr, uid, ids, context=None):
         return self._run_service(cr, uid, ids, context)
+    
+    def clear_call(self, cr, uid, ids, context=None):
+        call_pool = self.pool.get('bss.webservice_call')
+        if not context:
+            context = {}
+        
+        for ws in self.browse(cr, uid, ids, context):
+            if 'force' in context.keys() and context['force'] == 1:
+                cr.execute("""
+                    DELETE FROM bss_webservice_call
+                    WHERE id NOT IN (
+                        SELECT id
+                        FROM bss_webservice_call
+                        WHERE service_id = %s
+                        ORDER BY call_moment DESC
+                        LIMIT 1
+                        )
+                        AND service_id = %s
+                           """ % (ws.id,ws.id))
+                continue
+                
+            if ws.call_limit == 0:
+                continue
+            
+            if call_pool.search(cr, uid, [('service_id','=',ws.id),('success','=',False)]):
+                cr.execute("""
+                    DELETE FROM bss_webservice_call
+                    WHERE call_moment < '%s'
+                        and service_id = %s
+                           """ % ((datetime.now() - timedelta(hours=ws.call_limit_in_error)).isoformat(),ws.id))
+            else:
+                cr.execute("""
+                    DELETE FROM bss_webservice_call
+                    WHERE id NOT IN (
+                        SELECT id
+                        FROM bss_webservice_call
+                        WHERE service_id = %s
+                        ORDER BY call_moment DESC
+                        LIMIT %s
+                        )
+                        AND service_id = %s
+                           """ % (ws.id,ws.call_limit,ws.id))
         
 webservice()
 

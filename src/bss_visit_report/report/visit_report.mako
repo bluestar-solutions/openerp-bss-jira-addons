@@ -184,22 +184,32 @@
 	  <h1>Rapport d'intervention ${visit.ref}</h1>
 	  <h2>${visit.customer_id.name}</h2>
 	  <dl>
-	    <dt>Référence client</dt>
-	    <dd>${visit.customer_ref}</dd>
-	    <dt>Date</dt>
-	    <dd>${visit.date}</dd>
-	    <dt>Intervenant</dt>
-        <dd>${visit.user_id.name}</dd>
-        <dt>Contact client</dt>
-        <dd>${visit.customer_contact_id.name or visit.signer}</dd>
-	    <dt>Arrivée</dt>
-	    <dd>${str(datetime.timedelta(hours=visit.hour_from))[:-3]}</dd>
-	    <dt>Départ</dt>
-	    <dd>${str(datetime.timedelta(hours=visit.hour_to))[:-3]}</dd>
-	    <dt>Temps d'intervention</dt>
-        <dd>${str(datetime.timedelta(hours=visit.time))[:-3]}</dd>
-	    <dt>Zone de déplacement</dt>
-	    <dd>${visit.travel_zone.name or ''}</dd>
+		<dt>Référence client</dt>
+		<dd>${visit.customer_ref}</dd>
+		
+		<dt>Date</dt>
+		<dd>${visit.date}</dd>
+		
+		<dt>Intervenant</dt>
+		<dd>${visit.user_id.name}</dd>
+		
+		<dt>Contact client</dt>
+		<dd>${visit.customer_contact_id.name or visit.signer}</dd>
+		
+		<dt>Arrivée</dt>
+		<dd>${str(datetime.timedelta(hours=visit.hour_from))[:-3]}</dd>
+		
+		<dt>Départ</dt>
+		<dd>${str(datetime.timedelta(hours=visit.hour_to))[:-3]}</dd>
+		
+		<dt>Temps d'intervention</dt>
+		<dd>${str(datetime.timedelta(hours=visit.time))[:-3]}</dd>
+		
+		<dt>Zone de déplacement</dt>
+		<dd>${visit.travel_zone.name or ''}</dd>
+		
+		<dt>Solde carnet d'heures</dt>
+		<dd>${visit.pph_balance or ''}</dd>
 	  </dl>
 	
 	  <h3>Tâches demandées</h3>
@@ -261,6 +271,15 @@
 	      % endif
 	    % endfor
 	  </ul>
+	  
+	  <h3>Matériel</h3>
+	  <table>
+	  	% for line in visit.material_lines:
+	  		<tr>
+	  			${"<td>%s</td><td>%.0f %s</td>" % (line.product_id.name, line.product_uom_qty, line.product_uom.name)}
+	  		</tr>
+	  	% endfor
+	  </table>
 	  
 	  % if visit.remarks:
 		  <h3>Remarques</h3>

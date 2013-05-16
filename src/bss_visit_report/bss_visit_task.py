@@ -95,7 +95,7 @@ class bss_visit_task(osv.osv):
     def _description_name(self, cr, uid, ids, name, args, context=None):
         res = {}
         for bvt in self.browse(cr, uid, ids, context):
-            res[bvt.id] = "%s\r\n\r\n%s" % (bvt.task_name, bvt.description)
+            res[bvt.id] = ("%s\r\n\r\n%s" % (bvt.task_name, bvt.description or '')).rstrip('\r\n')
         return res
     
     _columns = {
