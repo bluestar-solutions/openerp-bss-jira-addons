@@ -313,10 +313,13 @@ class bss_prepaid_hours_hr_timesheet(osv.osv):
                 if timesheet.to_invoice:
                     factor = timesheet.to_invoice.factor
                     if factor < 100:
+                        amount = int(timedelta(hours=timesheet.unit_amount*(1-factor/100.0)).total_seconds() // 60)
+                        if amount < 0.25:
+                            amount = 0.25
                         ppt_pool.create(cr, uid, {
                                 'prepaid_hours_id' : pph[0].id,
                                 'related_timesheet' : timesheet.id,
-                                'amount' : int(timedelta(hours=timesheet.unit_amount*(1-factor/100.0)).total_seconds() // 60),
+                                'amount' : amount,
                                 'type' : 'pending',
                                 })
         
