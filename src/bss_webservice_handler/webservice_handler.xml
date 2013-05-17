@@ -36,6 +36,30 @@
             </field>
         </record>
         
+        <record model="ir.ui.view" id="bss_ws_call_search">
+			<field name="name">bss.webservice_call.search</field>
+			<field name="model">bss.webservice_call</field>
+			<field name="arch" type="xml">
+				<search string="Call">
+					<field name="service_id" invisible="1"/>
+					<field name="get_reason" />
+					<field name="push_reason" />
+					<field name="get_body" />
+					<field name="push_body" />
+					<filter name="status_ok" string="Succeed" domain="[('success','=',True)]" />
+					<filter name="status_ko" string="Aborted" domain="[('success','=',False)]" />
+				</search>
+			</field>
+		</record>
+		
+		<record id="bss_ws_act_show_call" model="ir.actions.act_window">
+            <field name="name">Webservices</field>
+            <field name="res_model">bss.webservice_call</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_service_id': active_id}</field>
+            <field name="search_view_id" ref="bss_ws_call_search" /> 
+        </record>
+        
         <record model="ir.ui.view" id="bss_webservice_form">
             <field name="name">bss.webservice.form</field>
             <field name="model">bss.webservice</field>
@@ -133,30 +157,6 @@
 				</form>
 			</field>
 		</record>
-		
-		<record model="ir.ui.view" id="bss_ws_call_search">
-			<field name="name">bss.webservice_call.search</field>
-			<field name="model">bss.webservice_call</field>
-			<field name="arch" type="xml">
-				<search string="Call">
-					<field name="service_id" invisible="1"/>
-					<field name="get_reason" />
-					<field name="push_reason" />
-					<field name="get_body" />
-					<field name="push_body" />
-					<filter name="status_ok" string="Succeed" domain="[('success','=',True)]" />
-					<filter name="status_ko" string="Aborted" domain="[('success','=',False)]" />
-				</search>
-			</field>
-		</record>
-		
-		<record id="bss_ws_act_show_call" model="ir.actions.act_window">
-            <field name="name">Webservices</field>
-            <field name="res_model">bss.webservice_call</field>
-            <field name="view_mode">tree,form</field>
-            <field name="context">{'search_default_service_id': active_id}</field>
-            <field name="search_view_id" ref="bss_ws_call_search" /> 
-        </record>
 
         <record id="bss_ws_act" model="ir.actions.act_window">
             <field name="name">Webservices</field>
