@@ -4,3 +4,4 @@
 /deps
 openerp-pid
 openerp-bss-addons.launch
+/.cache
