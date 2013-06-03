@@ -23,7 +23,10 @@ from openerp.osv import fields, osv
 from openerp.netsvc import logging
 import json
 from bss_webservice_handler.webservice import webservice
-from datetime import datetime, date
+from datetime import datetime, timedelta
+import re
+
+JIRA_DATE_PATTERN = re.compile('(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})\.(\\d{3})([\+-])(\\d{2})(\\d{2})')
 
 class bss_jira_project(osv.osv):
     _name = 'bss_jira_connector.jira_project'
@@ -68,9 +71,19 @@ class bss_jira_project(osv.osv):
                 oid = model.create(cr, uid, data)
         return True   
     
+    def decode_jira_time(self, string):
+        #"2013-04-16T13:23:42.000+0200"
+        m = JIRA_DATE_PATTERN.search(string)
+        d = datetime(int(m.group(1)),int(m.group(2)),int(m.group(3)),int(m.group(4)),int(m.group(5)),int(m.group(6)),int(m.group(7)))
+        t = timedelta(hours=int(m.group(9)), minutes=int(m.group(10)))
+        if m.group(8) == '+':
+            return d-t
+        else:
+            return d+t
+        
     def ws_decode_write_worklog(self, cr, uid, model, content, datetime_format):
         decoded_list = json.loads(content)
-#/jira/rest/api/2/search?jql=timeSpent%20%3E%200%20and%20updated%20%3E%20startOfDay(-1)%20ORDER%20BY%20updated%20DESC&startAt=0&maxResults=500&fields=assignee,description,summary,created,updated,duedate,priority,status,worklog,key,id,project,timeestimate,timeoriginalestimate
+#/jira/rest/api/2/search?jql=updated%20%3E%20startOfDay(-1)%20ORDER%20BY%20updated%20DESC&startAt=0&maxResults=500&fields=assignee,description,summary,created,updated,duedate,priority,status,worklog,key,id,project,timeestimate,timeoriginalestimate
 #        field_list = model.fields_get(cr,uid)
 #        self._logger.debug("List is : %s, length is %d",str(decoded_list),len(decoded_list))
 #        self._logger.debug("Field list is : %s, length is %d",str(field_list),len(field_list))
@@ -88,7 +101,8 @@ class bss_jira_project(osv.osv):
         user_obj = self.pool.get('res.users')
         ts_obj = self.pool.get('hr_timesheet_sheet.sheet')
         error_obj = self.pool.get('bss_jira_connector.jira_worklog_errors')
-        moved_worklogs = {}
+        jira_issue_oe_project = {}
+        jira_issue_keys = {}
         issue_worklogs = {}
         for issue_fields in issue_list:
             issue = issue_fields['fields']
@@ -124,17 +138,19 @@ class bss_jira_project(osv.osv):
 
             if jira_project and jira_project.project_id:
                 issue_jira_id = issue_fields['id']
+                jira_issue_oe_project[issue_jira_id] = jira_project.project_id.id
                 ioid = issue_obj.search(cr, uid, [('jira_id', '=', issue_jira_id)])
                 issue_key = issue_fields['key']
-                last_update = datetime.strptime(issue['updated'].split('.')[0],'%Y-%m-%dT%H:%M:%S')
+                jira_issue_keys[issue_jira_id]=issue_key
+                last_update = self.decode_jira_time(issue['updated'])
                 previous_update = None
                 if ioid:
                     jira_issue = issue_obj.browse(cr, uid, ioid)[0]
                     previous_update = datetime.strptime(jira_issue.last_update_datetime,'%Y-%m-%d %H:%M:%S')
-#                    if last_update <= previous_update:
+                    if last_update <= previous_update:
                         #update already done --> do nothing
-#                        self._logger.debug('issue update already done --> do nothing')
-#                        continue
+                        self._logger.debug('issue update already done --> do nothing %s %s',str(last_update),str(previous_update))
+                        continue
                     data = {}
                     if jira_issue.key != issue_key:
                         data['key'] = issue_key
@@ -236,7 +252,7 @@ class bss_jira_project(osv.osv):
                     self._logger.debug('Create issue %s',str(data))
                     ioid = issue_obj.create(cr, uid, data)
                     jira_issue = issue_obj.browse(cr, uid, ioid)
-                issue_worklogs[jira_issue.id] = []
+                issue_worklogs[jira_issue.jira_id] = []
                 if issue['worklog']:
                     if issue['worklog']['worklogs']:
                         for worklog in issue['worklog']['worklogs']:
@@ -244,25 +260,24 @@ class bss_jira_project(osv.osv):
                             if not author_id:
                                 #author not in openerp --> do nothing
                                 continue
-                            started_date = datetime.strptime(worklog['started'].split('.')[0],'%Y-%m-%dT%H:%M:%S')
+                            started_date = self.decode_jira_time(worklog['started'])
                             tsid = ts_obj.search(cr, uid, [('user_id','=',author_id[0]),('date_from','<=', started_date),('date_to','>=', started_date),('state','not in',['new','draft'])])
                             worklog_jira_id = worklog['id']
                             woid = worklog_obj.search(cr, uid, [('jira_id', '=', worklog_jira_id)])
+                            issue_worklogs[jira_issue.jira_id].append(worklog_jira_id)
                             if woid:
-                                work_last_update = datetime.strptime(worklog['updated'].split('.')[0],'%Y-%m-%dT%H:%M:%S')
+                                work_last_update = self.decode_jira_time(worklog['updated'])
                                 jira_worklog = worklog_obj.browse(cr, uid, woid)[0]
-                                issue_worklogs[jira_issue.id].append(jira_worklog.id)
-#                                if previous_update and work_last_update <= previous_update:
+                                if previous_update and work_last_update <= previous_update:
                                     #update already done --> do nothing
-#                                    self._logger.debug('worklog update already done --> do nothing')
-#                                    continue
+                                    self._logger.debug('worklog update already done --> do nothing')
+                                    continue
                                 #Check if work log is editable
                                 
                                 data = {}
                                 if jira_worklog.jira_issue_id != jira_issue.jira_id:
                                     data['jira_issue_id'] = jira_issue.jira_id
                                     data['task_id'] = jira_issue.id
-                                    moved_worklogs[jira_worklog.id] = jira_issue.id
                                 comment = worklog['comment'] or '/'
                                 comment = comment.replace('"','_').replace('\'','_')
                                 if len(comment)>127:
@@ -282,20 +297,33 @@ class bss_jira_project(osv.osv):
                                         if not weid:
                                             err_data = {}
                                             err_data['user_id']= author_id[0]
-                                            err_data['project_id'] = jira_project.project_id
+                                            err_data['project_id'] = jira_project.project_id.id
                                             err_data['jira_issue_id'] = jira_issue.id
                                             err_data['jira_worklog_id'] = worklog_jira_id
                                             err_data['synchro_date_time'] = str(datetime.now())
                                             err_data['update_date'] = str(work_last_update)
                                             err_data['key'] = issue_fields['key']
-                                            err_data['error_message'] = u'timesheet has been submitted : no change allowed !'                                            
-                                            self._logger.error('timesheet has been submitted : no change allowed !')
+                                            err_data['error_message'] = u'timesheet has been submitted : cannot change worklog !' 
+                                            error_obj.create(cr, uid,err_data)                                           
+                                            self._logger.error('timesheet has been submitted : cannot change worklog !')
                                         continue
                                     self._logger.debug('Update worklog %s with %s',jira_worklog.id,str(data))
                                     worklog_obj.write(cr, uid, woid, data)                             
                             else:
                                 if tsid:
-                                    self._logger.error('timesheet has been submitted : no change allowed !')
+                                    weid = error_obj.search(cr, uid, [('jira_worklog_id','=',worklog_jira_id)])
+                                    if not weid:
+                                        err_data = {}
+                                        err_data['user_id']= author_id[0]
+                                        err_data['project_id'] = jira_project.project_id.id
+                                        err_data['jira_issue_id'] = jira_issue.id
+                                        err_data['jira_worklog_id'] = worklog_jira_id
+                                        err_data['synchro_date_time'] = str(datetime.now())
+                                        err_data['update_date'] = str(work_last_update)
+                                        err_data['key'] = issue_fields['key']
+                                        err_data['error_message'] = u'timesheet has been submitted : cannot insert worklog !' 
+                                        error_obj.create(cr, uid,err_data)                                           
+                                        self._logger.error('timesheet has been submitted : cannot insert worklog !')
                                     continue
 
                                 if started_date < datetime.strptime(jira_project.project_id.date_start,'%Y-%m-%d'):
@@ -316,21 +344,31 @@ class bss_jira_project(osv.osv):
 
                                 self._logger.debug('Create worklog %s',str(data))
                                 woid = worklog_obj.create(cr, uid, data)
-                                issue_worklogs[jira_issue.id].append(woid)
-#        for decoded in decoded_list:
-#            oid = model.search(cr, uid, [('jira_id', '=', decoded['id'])])
-#            if oid:
-#                jira_project = self.browse(cr, uid, oid)[0]
-#                if jira_project.name!=decoded['name']:
-#                    self._logger.debug('Update name for project %s from %s to %s',decoded['key'],jira_project.name,decoded['name'])
-#                    self.write(cr, uid, jira_project.id, {'name': decoded['name']})
-#            else:   
-#                data = {'jira_id': decoded['id'],
-#                        'key': decoded['key'],
-#                        'name': decoded['name']
-#                        }
-#                self._logger.debug('Create project %s',str(data))
-#                oid = model.create(cr, uid, data)
+        worklog_to_delete = []
+        for issue_id in issue_worklogs:
+            wids = worklog_obj.search(cr, uid, [('jira_issue_id', '=', issue_id),('jira_id','not in',issue_worklogs[issue_id])]) 
+            if wids:
+                for worklog in worklog_obj.browse(cr, uid, wids):
+                    tsid = ts_obj.search(cr, uid, [('user_id','=',worklog.user_id.id),('date_from','<=', worklog.date),('date_to','>=', worklog.date),('state','not in',['new','draft'])])
+                    if tsid:
+                        weid = error_obj.search(cr, uid, [('jira_worklog_id','=',worklog.jira_id)])
+                        if not weid:
+                            err_data = {}
+                            err_data['user_id']= worklog.user_id
+                            err_data['project_id'] = jira_issue_oe_project[issue_id]
+                            err_data['jira_issue_id'] = issue_id
+                            err_data['jira_worklog_id'] = worklog.jira_id
+                            err_data['synchro_date_time'] = str(datetime.now())
+                            err_data['update_date'] = str(worklog.date)
+                            err_data['key'] = jira_issue_keys[issue_id]
+                            err_data['error_message'] = u'timesheet has been submitted : delete refused !' 
+                            error_obj.create(cr, uid,err_data)                                           
+                            self._logger.error('timesheet has been submitted : delete refused !')
+                    else:
+                        worklog_to_delete.append(worklog.id)
+                if worklog_to_delete:
+                    worklog_obj.unlink(cr, uid, worklog_to_delete)
+                self._logger.debug('Deleted worklogs for %s : %s',issue_id,str(worklog_to_delete))
         self._logger.debug('Synchronization finished')
         return True    
  

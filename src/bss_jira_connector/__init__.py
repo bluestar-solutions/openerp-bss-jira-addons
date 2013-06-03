@@ -22,9 +22,11 @@
 # From openerp addons
 
 # From this project
+
 import bss_jira_project
 import bss_jira_issue
 import bss_jira_worklog
+import bss_jira_worklog_errors
 
 #import report
 #import wizard

@@ -24,18 +24,25 @@ from openerp.netsvc import logging
 import json
 from bss_webservice_handler.webservice import webservice
 
-class bss_jira_worklog(osv.osv):
-    _inherit = 'project.task.work'
-    _logger = logging.getLogger('bss_jira_connector.jira_worklog')
+class bss_jira_worklog_errors(osv.osv):
+    _name = 'bss_jira_connector.jira_worklog_errors'
+    _logger = logging.getLogger(_name)
     
     _columns = {
-        'jira_id': fields.integer('JIRA id', readonly=True),
-        'jira_issue_id': fields.integer('JIRA issue id', readonly=True),
+        'user_id': fields.many2one('res.users', 'User'),
+        'project_id': fields.many2one('project.project', 'Project'),
+        'jira_issue_id': fields.integer('JIRA issue id'),
+        'key': fields.char('JIRA key', size=256),
+        'jira_worklog_id': fields.integer('JIRA worklog id'),
+        'synchro_date_time': fields.datetime('Error date'),
+        'update_date': fields.datetime('Update date'),
+        'error_message': fields.text('Error message'),
+        'active': fields.boolean('Active'),
     }
 
-    _sql_constraints = [
-        ('jira_id_uniq', 'unique (jira_id)', 'The JIRA id must be unique !'),
-    ]
-
-bss_jira_worklog()
+    _defaults = {
+        'active': True, 
+                 }
+    _order = "synchro_date_time desc"
+bss_jira_worklog_errors()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
