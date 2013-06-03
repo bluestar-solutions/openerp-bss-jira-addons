@@ -1,0 +1,184 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* bss_jira_connector
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-06-03 12:34+0000\n"
+"PO-Revision-Date: 2013-06-03 12:34+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#: view:project.task:0
+#. module: bss_jira_connector
+msgid "JIRA"
+msgstr "JIRA"
+
+#: model:ir.model,name:bss_jira_connector.model_project_task_work
+#. module: bss_jira_connector
+msgid "Project Task Work"
+msgstr "Avancement sur une tâche de projet"
+
+#: view:bss_jira_connector.jira_worklog_errors:0
+#. module: bss_jira_connector
+msgid "Search Worklog Errors"
+msgstr "Recherche d'erreurs de saisie de temps"
+
+#: selection:project.task,jira_status:0
+#. module: bss_jira_connector
+msgid "Closed"
+msgstr "Fermé"
+
+#: view:bss_jira_connector.jira_project:0
+#: model:ir.actions.act_window,name:bss_jira_connector.action_view_jira_project
+#: model:ir.ui.menu,name:bss_jira_connector.menu_action_view_jira_project
+#. module: bss_jira_connector
+msgid "JIRA projects"
+msgstr "Projets JIRA"
+
+#: selection:project.task,jira_status:0
+#. module: bss_jira_connector
+msgid "Need info"
+msgstr "Besoin d'information"
+
+#: model:ir.actions.act_window,name:bss_jira_connector.action_view_jira_errors
+#: model:ir.ui.menu,name:bss_jira_connector.menu_action_view_jira_errors
+#. module: bss_jira_connector
+msgid "JIRA errors"
+msgstr "Erreurs JIRA"
+
+#: field:project.task,last_update_datetime:0
+#. module: bss_jira_connector
+msgid "Last update"
+msgstr "Dernière mise-à-jour"
+
+#: field:bss_jira_connector.jira_worklog_errors,jira_worklog_id:0
+#. module: bss_jira_connector
+msgid "JIRA worklog id"
+msgstr "Id de saisie de temps JIRA worklog"
+
+#: model:ir.model,name:bss_jira_connector.model_bss_jira_connector_jira_worklog_errors
+#. module: bss_jira_connector
+msgid "bss_jira_connector.jira_worklog_errors"
+msgstr "Erreurs de saisie de temps"
+
+#: selection:project.task,jira_status:0
+#. module: bss_jira_connector
+msgid "Reopened"
+msgstr "Reouvert"
+
+#: field:bss_jira_connector.jira_worklog_errors,user_id:0
+#. module: bss_jira_connector
+msgid "User"
+msgstr "Utilisateur"
+
+#: model:ir.model,name:bss_jira_connector.model_bss_jira_connector_jira_project
+#. module: bss_jira_connector
+msgid "bss_jira_connector.jira_project"
+msgstr "Projet JIRA"
+
+#: sql_constraint:bss_jira_connector.jira_project:0
+#: sql_constraint:project.task:0
+#. module: bss_jira_connector
+msgid "The JIRA key must be unique !"
+msgstr "La clé JIRA doit être unique !"
+
+#: field:bss_jira_connector.jira_worklog_errors,active:0
+#. module: bss_jira_connector
+msgid "Active"
+msgstr "Actif"
+
+#: selection:project.task,jira_status:0
+#. module: bss_jira_connector
+msgid "Resolved"
+msgstr "Résolu"
+
+#: model:ir.model,name:bss_jira_connector.model_project_task
+#. module: bss_jira_connector
+msgid "Task"
+msgstr "Tâche"
+
+#: field:project.task,jira_status:0
+#. module: bss_jira_connector
+msgid "JIRA status"
+msgstr "Status JIRA"
+
+#: field:bss_jira_connector.jira_worklog_errors,synchro_date_time:0
+#. module: bss_jira_connector
+msgid "Error date"
+msgstr "Date de l'erreur"
+
+#: field:bss_jira_connector.jira_project,key:0
+#: field:bss_jira_connector.jira_worklog_errors,key:0
+#: field:project.task,key:0
+#. module: bss_jira_connector
+msgid "JIRA key"
+msgstr "Clé JIRA"
+
+#: field:bss_jira_connector.jira_worklog_errors,error_message:0
+#. module: bss_jira_connector
+msgid "Error message"
+msgstr "Message d'erreur"
+
+#: field:bss_jira_connector.jira_project,project_id:0
+#: field:bss_jira_connector.jira_worklog_errors,project_id:0
+#. module: bss_jira_connector
+msgid "Project"
+msgstr "Projet"
+
+#: field:bss_jira_connector.jira_worklog_errors,update_date:0
+#. module: bss_jira_connector
+msgid "Update date"
+msgstr "Date de mise-à-jour"
+
+#: view:bss_jira_connector.jira_worklog_errors:0
+#. module: bss_jira_connector
+msgid "JIRA worklog errors"
+msgstr "Erreurs de saisie de temps"
+
+#: field:bss_jira_connector.jira_worklog_errors,jira_issue_id:0
+#: field:project.task.work,jira_issue_id:0
+#. module: bss_jira_connector
+msgid "JIRA issue id"
+msgstr "Numéro de tâche JIRA"
+
+#: selection:project.task,jira_status:0
+#. module: bss_jira_connector
+msgid "In progress"
+msgstr "En cours"
+
+#: field:bss_jira_connector.jira_project,jira_id:0
+#: field:project.task,jira_id:0
+#: field:project.task.work,jira_id:0
+#. module: bss_jira_connector
+msgid "JIRA id"
+msgstr "Id JIRA"
+
+#: selection:project.task,jira_status:0
+#. module: bss_jira_connector
+msgid "In test"
+msgstr "En test"
+
+#: sql_constraint:bss_jira_connector.jira_project:0
+#: sql_constraint:project.task:0
+#: sql_constraint:project.task.work:0
+#. module: bss_jira_connector
+msgid "The JIRA id must be unique !"
+msgstr "L'id JIRA doit être unique !"
+
+#: field:bss_jira_connector.jira_project,name:0
+#. module: bss_jira_connector
+msgid "JIRA project name"
+msgstr "Nom de projet JIRA"
+
+#: selection:project.task,jira_status:0
+#. module: bss_jira_connector
+msgid "Open"
+msgstr "Ouvert"
+
