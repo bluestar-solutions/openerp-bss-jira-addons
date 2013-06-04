@@ -27,7 +27,6 @@ import json
 import httplib2
 from dateutil import parser as dateparser
 import threading
-from openerp import pooler
 
 WEBSERVICE_TYPE = [('GET','Get'),('PUSH', 'Push'),('PUSH_GET','Push Get Sync'),('GET_PUSH','Get Push Sync'),]
 HTTP_AUTH_TYPE = [('NONE', 'None'), ('BASIC', 'Basic')]
@@ -105,54 +104,54 @@ class webservice(osv.osv):
         return data
     
     @staticmethod
-    def str2date(string, type, format):
+    def str2date(string, date_type, date_format):
         if not string:
             return None
-        if format == 'TIMESTAMP':
-            if type=='date':
+        if date_format == 'TIMESTAMP':
+            if date_type=='date':
                 return date.fromtimestamp(string)
-            elif type=='datetime':
+            elif date_type=='datetime':
                 return datetime.fromtimestamp(string)
-            elif type=='time':
+            elif date_type=='time':
                 return datetime.fromtimestamp(string).time()
-        elif format == 'ISO8601':
-            if type=='date':
+        elif date_format == 'ISO8601':
+            if date_type=='date':
                 return dateparser.parse(string).date()
-            elif type=='datetime':
+            elif date_type=='datetime':
                 return dateparser.parse(string)
-            elif type=='time':
+            elif date_type=='time':
                 return dateparser.parse(string).time()
-        elif format == 'SWISS':
-            if type=='date':
+        elif date_format == 'SWISS':
+            if date_type=='date':
                 return datetime.strptime(string,'%d.%m.%Y').date()
-            elif type=='datetime':
+            elif date_type=='datetime':
                 return datetime.strptime(string,'%d.%m.%Y %H:%M:S')
-            elif type=='time':
+            elif date_type=='time':
                 return datetime.strptime(string,'%H:%M:S').time()
         return None
       
     @staticmethod
-    def date2str(string, type, format):
+    def date2str(string, date_type, date_format):
         if not string:
             return None
-        if format == 'TIMESTAMP':
-            if type=='date':
+        if date_format == 'TIMESTAMP':
+            if date_type=='date':
                 return int(mktime(strptime(string,"%Y-%m-%d")))
-            elif type=='datetime':
+            elif date_type=='datetime':
                 return int(mktime(strptime(string,"%Y-%m-%d %H:%M:%S.%f")))
-            elif type=='time':
+            elif date_type=='time':
                 return int(mktime(strptime(string,"%H:%M:S")))
-        elif format == 'ISO8601':
-            if type=='datetime':
+        elif date_format == 'ISO8601':
+            if date_type=='datetime':
                 return datetime.strftime(datetime.strptime(string,"%Y-%m-%d %H:%M:%S.%f"),'%Y-%m-%dT%H:%M:S')
-            elif type in ('date','time'):
+            elif date_type in ('date','time'):
                 return string
-        elif format == 'SWISS':
-            if type=='date':
+        elif date_format == 'SWISS':
+            if date_type=='date':
                 return datetime.strftime(datetime.strptime(string,"%Y-%m-%d"),'%d.%m.%Y')            
-            elif type=='datetime':
+            elif date_type=='datetime':
                 return datetime.strftime(datetime.strptime(string,"%Y-%m-%d %H:%M:%S.%f"),'%d.%m.%Y %H:%M:S')
-            elif type=='time':
+            elif date_type=='time':
                 return string
         return None
             
@@ -352,7 +351,7 @@ class webservice(osv.osv):
                   
             if success and model and service.after_method_name and hasattr(model,service.after_method_name):
                 method = getattr(model,service.after_method_name)       
-                method(service_cr, uid)
+                method(service_cr, uid, get_resp_content, push_resp_content)
             
             if success:    
                 with webservice_lock:
@@ -409,7 +408,7 @@ class webservice(osv.osv):
             task_thread.setDaemon(False)
             task_thread.start()
             self._logger.debug('Webservice thread spawned')
-        except Exception, ex:
+        except Exception:
             self._logger.warning('Exception in webservice multithread:', exc_info=True)
         return False
 

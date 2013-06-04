@@ -45,7 +45,7 @@ class bss_attendance_import_log(osv.osv):
         'create_date': fields.datetime(),
         'website_id': fields.integer('Website ID', required=True),
         'employee_id': fields.many2one('hr.employee', 'Employee', readonly=True),
-        'status': fields.selection([('OK', 'Success'), ('ERROR', 'Error')], 'Status', required=True),
+        'status': fields.selection([('OK', 'Success'), ('ERROR', 'Error'), ('DELETED','Deleted')], 'Status', required=True),
         'cause': fields.char('Cause', size=255)
     }    
     
@@ -103,12 +103,13 @@ class bss_attendance(osv.osv):
             'bss_attendance_sheet.sheet' : (_get_sheet_attendance_ids, ['name'], 1),   
             'hr.attendance': (lambda self, cr, uid, ids, context=None: ids, ['name'], 1),                                                                                                                                       
         }),
-        'website_id': fields.integer('Website ID'),
+        'website_id': fields.integer('Website ID', required=True),
         'is_vector_phone': fields.boolean('Vector'),
     }
     
     _defaults = {
-        'type': 'std'
+        'type': 'std',
+        'website_id' : 0,
     }
 
     def _altern_same_type(self, cr, uid, ids, context=None):       
@@ -153,15 +154,17 @@ class bss_attendance(osv.osv):
         
         datas = nson.loads(content)
         for data in sorted(datas, key=lambda k: k['time']) :
-            log_ids = log_obj.search(cr, uid, [('website_id', '=', data['id'])])
-            if not log_ids:
+            ts_ids = self.search(cr, uid, [('website_id','=',data['uid'])])
+            log_ids = log_obj.search(cr, uid, [('website_id', '=', data['uid'])])
+            
+            if not ts_ids and not log_ids:
                 vals = {
-                    'name': webservice.str2date(data['time'][:-6], 'datetime', datetime_format).isoformat(' '),
+                    'name': webservice.str2date(data['time'], 'datetime', datetime_format).isoformat(' '),
                     'type': WS_TYPES[data['attendance_type']],
                     'action': WS_ACTIONS[data['status']],
                     'action_desc': None,
                     'employee_id': data['openerp_id'],      
-                    'website_id': data['id'],                         
+                    'website_id': data['uid'],                         
                 }   
                 try:
                     self.create(cr, uid, vals)
@@ -170,7 +173,7 @@ class bss_attendance(osv.osv):
                     cr.rollback()
                     
                     log_obj.create(cr, 1, {
-                        'website_id': data['id'],
+                        'website_id': data['uid'],
                         'employee_id': data['openerp_id'],
                         'status': 'ERROR',
                         'cause': str(e),                  
@@ -178,7 +181,7 @@ class bss_attendance(osv.osv):
                     cr.commit()
                 else:
                     log_obj.create(cr, 1, {
-                        'website_id': data['id'],
+                        'website_id': data['uid'],
                         'employee_id': data['openerp_id'],
                         'status': 'OK',
                         'cause': '',                   
@@ -189,18 +192,42 @@ class bss_attendance(osv.osv):
     
     def ws_encode_attendance(self, cr, uid, model, last_success, parameters, datetime_format):
         log_obj = self.pool.get('bss_attendance_sheet.attendance_log')
-        
         attendance_list = []
-        search_param = [('create_date', '>=', last_success.isoformat(' '))]
-
-        for log in log_obj.browse(cr, uid, log_obj.search(cr, uid, search_param)):
-            attendance_list.append({
-                "id": log.website_id,
-                "error": log.status if log.status == 'ERROR' else '',
-                "message": log.cause,
-            })
-
+        
+        for attendance in sorted(self.browse(cr, uid, self.search(cr, uid, [])), key=lambda k: k.name):
+            attendance_args = {}
+            
+            attendance_args["oeid"] = attendance.id
+            attendance_args["uid"] = attendance.website_id
+            attendance_args["type"] = attendance.type
+            attendance_args["status"] = attendance.action
+            attendance_args["employee_id"] = attendance.employee_id.id
+            attendance_args["time"] = webservice.date2str(attendance.name+".0", 'datetime', datetime_format);
+            
+            if attendance.website_id == 0:
+                attendance_args["tstatus"] = 1
+            else:
+                log_entry = log_obj.browse(cr, uid, log_obj.search(cr, uid, [('website_id','=',attendance.website_id)]))
+                if len(log_entry) != 0 and log_entry[0].status != 'OK':
+                    attendance_args["tstatus"] = 2
+                else:
+                    attendance_args["tstatus"] = 1
+                
+            attendance_list.append(attendance_args)
+            
+        for log_ids in log_obj.browse(cr, uid, log_obj.search(cr, uid, [('status','=','DELETED')])):
+            attendance_list.append({'tstatus':3, 'uid':log_ids['website_id']})
+        
         return nson.dumps(attendance_list)
+
+    def ws_after_push(self, cr, uid, get_resp_content, push_resp_content):
+        log_obj = self.pool.get('bss_attendance_sheet.attendance_log')
+        
+        for data in nson.loads(push_resp_content):
+            tmp = data.popitem()
+            self.write(cr, uid, int(tmp[0]), {'website_id':int(tmp[1])})
+            
+        log_obj.unlink(cr, uid, log_obj.search(cr, uid, [('status','=','DELETED')]))
     
     def _check_sheet(self, cr, uid, ids, context=None):
         sheet_obj = self.pool.get('bss_attendance_sheet.sheet')
@@ -233,6 +260,27 @@ class bss_attendance(osv.osv):
         res = super(bss_attendance,self).write(cr, uid, ids, self._round_minute(vals), context)
         self._check_sheet(cr, uid, ids, context)
         return res
+    
+    def unlink(self, cr, uid, ids, context=None):
+        log_obj = self.pool.get('bss_attendance_sheet.attendance_log')
+        
+        if not isinstance(ids, list):
+            ids = [ids]
+
+        for attendance in self.browse(cr, uid, ids, context):
+            if attendance.website_id != 0:
+                log_id = log_obj.search(cr, uid, [('website_id','=',attendance.website_id)])
+                if log_id:
+                    log_obj.write(cr, uid, log_id, {'status':'DELETED'})
+                else:
+                    log_obj.create(cr, uid, {
+                        'website_id': attendance.website_id,
+                        'employee_id': attendance.employee_id.id,
+                        'status': 'DELETED',
+                        'cause': '',                   
+                    })
+                
+        return super(bss_attendance, self).unlink(cr, uid, ids, context)
 
 bss_attendance()
 
