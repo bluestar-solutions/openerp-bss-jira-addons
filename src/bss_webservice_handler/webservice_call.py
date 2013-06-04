@@ -82,10 +82,12 @@ class webservice_call(osv.osv):
     _order = "call_moment desc"
     
     def create(self, cr, uid, vals, context=None):
-        if 'push_status' in vals.keys():
+        if 'push_status' in vals.keys() and 'get_status' in vals.keys():
             vals['call_result'] = self._get_most_serious(vals['push_status'], vals['get_status'])
-        else:
+        elif 'get_status' in vals.keys():
             vals['call_result'] = self._return_code_parser(vals['get_status'])
+        elif 'push_status' in vals.keys():
+            vals['call_result'] = self._return_code_parser(vals['push_status'])
         super(webservice_call, self).create(cr, uid, vals, context)
     
 webservice_call()
