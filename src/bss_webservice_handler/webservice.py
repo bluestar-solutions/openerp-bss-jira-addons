@@ -27,6 +27,7 @@ import json
 import httplib2
 from dateutil import parser as dateparser
 import threading
+import base64
 
 WEBSERVICE_TYPE = [('GET','Get'),('PUSH', 'Push'),('PUSH_GET','Push Get Sync'),('GET_PUSH','Get Push Sync'),]
 HTTP_AUTH_TYPE = [('NONE', 'None'), ('BASIC', 'Basic')]
@@ -48,7 +49,7 @@ class webservice(osv.osv):
         'ws_protocol': fields.char('Webservice Protocol', size=256, required=True),
         'ws_host': fields.char('Webservice Host', size=256, required=True),
         'ws_port': fields.char('Webservice Port', size=256, required=True),
-        'ws_path': fields.char('Webservice Path', size=256, required=True),
+        'ws_path': fields.char('Webservice Path', size=1024, required=True),
         'http_auth_type': fields.selection(HTTP_AUTH_TYPE, 'HTTP Authentication', required=True),
         'http_auth_login': fields.char('HTTP Login', size=64),
         'http_auth_password': fields.char('HTTP Password', size=64),
@@ -245,11 +246,14 @@ class webservice(osv.osv):
         headers = {"Content-type": "application/json",
                    "Accept": "application/json",
                    }  
+        if service.http_auth_type == 'BASIC':
+            headers["Authorization"] = "Basic {0}".format(base64.b64encode("{0}:{1}".format(service.http_auth_login, service.http_auth_password)))
         if service.last_success:
             headers['Last-Success'] = webservice.date2str(service.last_success, 'datetime', 'ISO8601')
         logger.debug('Url : %s \\n', url)
         response, content = http.request(url, "GET", headers=headers)
-        logger.debug('Response: %s \n%s', response, content)
+#        logger.debug('Response: %s \n%s', response, content)
+        logger.debug('Response: %s ', response)
         success = False
         if response.status == 200:
             if model and service.decode_method_name and hasattr(model, service.decode_method_name):

@@ -1,40 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-       <record model="ir.ui.view" id="bss_webservice_tree">
-            <field name="name">bss.webservice.tree</field>
-            <field name="model">bss.webservice</field>
-            <field name="arch" type="xml">
-                <tree string="Webservices">
-                    <button name="run_service_multithread" string="Run Service" type="object" icon="gtk-execute"/>
-                    <field name="name" />
-                    <field name="service_type" />
-                    <field name="ws_protocol" />
-                    <field name="ws_host" />
-                    <field name="ws_port" />
-                    <field name="ws_path" />
-                    <field name="http_auth_type" />
-                    <field name="http_auth_login" />
-                    <field name="http_auth_password" widget="password" />
-                    <field name="model_name" />
-                    <field name="before_method_name" />
-                    <field name="after_method_name" />
-                    <field name="encode_method_name" />
-                    <field name="decode_method_name" />
-                    <field name="push_filter" />
-                    <field name="get_db_key" />
-                    <field name="datetime_format" />
-                    <field name="wait_retry_minutes" />
-                    <field name="wait_next_minutes" />
-                    <field name="priority" />
-                    <field name="active" />
-                    <field name="last_run" />
-                    <field name="last_success" />
-                    <field name="is_running" />
-                    <field name="next_service" />
-                </tree>
-            </field>
-        </record>
         
         <record model="ir.ui.view" id="bss_ws_call_search">
 			<field name="name">bss.webservice_call.search</field>
@@ -70,7 +36,7 @@
                 		<button name="clear_call" string="Force log clean" type="object" context="{'force':1}"/>
                 	</header>
                 	<div class="oe_right oe_button_box">
-                		<button name="%(bss_ws_act_show_call)d" string="Call details" type="action" />
+                		 <button name="%(bss_ws_act_show_call)d" string="Call details" type="action" />
                 	</div>
                 	<group>
 	                	<group string="Basic configuration">
@@ -118,6 +84,7 @@
             <field name="model">bss.webservice_call</field>
             <field name="arch" type="xml">
                 <tree string="" create="0" colors="darkred:call_result=='error';orange:call_result=='warn';green:call_result=='ok';">
+                    <button name="run_service_multithread" string="Run Service" type="object" icon="gtk-execute"/>
 				    <field name="service_id" />
 				    <field name="call_moment" />
 				    <field name="success" />
@@ -157,8 +124,8 @@
 				</form>
 			</field>
 		</record>
-
-        <record id="bss_ws_act" model="ir.actions.act_window">
+        
+		<record id="bss_ws_act" model="ir.actions.act_window">
             <field name="name">Webservices</field>
             <field name="res_model">bss.webservice</field>
             <field name="view_type">form</field>
