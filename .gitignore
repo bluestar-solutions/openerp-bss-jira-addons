@@ -1,5 +1,6 @@
 *.pyc
 /.settings
+/.target
 /openerp
 /deps
 openerp-pid
