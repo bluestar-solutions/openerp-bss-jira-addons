@@ -137,7 +137,7 @@
                                 <field name="travel_zone" />
                             </group>
                         </group>
-                        <notebook>
+                        <notebook states="pending,validate">
                         	<page string="Tasks">
 		                        <group name="tasks" string="Tasks"
 		                            attrs="{'invisible': [('state', '=', 'draft')]}">
