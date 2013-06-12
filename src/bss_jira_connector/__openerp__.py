@@ -31,6 +31,7 @@
                 'project',
                 'project_timesheet',
                 'bss_webservice_handler',
+                'procurement',
                 ],
     'data': [
         
