@@ -33,6 +33,7 @@
                 'project',
                 'project_timesheet',
                 'report_webkit',
+                'bss_attendance_sheet',
                 ],
     'data': ['bss_visit_account_invoice_data.xml',
              'bss_prepaid_hours_data.xml'],
