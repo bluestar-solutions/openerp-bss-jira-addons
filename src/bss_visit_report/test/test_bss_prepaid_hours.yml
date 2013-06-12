@@ -12,12 +12,14 @@
     use_timesheets: True
     invoice_on_timesheets: True
     to_invoice: hr_timesheet_invoice.timesheet_invoice_factor1
+    partner_id: base.partner_demo
 
 -
   I check the state of the contract
 -
   !assert {model: account.analytic.account, id: contract_0}:
     - state == "open"
+    - partner_id.id == ref('base.partner_demo')
     
 -
   I check if Prepaid hours object is created
@@ -59,21 +61,13 @@
     assert pph.av_amount == 600, "Bad value for available amount"
     
 -
-  In order to check correct validated and deductable hours
--
-  I create a project
--
-  !record {model: project.project, id: project_0}:
-    name: Test project
-    user_id: base.user_demo
-    analytic_account_id: contract_0
-    
+  In order to check correct validated and deductable hours 
 -
   I create a task
 -
   !record {model: project.task, id: task_0}:
     name: Test task
-    project_id: project_0
+    project_id: !ref {model: project.project, search: "[('analytic_account_id','=',ref('contract_0'))]"}
     user_id: base.user_demo
     description: test description
     date_start: !eval time.strftime('%Y-%m-%d')
@@ -105,7 +99,7 @@
   I create a visit report
 -
   !record {model: bss_visit_report.visit, id: visit_report_0}:
-    project_id: project_0
+    project_id: !ref {model: project.project, search: "[('analytic_account_id','=',ref('contract_0'))]"}
     user_id: base.user_demo
     date: !eval time.strftime('%Y-%m-%d')
     hour_from: 2.5

@@ -250,8 +250,11 @@ class bss_visit(osv.osv):
             self.pool.get('account.analytic.line').write(cr, uid, line_id.id, {'to_invoice' : invoice_id})
             
             self.pool.get('project.task').do_close(cr, uid, [visit.linked_task_id.id], context)
-            self.pool.get('sale.order').action_button_confirm(cr, uid, [visit.linked_sale_order_id.id], context)
-            self.pool.get('sale.order').action_invoice_create(cr, uid, [visit.linked_sale_order_id.id], context=context)
+            if visit.material_lines :
+                self.pool.get('sale.order').action_button_confirm(cr, uid, [visit.linked_sale_order_id.id], context)
+                self.pool.get('sale.order').action_invoice_create(cr, uid, [visit.linked_sale_order_id.id], context=context)
+            elif visit.linked_sale_order_id:
+                self.pool.get('sale.order').unlink(cr, uid, [visit.linked_sale_order_id.id], context)
         self.write(cr, uid, ids, {'state': 'terminated'}, context)
 
     def action_reopen(self, cr, uid, ids, context=None):
