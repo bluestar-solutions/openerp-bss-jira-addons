@@ -28,6 +28,8 @@ from datetime import datetime, timedelta
 class webservice_handler(osv.osv_memory):
     _name = 'bss.webservice_handler'
     _description = 'Webservice Handler'
+    
+    _is_init = False
             
     _columns= {
         'name': fields.char('Name', size=64),
@@ -85,6 +87,8 @@ class webservice_handler(osv.osv_memory):
 
         for service in services:           
 #            _logger.debug('Service is %s', str(service))
+            if not self._is_init:
+                webservice_obj.write(cr, uid, service.id, {'is_running': False}, context)
             
             if service.last_run:
                 _logger.debug('last_run is %s', str(service.last_run))
@@ -98,6 +102,7 @@ class webservice_handler(osv.osv_memory):
             if next_run < datetime.now():
                 _logger.debug('Context is %s', str(context))
                 webservice_obj.do_run(cr, uid, service.id, context)
+        self._is_init = True
         if _logger.isEnabledFor(logging.DEBUG):
             _logger.debug('Webservices ended at %s', datetime.now())
         _logger.info('Ended webservice handler')
