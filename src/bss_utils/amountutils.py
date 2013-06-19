@@ -19,23 +19,20 @@
 #
 ##############################################################################
 
-{
-    'name': 'Utils',
-    'version': '1.1-1',
-    "category" : 'Bluestar/Generic module',
-    'complexity': "easy",
-    'description': """A module with python tools.""",
-    'author': 'bluestar solutions sàrl',
-    'website': 'http://www.blues2.ch',
-    'depends': [],
-    'init_xml': [],
-    'update_xml': [],
-    'css': [],
-    'demo_xml': [],
-    'test': ['test/test_amountutils.yml'],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
-}
+def enum(**enums):
+    return type('Enum', (), enums)
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+Direction = enum(FLOOR=-1, NEAR=0, CEIL=1)
+
+def round_to(n, precision, direction=Direction.NEAR):
+    correction = 0.0
+    if direction == Direction.NEAR:
+        correction = 0.5 if n >= 0 else -0.5
+    elif direction == Direction.CEIL:
+        if int(n/precision)*precision == n :
+            return n
+        correction = 1.0 if n >= 0 else -1.0
+    return int(n/precision+correction)*precision
+
+def round_to_05(n, direction=Direction.NEAR):
+    return round_to(n, 0.05, direction)
