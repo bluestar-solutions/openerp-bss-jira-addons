@@ -19,9 +19,18 @@
 #
 ##############################################################################
 
-def round_to(n, precission):
-    correction = 0.5 if n >= 0 else -0.5
+def enum(**enums):
+    return type('Enum', (), enums)
+
+Direction = enum(FLOOR=-1, NEAR=0, CEIL=1)
+
+def round_to(n, precission, direction=Direction.NEAR):
+    correction = 0.0
+    if direction == Direction.NEAR:
+        correction = 0.5 if n >= 0 else -0.5
+    elif direction == Direction.CEIL:
+        correction = 1.0 if n >= 0 else -1.0
     return int(n/precission+correction)*precission
 
-def round_to_05(n):
-    return round_to(n, 0.05)
+def round_to_05(n, direction=Direction.NEAR):
+    return round_to(n, 0.05, direction)
