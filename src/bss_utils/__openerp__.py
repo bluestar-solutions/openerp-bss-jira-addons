@@ -32,7 +32,7 @@
     'update_xml': [],
     'css': [],
     'demo_xml': [],
-    'test': [],
+    'test': ['test/test_amountutils.yml'],
     'installable': True,
     'application': False,
     'auto_install': False,
