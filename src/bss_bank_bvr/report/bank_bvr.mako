@@ -14,7 +14,7 @@ locale.setlocale(locale.LC_ALL, 'fr_CH.utf-8')
                font-family: "bvrocrb";
                font-style: normal;
                font-weight: normal;
-               src: url(${police_absolute_path('ocrbb.ttf')}) format("truetype");
+               src: url(${police_absolute_path('l10n_ch_payment_slip/report/ocrbb.ttf')}) format("truetype");
            }
 
 	#bvrfooter {
