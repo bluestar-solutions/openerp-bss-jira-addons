@@ -8,7 +8,7 @@
             file="bss_bank_bvr/report/bank_bvr.mako"
             string="Bank BVR/ESR"
             report_type="webkit"
-            webkit_header="bvr_header"
+            webkit_header="l10n_ch_payment_slip.bvr_header"
             />
   </data>
 </openerp>
