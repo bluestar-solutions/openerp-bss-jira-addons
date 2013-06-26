@@ -2,7 +2,7 @@
 ##############################################################################
 #    
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2012 Bluestar Solutions Sàrl (<http://www.blues2.ch>).
+#    Copyright (C) 2013 Bluestar Solutions Sàrl (<http://www.blues2.ch>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,7 @@
 
 {
     'name': 'Utils',
-    'version': '1.1-1',
+    'version': 'master',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """A module with python tools.""",

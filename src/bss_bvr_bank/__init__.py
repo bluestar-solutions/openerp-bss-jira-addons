@@ -19,12 +19,9 @@
 #
 ##############################################################################
 
-# From openerp addons
-
 # From this project
-import bss_crm_phonenumbers_lead
 
 #import wizard
 #import report
-
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
