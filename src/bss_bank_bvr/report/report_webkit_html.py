@@ -2,7 +2,7 @@
 ##############################################################################
 #    
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2012-2013 Bluestar Solutions Sàrl (<http://www.blues2.ch>).
+#    Copyright (C) 2013 Bluestar Solutions Sàrl (<http://www.blues2.ch>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,12 +19,12 @@
 #
 ##############################################################################
 
-# From openerp addons
+from openerp.addons.l10n_ch_payment_slip.report import report_webkit_html
+from openerp.report import report_sxw
 
-# From this project
-import bss_crm_phonenumbers_lead
-
-#import wizard
-#import report
+report_sxw.report_sxw('report.invoice_bank_bvr_webkit',
+                      'account.invoice',
+                      'bss_bank_bvr/report/bank_bvr.mako',
+                      parser=report_webkit_html.L10nCHReportWebkitHtml)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

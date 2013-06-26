@@ -2,7 +2,7 @@
 ##############################################################################
 #    
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2012-2013 Bluestar Solutions Sàrl (<http://www.blues2.ch>).
+#    Copyright (C) 2013 Bluestar Solutions Sàrl (<http://www.blues2.ch>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,12 +19,24 @@
 #
 ##############################################################################
 
-# From openerp addons
-
-# From this project
-import bss_crm_phonenumbers_lead
-
-#import wizard
-#import report
-
+{
+    'name': 'Bank BVR',
+    'version': 'master',
+    "category" : 'Bluestar/Generic module',
+    'complexity': "easy",
+    'description': """A swiss bank BVR report.""",
+    'author': 'bluestar solutions sàrl',
+    'website': 'http://www.blues2.ch',
+    'depends': ['l10n_ch_bank',
+                'l10n_ch_base_bank',
+                'l10n_ch_payment_slip',
+                ],
+    'init_xml': [],
+    'update_xml': ['report/report_webkit_html_view.xml'],
+    'demo_xml': [],
+    'test': [],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
