@@ -89,6 +89,7 @@ class webservice_handler(osv.osv_memory):
 #            _logger.debug('Service is %s', str(service))
             if not self._is_init:
                 webservice_obj.write(cr, uid, service.id, {'is_running': False}, context)
+                cr.commit()
             
             if service.last_run:
                 _logger.debug('last_run is %s', str(service.last_run))

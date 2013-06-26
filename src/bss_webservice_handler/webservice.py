@@ -461,6 +461,8 @@ class webservice(osv.osv):
                         )
                         AND service_id = %s
                            """ % (ws.id,ws.call_limit,ws.id))
+                
+        return True
         
 webservice()
 
