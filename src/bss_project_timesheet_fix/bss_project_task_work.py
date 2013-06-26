@@ -19,23 +19,19 @@
 #
 ##############################################################################
 
-{
-    'name': 'Utils',
-    'version': '1.1-1',
-    "category" : 'Bluestar/Generic module',
-    'complexity': "easy",
-    'description': """A module with python tools.""",
-    'author': 'bluestar solutions sàrl',
-    'website': 'http://www.blues2.ch',
-    'depends': [],
-    'init_xml': [],
-    'update_xml': [],
-    'css': [],
-    'demo_xml': [],
-    'test': ['test/test_amountutils.yml'],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
-}
+from openerp.osv import osv
+
+class bss_project_task_work(osv.osv):
+    _inherit = 'project.task.work'
+    
+    def write(self, cr, uid, ids, vals, context=None):
+        # just update the record with admin if it's called by task form on unmodified entries
+        if len(vals) == 1 and 'task_id' in vals:
+            return super(bss_project_task_work, self).write(cr, 1, ids, vals, context)
+        
+        return super(bss_project_task_work, self).write(cr, uid, ids, vals, context)
+    
+    
+bss_project_task_work()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

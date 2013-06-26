@@ -19,23 +19,9 @@
 #
 ##############################################################################
 
-{
-    'name': 'Utils',
-    'version': '1.1-1',
-    "category" : 'Bluestar/Generic module',
-    'complexity': "easy",
-    'description': """A module with python tools.""",
-    'author': 'bluestar solutions sàrl',
-    'website': 'http://www.blues2.ch',
-    'depends': [],
-    'init_xml': [],
-    'update_xml': [],
-    'css': [],
-    'demo_xml': [],
-    'test': ['test/test_amountutils.yml'],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
-}
+# From openerp addons
+
+# From this project
+import bss_project_task_work
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
