@@ -20,8 +20,8 @@
 ##############################################################################
 
 from openerp.osv import osv, fields
-from openerp.tools.translate import _ 
-from bss_phonenumbers.bss_phonumbers_fields import bss_phonenumbers_converter as phonumbers_converter
+from openerp.tools.translate import _
+from openerp.addons.bss_phonenumbers.bss_phonumbers_fields import bss_phonenumbers_converter as phonumbers_converter #@UnresolvedImport
 import phonenumbers
 import base64
 
