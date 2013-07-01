@@ -22,7 +22,6 @@
 from openerp.osv import fields, osv
 from openerp.netsvc import logging
 import json
-from bss_webservice_handler.webservice import webservice
 from datetime import datetime, timedelta
 import re
 
