@@ -21,7 +21,7 @@
 
 from openerp.osv import osv, fields
 from openerp.addons.base.res.res_company import res_company
-from bss_phonenumbers import bss_phonumbers_fields as pnfields
+from openerp.addons.bss_phonenumbers import bss_phonumbers_fields as pnfields #@UnresolvedImport
 
 class bss_partner_phonenumbers_partner(osv.osv):
     
