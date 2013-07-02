@@ -8,7 +8,6 @@
 	<pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
 		<path>/openerp-bss-addons/openerp/server</path>
 		<path>/openerp-bss-addons/src</path>
-		<path>/openerp-bss-addons/bss_bvr_bank</path>
 	</pydev_pathproperty>
 
 	<pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
