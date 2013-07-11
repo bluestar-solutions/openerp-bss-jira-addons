@@ -1,7 +1,0 @@
-"id","key","value"
-"__export__.ir_config_parameter_smtp_url","smtp.url","email-smtp.us-east-1.amazonaws.com"
-"__export__.ir_config_parameter_smtp_port","smtp.port","587"
-"__export__.ir_config_parameter_smtp_login","smtp.login","AKIAJF2QDT3G6KXD7YFA"
-"__export__.ir_config_parameter_smtp_password","smtp.password","Ahy4hrMJaStaRWdzfSfqkQQC4fKzoZjhIuR3nCSmgko6"
-"__export__.ir_config_parameter_error_report_mail_from","error_report.mail_from","openerp@blues2.ch"
-"__export__.ir_config_parameter_error_report_mail_to","error_report.mail_to","devs@blues2.ch"
