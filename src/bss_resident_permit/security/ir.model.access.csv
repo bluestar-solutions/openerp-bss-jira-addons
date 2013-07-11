@@ -1,2 +1,0 @@
-"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-"access_resident_permit","resident_permit","model_bluestar_resident_permit","base.group_user","True","False","False","False"
