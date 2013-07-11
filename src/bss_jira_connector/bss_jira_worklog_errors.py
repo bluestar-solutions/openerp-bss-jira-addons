@@ -21,8 +21,6 @@
 
 from openerp.osv import fields, osv
 from openerp.netsvc import logging
-import json
-from bss_webservice_handler.webservice import webservice
 
 class bss_jira_worklog_errors(osv.osv):
     _name = 'bss_jira_connector.jira_worklog_errors'
