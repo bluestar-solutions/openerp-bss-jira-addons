@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_webservice_user,webservice.user,model_bss_webservice,base.group_user,False,False,False,False
-access_webservice_call_user,webservice_call.user,model_bss_webservice_call,base.group_user,False,False,False,False
-access_webservice_field_user,webservice_field.user,model_bss_webservice_field,base.group_user,False,False,False,False

@@ -1,8 +1,4 @@
 *.pyc
 /.settings
-/target
-/openerp
-/deps
-openerp-pid
-openerp-bss-addons.launch
-/.cache
+.project
+.pydevproject
