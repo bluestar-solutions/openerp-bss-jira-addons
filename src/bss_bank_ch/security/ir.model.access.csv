@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_bluestar_bank_ch,bluestar.bank_ch,model_bluestar_bank_ch,base.group_user,1,0,0,0
-
