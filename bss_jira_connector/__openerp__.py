@@ -25,7 +25,7 @@
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """A module to get worklogs from JIRA.""",
-    'author': 'bluestar solutions sàrl',
+    'author': 'Bluestar Solutions Sàrl',
     'website': 'http://www.blues2.ch',
     'depends': ['base',
                 'project',
