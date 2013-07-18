@@ -24,7 +24,54 @@
     'version': 'master',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
-    'description': """A module to get worklogs from JIRA.""",
+    'description': """
+A connector to fetch worklogs from Atlassian JIRA into OpenERP projects tasks
+=============================================================================
+
+This module uses bss_webservice_handler (https://launchpad.net/bss-webservice-addons) to fetch worklogs from Atlassian JIRA using its REST interface. 
+Once a JIRA project (new object) is matched to an OpenERP project, all JIRA issues are copied as tasks on OpenERP 
+side and all JIRA worklogs become analytic lines in OpenERP if a corresponding employee has been defined in the HR module.
+
+Configure the JIRA webservice
+-----------------------------
+
+Create a webservice in Settings/Webservices with these settings :
+
+* Name : jira worklog
+* Type : (depend of your service)
+* Webservice Protocol : (http/https)
+* Webservice Host : your.jira.host
+* Webservice Port : (your jira webservices port)
+* Webservice Path : /jira/rest/api/2/search?jql=updated%20%3E%20startOfDay(-1)%20ORDER%20BY%20updated%20DESC&startAt=0&maxResults=1500&fields=assignee,description,summary,created,updated,duedate,priority,status,worklog,key,id,project,timeestimate,timeoriginalestimate
+* Push Filter : (leave it empty)
+* Get DB Key : (leave it empty)
+* Date & Time Format : ISO 8601
+* Soft log limit : 0
+* Error log limit : 0.00
+
+* HTTP Authentication : Basic
+* HTTP Login : a-jira-user
+* HTTP Password : a-jira-password
+
+* Active : True
+
+* Model Name : bss_jira_connector.jira_project
+* Before Method Name : (leave it empty)
+* After Method Name : (leave it empty)
+* Encode Method Name : (leave it empty)
+* Decode Method Name : ws_decode_write_worklog
+
+You can manually execute webservice once with startOfMonth(-x) with x the number of month (in Webservice Path field) to collect before now. 
+This will collect all JIRA projects with worklogs in this period.
+
+Import worklogs into OpenERP projects
+-------------------------------------
+
+* Link JIRA projects with OpenERP projects in the Project > JIRA Projects menu.
+* Fill in contract infos and project start date (no worklog before this date will be collected).
+* Manually execute webservice once with startOfMonth(-x) to collect worklogs.
+* Update webservice to start automatically with startOfDay(-1) and update waiting time.
+    """,
     'author': 'Bluestar Solutions Sàrl',
     'website': 'http://www.blues2.ch',
     'depends': ['base',
@@ -51,6 +98,7 @@
     'installable': True,
     'application': False,
     'auto_install': False,
+    'images' : ['images/jira_project_edit.png',],
 }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
