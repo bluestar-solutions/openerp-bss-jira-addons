@@ -67,6 +67,7 @@ This will collect all JIRA projects with worklogs in this period.
 Import worklogs into OpenERP projects
 -------------------------------------
 
+* Check the REST plugin is enabled in JIRA settings.
 * Link JIRA projects with OpenERP projects in the Project > JIRA Projects menu.
 * Fill in contract infos and project start date (no worklog before this date will be collected).
 * Manually execute webservice once with startOfMonth(-x) to collect worklogs.
