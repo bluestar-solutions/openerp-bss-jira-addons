@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_bss_jira_config_form" model="ir.ui.view">
+			<field name="name">bss_jira_connector.jira_config.form</field>
+			<field name="model">bss_jira_connector.jira_config_wizard</field>
+			<field name="arch" type="xml">
+				<form string="Jira Connector" version="7.0">
+					<group>
+						<group string="Webservice">
+							<field name="protocol" />
+							<field name="hostname" />
+							<field name="hostport" />
+							<field name="pathtojira" />
+						</group>
+						<group string="Authentication">
+							<field name="username" />
+							<field name="password" password="True" />
+						</group>
+					</group>
+					<group string="Custom parameters">
+						<field name="interval" />
+						<field name="maxresults" />
+						<field name="startofday" />
+					</group>
+					<footer>
+						<button name="execute" string="Apply" type="object" class="oe_highlight" />
+						or
+						<button string="Cancel" class="oe_link" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_bss_jira_config_form" model="ir.actions.act_window">
+			<field name="name">Configure Jira Connector</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">bss_jira_connector.jira_config_wizard</field>
+			<field name="view_type">form</field>
+			<field name="view_id" ref="view_bss_jira_config_form" />
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+		</record>
+
+		<record id="bss_jira_config_todo" model="ir.actions.todo">
+			<field name="action_id" ref="action_bss_jira_config_form" />
+			<field name="sequence">200</field>
+			<field name="type">automatic</field>
+		</record>
+	</data>
+</openerp>

@@ -81,14 +81,14 @@ Import worklogs into OpenERP projects
                 'bss_webservice_handler',
                 'procurement',
                 ],
-    'data': [
-        
-    ],
+    'data': [],
     'init_xml': [],
     'update_xml': ['security/ir_security.xml',
                    
                    'security/ir.model.access.csv',
                    'bss_jira_project_view.xml',
+                   
+                   'wizard/bss_jira_config_wizard_view.xml',
                    
                    ],
     'css': [],
