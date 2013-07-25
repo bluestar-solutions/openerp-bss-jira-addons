@@ -23,6 +23,7 @@ from openerp.osv import fields, osv
 from openerp.netsvc import logging
 
 PROTOCOLS = [('http','Http'),('https','Https')]
+HTTP_AUTH_TYPE = [('NONE', 'None'), ('BASIC', 'Basic')]
 
 class bss_jira_config_wizard(osv.osv_memory):
     _name = 'bss_jira_connector.jira_config_wizard'
@@ -35,7 +36,8 @@ class bss_jira_config_wizard(osv.osv_memory):
         'hostname' : fields.char('Hostname', required=True),
         'hostport' : fields.integer('Port', required=True),
         'pathtojira' : fields.char('Path to Jira (without leading \'/\')', required=True),
-        'username' : fields.char('Username', required=True),
+        'authtype' : fields.selection(HTTP_AUTH_TYPE, 'Authentication type'),
+        'username' : fields.char('Username'),
         'password' : fields.char('Password'),
         'interval' : fields.integer('Time between synchronization (minutes)', required=True),
         'maxresults' : fields.integer('Max number of results', required=True),
@@ -49,6 +51,7 @@ class bss_jira_config_wizard(osv.osv_memory):
         'maxresults' : 1500,
         'startofday' : 1,
         'pathtojira' : '/jira',
+        'authtype' : 'BASIC',
         }
     
     def execute(self, cr, uid, ids, context=None):
@@ -65,9 +68,9 @@ class bss_jira_config_wizard(osv.osv_memory):
                 'ws_host' : config.hostname,
                 'ws_port' : config.hostport,
                 'ws_path' : config.pathtojira + "/rest/api/2/search?jql=updated%20%3E%20startOfDay(-" + str(config.startofday) + ")%20ORDER%20BY%20updated%20DESC&startAt=0&maxResults=" + str(config.maxresults) + "&fields=assignee,description,summary,created,updated,duedate,priority,status,worklog,key,id,project,timeestimate,timeoriginalestimate",
-                'http_auth_type' : 'BASIC',
-                'http_auth_login' : config.username,
-                'http_auth_password' : config.password,
+                'http_auth_type' : config.authtype,
+                'http_auth_login' : '' if config.authtype == 'NONE' else config.username,
+                'http_auth_password' : '' if config.authtype == 'NONE' else config.password,
                 'model_name' : 'bss_jira_connector.jira_project',
                 'decode_method_name' : 'ws_decode_write_worklog',
                 'datetime_format' : 'ISO8601',

@@ -14,8 +14,9 @@
 							<field name="pathtojira" />
 						</group>
 						<group string="Authentication">
-							<field name="username" />
-							<field name="password" password="True" />
+							<field name="authtype" />
+							<field name="username" attrs="{'invisible' : [('authtype','=','NONE')]}" />
+							<field name="password" password="True" attrs="{'invisible' : [('authtype','=','NONE')]}" />
 						</group>
 					</group>
 					<group string="Custom parameters">
