@@ -23,13 +23,10 @@
 
 # From this project
 
-import bss_jira_project
-import bss_jira_issue
-import bss_jira_worklog
-import bss_jira_worklog_errors
+import bss_jira_config_wizard
 
 #import report
-import wizard
+#import wizard
 #import report
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
