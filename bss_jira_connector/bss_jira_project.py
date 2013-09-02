@@ -24,6 +24,7 @@ from openerp.netsvc import logging
 import json
 from datetime import datetime, timedelta
 import re
+from bss_jira_config import JIRA_DISABLE_TZ
 
 JIRA_DATE_PATTERN = re.compile('(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})\.(\\d{3})([\+-])(\\d{2})(\\d{2})')
 
@@ -70,15 +71,19 @@ class bss_jira_project(osv.osv):
                 oid = model.create(cr, uid, data)
         return True   
     
-    def decode_jira_time(self, string):
+    def decode_jira_time(self, cr, uid, string):
+        with_timezone = self.pool.get('ir.config_parameter').get_param(cr, uid, JIRA_DISABLE_TZ, default=str(False)) == str(False)
         #"2013-04-16T13:23:42.000+0200"
         m = JIRA_DATE_PATTERN.search(string)
         d = datetime(int(m.group(1)),int(m.group(2)),int(m.group(3)),int(m.group(4)),int(m.group(5)),int(m.group(6)),int(m.group(7)))
         t = timedelta(hours=int(m.group(9)), minutes=int(m.group(10)))
-        if m.group(8) == '+':
-            return d-t
+        if with_timezone:
+            if m.group(8) == '+':
+                return d-t
+            else:
+                return d+t
         else:
-            return d+t
+            return d
         
     def ws_decode_write_worklog(self, cr, uid, model, content, datetime_format):
         decoded_list = json.loads(content)
@@ -141,7 +146,7 @@ class bss_jira_project(osv.osv):
                 ioid = issue_obj.search(cr, uid, [('jira_id', '=', issue_jira_id)])
                 issue_key = issue_fields['key']
                 jira_issue_keys[issue_jira_id]=issue_key
-                last_update = self.decode_jira_time(issue['updated'])
+                last_update = self.decode_jira_time(cr, uid, issue['updated'])
                 previous_update = None
                 if ioid:
                     jira_issue = issue_obj.browse(cr, uid, ioid)[0]
@@ -259,13 +264,13 @@ class bss_jira_project(osv.osv):
                             if not author_id:
                                 #author not in openerp --> do nothing
                                 continue
-                            started_date = self.decode_jira_time(worklog['started'])
+                            started_date = self.decode_jira_time(cr, uid, worklog['started'])
                             tsid = ts_obj.search(cr, uid, [('user_id','=',author_id[0]),('date_from','<=', started_date),('date_to','>=', started_date),('state','not in',['new','draft'])])
                             worklog_jira_id = worklog['id']
                             woid = worklog_obj.search(cr, uid, [('jira_id', '=', worklog_jira_id)])
                             issue_worklogs[jira_issue.jira_id].append(worklog_jira_id)
                             if woid:
-                                work_last_update = self.decode_jira_time(worklog['updated'])
+                                work_last_update = self.decode_jira_time(cr, uid, worklog['updated'])
                                 jira_worklog = worklog_obj.browse(cr, uid, woid)[0]
                                 if previous_update and work_last_update <= previous_update:
                                     #update already done --> do nothing
