@@ -21,7 +21,7 @@
 
 {
     'name': 'JIRA connector',
-    'version': '7.0.2.0',
+    'version': '7.0.2.1',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """
@@ -90,6 +90,7 @@ Import worklogs into OpenERP projects
                    
                    'wizard/bss_jira_config_wizard_view.xml',
                    
+                   'bss_jira_config_view.xml',
                    ],
     'css': [],
     'js': [],

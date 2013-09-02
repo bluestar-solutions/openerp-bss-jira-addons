@@ -28,6 +28,8 @@ import bss_jira_issue
 import bss_jira_worklog
 import bss_jira_worklog_errors
 
+import bss_jira_config
+
 #import report
 import wizard
 #import report

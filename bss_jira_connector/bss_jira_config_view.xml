@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+         <record id="view_config_settings" model="ir.ui.view">
+            <field name="name">project settings</field>
+            <field name="model">project.config.settings</field>
+            <field name="inherit_id" ref="project.view_config_settings" />
+            <field name="arch" type="xml">
+            	<xpath expr="//separator/following-sibling::*[last()]" position="after">
+            		<separator string="JIRA Connector" />
+                    <group>
+                        <label for="id" string="Task"/>
+                        <div>
+                             <div>
+                                <field name="bss_jira_disable_timezone" class="oe_inline"/>
+                                <label for="bss_jira_disable_timezone"/>
+                            </div>
+                        </div>
+                    </group>
+				</xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
