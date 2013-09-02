@@ -90,6 +90,7 @@ Import worklogs into OpenERP projects
                    
                    'wizard/bss_jira_config_wizard_view.xml',
                    
+                   'bss_jira_config_view.xml',
                    ],
     'css': [],
     'js': [],
