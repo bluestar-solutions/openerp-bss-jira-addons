@@ -7,319 +7,315 @@ msgstr ""
 "Project-Id-Version: OpenERP Server 7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-04 16:11+0000\n"
-"PO-Revision-Date: 2013-09-05 11:49+0200\n"
-"Last-Translator: Pierre-Yves <pierre-yves.berger@blues2.ch>\n"
+"PO-Revision-Date: 2013-09-04 16:11+0000\n"
+"Last-Translator: <>\n"
 "Language-Team: \n"
-"Language: fr_CH\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Pootle 2.5.0\n"
-"X-POOTLE-MTIME: 1378374583.0\n"
+"Plural-Forms: \n"
 
 #. module: bss_jira_connector
 #: view:project.task:0
 msgid "JIRA"
-msgstr "JIRA"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_config_wizard,protocol:0
 msgid "Protocol"
-msgstr "Protocole"
+msgstr ""
 
 #. module: bss_jira_connector
 #: view:project.config.settings:0
 msgid "JIRA Connector"
-msgstr "Connecteur JIRA"
+msgstr ""
 
 #. module: bss_jira_connector
 #: selection:bss_jira_connector.jira_config_wizard,protocol:0
 msgid "Https"
-msgstr "Https"
+msgstr ""
 
 #. module: bss_jira_connector
 #: selection:project.task,jira_status:0
 msgid "Reopened"
-msgstr "Reouvert"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_config_wizard,hostname:0
 msgid "Hostname"
-msgstr "Hôte"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:project.config.settings,bss_jira_disable_timezone:0
 msgid "Disable timezone conversion"
-msgstr "Désactiver la conversion des fuseaux horaires"
+msgstr ""
 
 #. module: bss_jira_connector
 #: view:bss_jira_connector.jira_worklog_errors:0
 msgid "Search Worklog Errors"
-msgstr "Recherche d'erreurs de saisie de temps"
+msgstr ""
 
 #. module: bss_jira_connector
 #: view:bss_jira_connector.jira_config_wizard:0
 msgid "Authentication"
-msgstr "Authentification"
+msgstr ""
 
 #. module: bss_jira_connector
 #: selection:project.task,jira_status:0
 msgid "Closed"
-msgstr "Fermé"
+msgstr ""
 
 #. module: bss_jira_connector
 #: selection:bss_jira_connector.jira_config_wizard,authtype:0
 msgid "Basic"
-msgstr "Basique"
+msgstr ""
 
 #. module: bss_jira_connector
 #: selection:project.task,jira_status:0
 msgid "Need info"
-msgstr "Besoin d'information"
+msgstr ""
 
 #. module: bss_jira_connector
 #: model:ir.actions.act_window,name:bss_jira_connector.action_view_jira_errors
 #: model:ir.ui.menu,name:bss_jira_connector.menu_action_view_jira_errors
 msgid "JIRA errors"
-msgstr "Erreurs JIRA"
+msgstr ""
 
 #. module: bss_jira_connector
 #: view:bss_jira_connector.jira_config_wizard:0
 msgid "Webservice"
-msgstr "Service web"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:project.task,last_update_datetime:0
 msgid "Last update"
-msgstr "Dernière mise-à-jour"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_worklog_errors,jira_worklog_id:0
 msgid "JIRA worklog id"
-msgstr "Id de saisie de temps JIRA worklog"
+msgstr ""
 
 #. module: bss_jira_connector
 #: view:bss_jira_connector.jira_config_wizard:0
 msgid "Jira Connector"
-msgstr "Connecteur Jira"
+msgstr ""
 
 #. module: bss_jira_connector
 #: selection:bss_jira_connector.jira_config_wizard,protocol:0
 msgid "Http"
-msgstr "Http"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_config_wizard,maxresults:0
 msgid "Max number of results"
-msgstr "Nombre maximum de résultats"
+msgstr ""
 
 #. module: bss_jira_connector
 #: model:ir.model,name:bss_jira_connector.model_project_config_settings
 msgid "project.config.settings"
-msgstr "Paramètres de configuration du projet"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_config_wizard,pathtojira:0
 msgid "Path to Jira (without leading '/')"
-msgstr "Chemin d'accès à Jira (sans le '/' de tête)"
+msgstr ""
 
 #. module: bss_jira_connector
 #: view:bss_jira_connector.jira_project:0
 #: model:ir.actions.act_window,name:bss_jira_connector.action_view_jira_project
 #: model:ir.ui.menu,name:bss_jira_connector.menu_action_view_jira_project
 msgid "JIRA projects"
-msgstr "Projets JIRA"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_config_wizard,authtype:0
 msgid "Authentication type"
-msgstr "Type d'authentification"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_worklog_errors,user_id:0
 msgid "User"
-msgstr "Utilisateur"
+msgstr ""
 
 #. module: bss_jira_connector
 #: model:ir.model,name:bss_jira_connector.model_bss_jira_connector_jira_project
 msgid "bss_jira_connector.jira_project"
-msgstr "Projet JIRA"
+msgstr ""
 
 #. module: bss_jira_connector
 #: sql_constraint:bss_jira_connector.jira_project:0
 #: sql_constraint:project.task:0
 msgid "The JIRA key must be unique !"
-msgstr "La clé JIRA doit être unique !"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_worklog_errors,active:0
 msgid "Active"
-msgstr "Actif"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_config_wizard,password:0
 msgid "Password"
-msgstr "Mot de passe"
+msgstr ""
 
 #. module: bss_jira_connector
 #: selection:project.task,jira_status:0
 msgid "Resolved"
-msgstr "Résolu"
+msgstr ""
 
 #. module: bss_jira_connector
 #: selection:bss_jira_connector.jira_config_wizard,authtype:0
 msgid "None"
-msgstr "Aucun"
+msgstr ""
 
 #. module: bss_jira_connector
 #: model:ir.model,name:bss_jira_connector.model_project_task
 #: view:project.config.settings:0
 msgid "Task"
-msgstr "Tâche"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_worklog_errors,update_date:0
 msgid "Update date"
-msgstr "Date de mise-à-jour"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_config_wizard,interval:0
 msgid "Time between synchronization (minutes)"
-msgstr "Intervalle entre les synchronisations (minutes)"
+msgstr ""
 
 #. module: bss_jira_connector
 #: model:ir.model,name:bss_jira_connector.model_project_task_work
 msgid "Project Task Work"
-msgstr "Avancement sur une tâche de projet"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:project.task,jira_status:0
 msgid "JIRA status"
-msgstr "Statut JIRA"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_worklog_errors,synchro_date_time:0
 msgid "Error date"
-msgstr "Date de l'erreur"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_project,key:0
 #: field:bss_jira_connector.jira_worklog_errors,key:0
 #: field:project.task,key:0
 msgid "JIRA key"
-msgstr "Clé JIRA"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_config_wizard,startofday:0
 msgid "Number of days to collect logs before now"
-msgstr "Nombre de jours de logs à récupérer"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_worklog_errors,error_message:0
 msgid "Error message"
-msgstr "Message d'erreur"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_project,project_id:0
 #: field:bss_jira_connector.jira_worklog_errors,project_id:0
 msgid "Project"
-msgstr "Projet"
+msgstr ""
 
 #. module: bss_jira_connector
 #: model:ir.model,name:bss_jira_connector.model_bss_jira_connector_jira_worklog_errors
 msgid "bss_jira_connector.jira_worklog_errors"
-msgstr "Erreurs de saisie de temps"
+msgstr ""
 
 #. module: bss_jira_connector
 #: view:bss_jira_connector.jira_config_wizard:0
 msgid "Custom parameters"
-msgstr "Paramètres individualisés"
+msgstr ""
 
 #. module: bss_jira_connector
 #: view:bss_jira_connector.jira_worklog_errors:0
 msgid "JIRA worklog errors"
-msgstr "Erreurs de saisie de temps"
+msgstr ""
 
 #. module: bss_jira_connector
 #: model:ir.actions.act_window,name:bss_jira_connector.action_bss_jira_config_form
 msgid "Configure Jira Connector"
-msgstr "Configurer le connecteur Jira"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_config_wizard,username:0
 msgid "Username"
-msgstr "Nom d'utilisateur"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_worklog_errors,jira_issue_id:0
 #: field:project.task.work,jira_issue_id:0
 msgid "JIRA issue id"
-msgstr "Numéro de tâche JIRA"
+msgstr ""
 
 #. module: bss_jira_connector
 #: selection:project.task,jira_status:0
 msgid "In progress"
-msgstr "En cours"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_project,jira_id:0
 #: field:project.task,jira_id:0
 #: field:project.task.work,jira_id:0
 msgid "JIRA id"
-msgstr "Id JIRA"
+msgstr ""
 
 #. module: bss_jira_connector
 #: selection:project.task,jira_status:0
 msgid "In test"
-msgstr "En test"
+msgstr ""
 
 #. module: bss_jira_connector
 #: sql_constraint:bss_jira_connector.jira_project:0
 #: sql_constraint:project.task:0
 #: sql_constraint:project.task.work:0
 msgid "The JIRA id must be unique !"
-msgstr "L'id JIRA doit être unique !"
+msgstr ""
 
 #. module: bss_jira_connector
 #: view:bss_jira_connector.jira_config_wizard:0
 msgid "or"
-msgstr "ou"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_project,name:0
 msgid "JIRA project name"
-msgstr "Nom de projet JIRA"
+msgstr ""
 
 #. module: bss_jira_connector
 #: help:project.config.settings,bss_jira_disable_timezone:0
 msgid "This setting disables the conversion between JIRA and OpenERP datetime with\n"
 "            the timezone provided by the JIRA datetime."
 msgstr ""
-"Ce paramètre désactive la conversion de fuseau horaire entre JIRA et OpenERP\n"
-"                       utilisant le fuseau fourni par JIRA"
 
 #. module: bss_jira_connector
 #: view:bss_jira_connector.jira_config_wizard:0
 msgid "Cancel"
-msgstr "Annuler"
+msgstr ""
 
 #. module: bss_jira_connector
 #: view:bss_jira_connector.jira_config_wizard:0
 msgid "Apply"
-msgstr "Appliquer"
+msgstr ""
 
 #. module: bss_jira_connector
 #: selection:project.task,jira_status:0
 msgid "Open"
-msgstr "Ouvert"
+msgstr ""
 
 #. module: bss_jira_connector
 #: field:bss_jira_connector.jira_config_wizard,hostport:0
 msgid "Port"
-msgstr "Port"
+msgstr ""
 
 #. module: bss_jira_connector
 #: model:ir.model,name:bss_jira_connector.model_bss_jira_connector_jira_config_wizard
 msgid "Jira connector Configuration"
-msgstr "Configuration du connecteur Jira"
+msgstr ""
+
