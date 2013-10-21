@@ -31,9 +31,5 @@ class bss_jira_worklog(osv.osv):
         'jira_issue_id': fields.integer('JIRA issue id', readonly=True),
     }
 
-    _sql_constraints = [
-        ('jira_id_uniq', 'unique (jira_id)', 'The JIRA id must be unique !'),
-    ]
-
 bss_jira_worklog()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

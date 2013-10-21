@@ -32,11 +32,6 @@ class bss_jira_issue(osv.osv):
         'last_update_datetime': fields.datetime('Last update', readonly=True),
         'jira_status': fields.selection([('1','Open'),('3','In progress'),('4','Reopened'),('5','Resolved'),('6','Closed'),('10000','In test'),('10001','Need info')],'JIRA status', readonly=True),
     }
-
-    _sql_constraints = [
-        ('jira_id_uniq', 'unique (jira_id)', 'The JIRA id must be unique !'),
-        ('key_uniq', 'unique (key)', 'The JIRA key must be unique !'),
-    ]
   
 bss_jira_issue()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
