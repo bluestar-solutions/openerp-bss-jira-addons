@@ -21,7 +21,7 @@
 
 {
     'name': 'JIRA connector',
-    'version': '7.0.2.1',
+    'version': '7.0.2.1-1',
     "category" : 'Bluestar/Generic module',
     'complexity': "easy",
     'description': """
