@@ -73,12 +73,12 @@ class bss_jira_project(osv.osv):
     def ws_decode_write(self, cr, uid, model, content, datetime_format):
         decoded_list = json.loads(content)
         field_list = model.fields_get(cr,uid)
-        self._logger.info("List is : %s, length is %d",str(decoded_list),len(decoded_list))
-        self._logger.info("Field list is : %s, length is %d",str(field_list),len(field_list))
+        self._logger.debug("List is : %s, length is %d",str(decoded_list),len(decoded_list))
+        self._logger.debug("Field list is : %s, length is %d",str(field_list),len(field_list))
         if not decoded_list:
             return True
         elif len(decoded_list)==0:
-            self._logger.info("List is empty")
+            self._logger.debug("List is empty")
             return True
 
         for decoded in decoded_list:
@@ -86,14 +86,14 @@ class bss_jira_project(osv.osv):
             if oid:
                 jira_project = self.browse(cr, uid, oid)[0]
                 if jira_project.name!=decoded['name']:
-                    self._logger.info('Update name for project %s from %s to %s',decoded['key'],jira_project.name,decoded['name'])
+                    self._logger.debug('Update name for project %s from %s to %s',decoded['key'],jira_project.name,decoded['name'])
                     self.write(cr, uid, jira_project.id, {'name': decoded['name']})
             else:   
                 data = {'jira_id': decoded['id'],
                         'key': decoded['key'],
                         'name': decoded['name']
                         }
-                self._logger.info('Create project %s',str(data))
+                self._logger.debug('Create project %s',str(data))
                 oid = model.create(cr, uid, data)
         return True   
     
@@ -115,15 +115,15 @@ class bss_jira_project(osv.osv):
         decoded_list = json.loads(content)
 #/jira/rest/api/2/search?jql=updated%20%3E%20startOfDay(-1)%20ORDER%20BY%20updated%20DESC&startAt=0&maxResults=500&fields=assignee,description,summary,created,updated,duedate,priority,status,worklog,key,id,project,timeestimate,timeoriginalestimate
 #        field_list = model.fields_get(cr,uid)
-#        self._logger.info("List is : %s, length is %d",str(decoded_list),len(decoded_list))
-#        self._logger.info("Field list is : %s, length is %d",str(field_list),len(field_list))
+#        self._logger.debug("List is : %s, length is %d",str(decoded_list),len(decoded_list))
+#        self._logger.debug("Field list is : %s, length is %d",str(field_list),len(field_list))
         if not decoded_list:
             return True
         elif len(decoded_list)==0:
-            self._logger.info("List is empty")
+            self._logger.debug("List is empty")
             return True
         issue_list = decoded_list['issues']
-        self._logger.info('Issue list contains %d issues (len = %d)',decoded_list['total'],len(issue_list))
+        self._logger.debug('Issue list contains %d issues (len = %d)',decoded_list['total'],len(issue_list))
         found_projects = []
         active_projects = {}
         issue_obj = self.pool.get('project.task')
@@ -137,34 +137,34 @@ class bss_jira_project(osv.osv):
         for issue_fields in issue_list:
             is_issue_cause_error = False
             issue = issue_fields['fields']
-            self._logger.info('Processing issue %s',issue_fields['key'])
+            self._logger.debug('Processing issue %s',issue_fields['key'])
             project = issue['project']
             if project['key'] not in found_projects:
-                self._logger.info('Processing project %s',project['key'])
+                self._logger.debug('Processing project %s',project['key'])
                 oid = model.search(cr, uid, [('jira_id', '=', project['id'])])
                 if oid:
                     jira_project = self.browse(cr, uid, oid)[0]
                     if jira_project.name!=project['name']:
-                        self._logger.info('Update name for project %s from %s to %s',project['key'],jira_project.name,project['name'])
+                        self._logger.debug('Update name for project %s from %s to %s',project['key'],jira_project.name,project['name'])
                     self.write(cr, uid, jira_project.id, {'name': project['name']})
                     found_projects.append(project['key'])
                     if jira_project.project_id:
                         active_projects[project['key']] = oid
                     else:
-                        self._logger.info('Project %s is not active',project['key'])
+                        self._logger.debug('Project %s is not active',project['key'])
                         continue
                 else:   
                     data = {'jira_id': project['id'],
                         'key': project['key'],
                         'name': project['name']
                         }
-                    self._logger.info('Create project %s',str(data))
+                    self._logger.debug('Create project %s',str(data))
                     oid = model.create(cr, uid, data)
                     jira_project = self.browse(cr, uid, [oid])[0]
             elif project['key'] in active_projects:
                 jira_project = self.browse(cr, uid, active_projects[project['key']])[0]        
             else:
-                self._logger.info('Project %s is not active',project['key'])
+                self._logger.debug('Project %s is not active',project['key'])
                 continue    
 
             if jira_project and jira_project.project_id:
@@ -180,7 +180,7 @@ class bss_jira_project(osv.osv):
                     previous_update = datetime.strptime(jira_issue.last_update_datetime,'%Y-%m-%d %H:%M:%S')
                     if last_update <= previous_update:
                         #update already done --> do nothing
-                        self._logger.info('issue update already done --> do nothing %s %s',str(last_update),str(previous_update))
+                        self._logger.debug('issue update already done --> do nothing %s %s',str(last_update),str(previous_update))
                         continue
                     data = {}
                     if jira_issue.key != issue_key:
@@ -200,15 +200,15 @@ class bss_jira_project(osv.osv):
                     if jira_issue.user_id:
                         oe_assignee = jira_issue.user_id.login 
                     if issue['assignee'] and issue['assignee']['name'] != oe_assignee:
-                        self._logger.info('assignee = %s user = %s',issue['assignee']['name'],oe_assignee)
+                        self._logger.debug('assignee = %s user = %s',issue['assignee']['name'],oe_assignee)
                         assignee_id = user_obj.search(cr, uid, [('login','=',issue['assignee']['name'])])
-                        self._logger.info('assignee_id = %s ',str(assignee_id))
+                        self._logger.debug('assignee_id = %s ',str(assignee_id))
                         if assignee_id and len(assignee_id):
                             data['user_id'] = assignee_id[0]                        
                     elif not issue['assignee'] and oe_assignee:
                         data['user_id']=None
                     if issue['description'] and jira_issue.description and issue['description'] != jira_issue.description:
-                        self._logger.info('issue description = %s task description = %s',issue['description'],jira_issue.description)
+                        self._logger.debug('issue description = %s task description = %s',issue['description'],jira_issue.description)
                         data['description'] = issue['description']
                     elif not issue['description'] and jira_issue.description:
                         data['description'] = None
@@ -217,12 +217,12 @@ class bss_jira_project(osv.osv):
                     if issue['timeoriginalestimate']:
                         toe = float(issue['timeoriginalestimate']) / 3600.0
                         if abs(toe - jira_issue.planned_hours) > 0.01:
-                            self._logger.info('timeoriginalestimate %s jira_issue.planned_hours %s',str(toe),str(jira_issue.planned_hours))
+                            self._logger.debug('timeoriginalestimate %s jira_issue.planned_hours %s',str(toe),str(jira_issue.planned_hours))
                             data['planned_hours'] = toe
                     if issue['timeestimate']:
                         te = float(issue['timeestimate']) / 3600.0
                         if abs(te - jira_issue.remaining_hours) > 0.01:
-                            self._logger.info('timeestimate %s jira_issue.remaining_hours %s',str(te),str(jira_issue.remaining_hours))
+                            self._logger.debug('timeestimate %s jira_issue.remaining_hours %s',str(te),str(jira_issue.remaining_hours))
                             data['remaining_hours'] = te
                     if issue['duedate']:
                         duedate = datetime.strptime(issue['duedate'],'%Y-%m-%d')
@@ -240,16 +240,16 @@ class bss_jira_project(osv.osv):
                             data['jira_status'] = issue['status']['id']
                     
                     if jira_issue.last_update_datetime != str(last_update):
-                        self._logger.info('jira_issue.last_update_datetime %s last_update %s',str(jira_issue.last_update_datetime),str(last_update))
+                        self._logger.debug('jira_issue.last_update_datetime %s last_update %s',str(jira_issue.last_update_datetime),str(last_update))
                         data['last_update_datetime'] = str(last_update)
                     if data:
                         # Test if update breaks invoiced line constraint
                         if self._check_constraint(cr, uid, ioid, data):
-                            self._logger.info('Update issue %s with %s',issue_key,str(data))
+                            self._logger.debug('Update issue %s with %s',issue_key,str(data))
                             issue_obj.write(cr, uid, ioid, data)
                         else:
                             self._logger.error('Updating issue %s breaks invoiced line constraint',issue_key)
-                            self._logger.info('Data : %s' % str(data))
+                            self._logger.debug('Data : %s' % str(data))
                             is_issue_cause_error = True
                 else:
                     summary =  issue['summary']
@@ -286,7 +286,7 @@ class bss_jira_project(osv.osv):
                     if state:
                         data['stage_id'] = issue_obj.stage_find(cr, uid, [], jira_project.project_id.id, [('state', '=', state)])
                     data['last_update_datetime'] = str(last_update)
-                    self._logger.info('Create issue %s',str(data))
+                    self._logger.debug('Create issue %s',str(data))
                     ioid = issue_obj.create(cr, uid, data)
                     jira_issue = issue_obj.browse(cr, uid, ioid)
                 issue_worklogs[jira_issue.jira_id] = []
@@ -311,7 +311,7 @@ class bss_jira_project(osv.osv):
                                 jira_worklog = worklog_obj.browse(cr, uid, woid)[0]
                                 if previous_update and work_last_update <= previous_update:
                                     #update already done --> do nothing
-                                    self._logger.info('worklog update already done --> do nothing')
+                                    self._logger.debug('worklog update already done --> do nothing')
                                     continue
                                 #Check if work log is editable
                                 
@@ -329,7 +329,7 @@ class bss_jira_project(osv.osv):
                                     data['date'] = str(started_date)
                                 hours = float(worklog['timeSpentSeconds']) / 3600.0    
                                 if abs(jira_worklog.hours - hours) > 0.01:
-                                    self._logger.info('hours %s jira_worklog.hours %s',str(hours),str(jira_worklog.hours))
+                                    self._logger.debug('hours %s jira_worklog.hours %s',str(hours),str(jira_worklog.hours))
                                     data['hours'] = hours            
 
                                 if data:
@@ -348,7 +348,7 @@ class bss_jira_project(osv.osv):
                                             error_obj.create(cr, uid,err_data)                                           
                                             self._logger.error('timesheet has been submitted : cannot change worklog !')
                                         continue
-                                    self._logger.info('Update worklog %s with %s',jira_worklog.id,str(data))
+                                    self._logger.debug('Update worklog %s with %s',jira_worklog.id,str(data))
                                     worklog_obj.write(cr, uid, woid, data)                             
                             else:
                                 if tsid:
@@ -383,7 +383,7 @@ class bss_jira_project(osv.osv):
                                 data['date'] = str(started_date)
                                 data['hours'] = float(worklog['timeSpentSeconds']) / 3600.0
 
-                                self._logger.info('Create worklog %s',str(data))
+                                self._logger.debug('Create worklog %s',str(data))
                                 woid = worklog_obj.create(cr, uid, data)
         worklog_to_delete = []
         for issue_id in issue_worklogs:
@@ -397,10 +397,10 @@ class bss_jira_project(osv.osv):
                             self._save_error(cr, uid, worklog, u'timesheet has been submitted : delete refused !')
                     else:
                         worklog_to_delete.append(worklog.id)
-                        self._logger.info('Delete worklogs for %s : %s',issue_id,str(worklog.id))
+                        self._logger.debug('Delete worklogs for %s : %s',issue_id,str(worklog.id))
         if worklog_to_delete:
             worklog_obj.unlink(cr, uid, worklog_to_delete)
-        self._logger.info('Synchronization finished')
+        self._logger.debug('Synchronization finished')
         return True    
  
 bss_jira_project()
