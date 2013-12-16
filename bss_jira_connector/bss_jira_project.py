@@ -43,6 +43,32 @@ class bss_jira_project(osv.osv):
         ('jira_id_uniq', 'unique (jira_id)', 'The JIRA id must be unique !'),
         ('key_uniq', 'unique (key)', 'The JIRA key must be unique !'),
     ]
+    
+    def _save_error(self, cr, uid, worklog, message="Unknown error"):
+        error_obj = self.pool.get('bss_jira_connector.jira_worklog_errors')
+        
+        err_data = {}
+        err_data['user_id']= worklog.user_id
+        err_data['project_id'] = self.browse(cr, uid, self.search(cr, uid, [('jira_id','=',worklog.jira_id)]))[0].project_id
+        err_data['jira_issue_id'] = worklog.jira_issue_id
+        err_data['jira_worklog_id'] = worklog.jira_id
+        err_data['synchro_date_time'] = str(datetime.now())
+        err_data['update_date'] = str(worklog.date)
+        err_data['error_message'] = message
+        err_data['key'] = self.browse(cr, uid, self.search(cr, uid, [('jira_id','=',worklog.jira_id)]))[0].key
+        error_obj.create(cr, uid, err_data)
+        self._logger.error(message)
+        
+    def _check_constraint(self, cr, uid, task_id, data):
+        if data.has_key('name') or data.has_key('project_id'):
+            task = self.pool.get('project.task').browse(cr, uid, task_id)[0]
+            if task and len(task.work_ids):
+                for task_work in task.work_ids:
+                    if not task_work.hr_analytic_timesheet_id:
+                        continue
+                    if task_work.hr_analytic_timesheet_id.line_id.invoice_id:
+                        return False
+        return True
 
     def ws_decode_write(self, cr, uid, model, content, datetime_format):
         decoded_list = json.loads(content)
@@ -109,6 +135,7 @@ class bss_jira_project(osv.osv):
         jira_issue_keys = {}
         issue_worklogs = {}
         for issue_fields in issue_list:
+            is_issue_cause_error = False
             issue = issue_fields['fields']
             self._logger.debug('Processing issue %s',issue_fields['key'])
             project = issue['project']
@@ -204,9 +231,9 @@ class bss_jira_project(osv.osv):
                     if issue['status']['id'] != jira_issue.jira_status:
                         if issue['status']['id'] in ['1','4','10000']:
                             state = 'pending'
-                        elif issue['status']['id'] in ['3','10001']:
+                        elif issue['status']['id'] in ['3']:
                             state = 'open'
-                        elif issue['status']['id'] in ['5','6']:
+                        elif issue['status']['id'] in ['5','6','10001']:
                             state = 'done'
                         if state:
                             data['stage_id'] = issue_obj.stage_find(cr, uid, [], jira_project.project_id.id, [('state', '=', state)])
@@ -216,8 +243,14 @@ class bss_jira_project(osv.osv):
                         self._logger.debug('jira_issue.last_update_datetime %s last_update %s',str(jira_issue.last_update_datetime),str(last_update))
                         data['last_update_datetime'] = str(last_update)
                     if data:
-                        self._logger.debug('Update issue %s with %s',issue_key,str(data))
-                        issue_obj.write(cr, uid, ioid, data)                             
+                        # Test if update breaks invoiced line constraint
+                        if self._check_constraint(cr, uid, ioid, data):
+                            self._logger.debug('Update issue %s with %s',issue_key,str(data))
+                            issue_obj.write(cr, uid, ioid, data)
+                        else:
+                            self._logger.error('Updating issue %s breaks invoiced line constraint',issue_key)
+                            self._logger.debug('Data : %s' % str(data))
+                            is_issue_cause_error = True
                 else:
                     summary =  issue['summary']
                     summary = summary.replace('"','_').replace('\'','_')
@@ -244,11 +277,11 @@ class bss_jira_project(osv.osv):
                         data['date_deadline'] = datetime.strptime(issue['duedate'],'%Y-%m-%d')
                     
                     data['jira_status'] = issue['status']['id']
-                    if issue['status']['id'] in ['1','4','10000']:
+                    if issue['status']['id'] in ['1','4','10001']:
                         state = 'pending'
-                    elif issue['status']['id'] in ['3','10001']:
+                    elif issue['status']['id'] in ['3']:
                         state = 'open'
-                    elif issue['status']['id'] in ['5','6']:
+                    elif issue['status']['id'] in ['5','6','10000']:
                         state = 'done'
                     if state:
                         data['stage_id'] = issue_obj.stage_find(cr, uid, [], jira_project.project_id.id, [('state', '=', state)])
@@ -268,6 +301,10 @@ class bss_jira_project(osv.osv):
                             tsid = ts_obj.search(cr, uid, [('user_id','=',author_id[0]),('date_from','<=', started_date),('date_to','>=', started_date),('state','not in',['new','draft'])])
                             worklog_jira_id = worklog['id']
                             woid = worklog_obj.search(cr, uid, [('jira_id', '=', worklog_jira_id)])
+                            if is_issue_cause_error:
+                                if woid:
+                                    self._save_error(cr, uid, worklog_obj.browse(cr, uid, woid), 'You cannot modify an invoiced analytic line!')
+                                continue
                             issue_worklogs[jira_issue.jira_id].append(worklog_jira_id)
                             if woid:
                                 work_last_update = self.decode_jira_time(cr, uid, worklog['updated'])
@@ -357,22 +394,12 @@ class bss_jira_project(osv.osv):
                     if tsid:
                         weid = error_obj.search(cr, uid, [('jira_worklog_id','=',worklog.jira_id)])
                         if not weid:
-                            err_data = {}
-                            err_data['user_id']= worklog.user_id
-                            err_data['project_id'] = jira_issue_oe_project[issue_id]
-                            err_data['jira_issue_id'] = issue_id
-                            err_data['jira_worklog_id'] = worklog.jira_id
-                            err_data['synchro_date_time'] = str(datetime.now())
-                            err_data['update_date'] = str(worklog.date)
-                            err_data['key'] = jira_issue_keys[issue_id]
-                            err_data['error_message'] = u'timesheet has been submitted : delete refused !' 
-                            error_obj.create(cr, uid,err_data)                                           
-                            self._logger.error('timesheet has been submitted : delete refused !')
+                            self._save_error(cr, uid, worklog, u'timesheet has been submitted : delete refused !')
                     else:
                         worklog_to_delete.append(worklog.id)
-                if worklog_to_delete:
-                    worklog_obj.unlink(cr, uid, worklog_to_delete)
-                self._logger.debug('Deleted worklogs for %s : %s',issue_id,str(worklog_to_delete))
+                        self._logger.debug('Delete worklogs for %s : %s',issue_id,str(worklog.id))
+        if worklog_to_delete:
+            worklog_obj.unlink(cr, uid, worklog_to_delete)
         self._logger.debug('Synchronization finished')
         return True    
  
