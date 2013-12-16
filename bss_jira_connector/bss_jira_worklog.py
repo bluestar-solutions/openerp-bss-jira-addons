@@ -30,6 +30,11 @@ class bss_jira_worklog(osv.osv):
         'jira_id': fields.integer('JIRA id', readonly=True),
         'jira_issue_id': fields.integer('JIRA issue id', readonly=True),
     }
+    
+    def init(self, cr):
+        cr.execute("SELECT * FROM pg_constraint WHERE conname = 'project_task_work_jira_id_uniq';")
+        if len(cr.fetchall()):
+            cr.execute("ALTER TABLE project_task_work DROP CONSTRAINT project_task_work_jira_id_uniq;")
 
 bss_jira_worklog()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
