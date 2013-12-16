@@ -32,6 +32,15 @@ class bss_jira_issue(osv.osv):
         'last_update_datetime': fields.datetime('Last update', readonly=True),
         'jira_status': fields.selection([('1','Open'),('3','In progress'),('4','Reopened'),('5','Resolved'),('6','Closed'),('10000','In test'),('10001','Need info')],'JIRA status', readonly=True),
     }
+    
+    def init(self, cr):
+        cr.execute("SELECT * FROM pg_constraint WHERE conname = 'project_task_jira_id_uniq';")
+        if len(cr.fetchall()):
+            cr.execute("ALTER TABLE project_task DROP CONSTRAINT project_task_jira_id_uniq;")
+            
+        cr.execute("SELECT * FROM pg_constraint WHERE conname = 'project_task_key_uniq';")
+        if len(cr.fetchall()):
+            cr.execute("ALTER TABLE project_task DROP CONSTRAINT project_task_key_uniq;")
   
 bss_jira_issue()
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
